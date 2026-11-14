@@ -87,10 +87,10 @@
   }
   .mobile-news {
     display: block;
-    margin-top: 10vw;
+    margin: 10vw auto 0;
     padding: 2vw 4vw;
     width: min(65vw, 500px);
-    border-radius: 0 12px 12px 0;
+    border-radius: 12px;
   }
   .ticker-heading a,
   .ticker-link {
