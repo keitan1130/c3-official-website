@@ -33,19 +33,6 @@
 .all {
   grid-area: all;
   align-self: start;
-  box-sizing: border-box;
-  background: var(--paper-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 240px;
-  height: 60px;
-  border: 1px solid var(--font-color);
-  border-radius: 53px;
-  color: var(--font-color);
-  text-decoration: none;
-  text-align: center;
-  font-size: 24px;
   margin: 0 auto 32px;
 }
 @media (max-width: 1000px) {
@@ -69,10 +56,5 @@
   }
   .all {
     margin: 65px auto 0;
-  }
-}
-@media (max-width: 600px) {
-  .all {
-    font-size: 17px;
   }
 }

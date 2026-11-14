@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./index.module.css";
 
 import videoLoading from "@/assets/video-loading.png";
+import LinkButton from "@/shared/ui/LinkButton";
 
 import type { Community } from "@/shared/types/content";
 
@@ -34,7 +35,12 @@ const HomeCommunity = ({ community, isReversed }: HomeCommunityProps) => (
     <div className={styles["text"]}>
       <h2>{community.name}</h2>
       <p>{community.domain}</p>
-      <Link to={`/community/${community.slug}`}>詳しく見る</Link>
+      <LinkButton
+        className={styles["more"]}
+        to={`/community/${community.slug}`}
+      >
+        詳しく見る
+      </LinkButton>
     </div>
   </section>
 );

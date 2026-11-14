@@ -40,22 +40,7 @@
   background: linear-gradient(to top, var(--background-color), transparent);
 }
 .text a {
-  background: var(--paper-color);
-  display: block;
-  width: 240px;
-  height: 60px;
-  line-height: 60px;
-  text-align: center;
-  border: 1px solid var(--font-color);
-  border-radius: 53px;
-  color: var(--font-color);
-  text-decoration: none;
-  font-size: 24px;
   margin: 28px auto 0;
-}
-.text a:hover {
-  color: var(--paper-color);
-  background: var(--font-color);
 }
 @media (max-width: 1000px) {
   .introduction {
@@ -98,8 +83,5 @@
   }
   .text p {
     font-size: 20px;
-  }
-  .text a {
-    font-size: 17px;
   }
 }

@@ -13,16 +13,6 @@
   height: min(37.5vw, 720px);
 }
 .all {
-  background: var(--paper-color);
-  display: block;
-  width: 240px;
-  height: 60px;
-  line-height: 60px;
-  border: 1px solid var(--font-color);
-  border-radius: 53px;
-  color: var(--font-color);
-  text-decoration: none;
-  font-size: 24px;
   margin: 0 auto;
 }
 @media (max-width: 1000px) {
@@ -38,8 +28,5 @@
 @media (max-width: 600px) {
   .blog h2 {
     font-size: 56px;
-  }
-  .all {
-    font-size: 17px;
   }
 }

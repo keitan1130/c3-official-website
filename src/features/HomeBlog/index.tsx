@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
 import useSWR from "swr";
 
 import styles from "./index.module.css";
 
 import BlogStatus from "@/features/BlogStatus";
 import Carousel from "@/features/Carousel";
+import LinkButton from "@/shared/ui/LinkButton";
 import { getBlogs } from "@/util/blogRepository";
 
 const HomeBlog = () => {
@@ -29,9 +29,9 @@ const HomeBlog = () => {
           />
         </div>
       ) : null}
-      <Link className={styles["all"]} to="/blog">
+      <LinkButton className={styles["all"]} to="/blog">
         一覧を見る
-      </Link>
+      </LinkButton>
     </section>
   );
 };

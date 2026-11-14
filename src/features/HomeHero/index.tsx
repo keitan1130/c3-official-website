@@ -1,8 +1,7 @@
-import { Link } from "react-router-dom";
-
 import styles from "./index.module.css";
 
 import Carousel from "@/features/Carousel";
+import LinkButton from "@/shared/ui/LinkButton";
 import { CONTENT } from "@/util/contentRepository";
 
 const HomeHero = () => {
@@ -19,9 +18,9 @@ const HomeHero = () => {
       <div className={styles["carousel"]}>
         <Carousel entries={news} kind="news" label="お知らせ" />
       </div>
-      <Link className={styles["all"]} to="/news">
+      <LinkButton className={styles["all"]} to="/news">
         お知らせ一覧を見る
-      </Link>
+      </LinkButton>
     </section>
   );
 };
