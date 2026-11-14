@@ -1,0 +1,18 @@
+{
+  "id": "Ft2AhAaU8ZLT9dySKoUS8",
+  "title": "10/8,10/9に工大祭が行われます！！",
+  "digest": "10/8,10/9に工大祭が行われるよ！！！",
+  "createdAt": "2022-09-28T10:37:14.498Z",
+  "updatedAt": "2023-03-01T13:19:25.040Z",
+  "isPublished": true,
+  "important": false,
+  "thumbnail": "./assets/cover.webp",
+  "authorIds": [
+    "5L7yQ09nTmD5AftH0daopl"
+  ],
+  "tagIds": [
+    "6KJkzvTBJHJr0EhsYAoiYU",
+    "7mSs943ZaHUI1uNc1bufNs"
+  ],
+  "body": "./body.md"
+}

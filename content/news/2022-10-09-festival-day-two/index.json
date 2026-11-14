@@ -1,0 +1,20 @@
+{
+  "id": "1Py5juSW3x9IBzzZ5Tqd0h",
+  "title": "工大祭2日目スタートです！",
+  "digest": "2日目スタートです！グッズが品薄なので早めにお買い求めください！！！",
+  "createdAt": "2022-10-09T01:13:25.491Z",
+  "updatedAt": "2023-03-01T13:18:45.451Z",
+  "isPublished": true,
+  "important": false,
+  "thumbnail": "./assets/cover.jpg",
+  "authorIds": [
+    "5sMs2rpHj96OJS2CHDiqyc"
+  ],
+  "tagIds": [
+    "18ZfElcC45eGcLp5iESyTF",
+    "6BZzaC27WSTi0rHhcjZfzG",
+    "6KJkzvTBJHJr0EhsYAoiYU",
+    "7mSs943ZaHUI1uNc1bufNs"
+  ],
+  "body": "./body.md"
+}

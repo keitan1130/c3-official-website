@@ -1,0 +1,18 @@
+{
+  "id": "1y1xT8pvbWb9GoNn7KwDh8",
+  "title": "C3オープンキャンパス開催‼",
+  "digest": "今年度のC3オープンキャンパスサイトが開設しました。特設サイトに部員の作品がたくさん展示されているので楽しんでいってください‼",
+  "createdAt": "2022-07-15T08:29:23.346Z",
+  "updatedAt": "2023-03-01T13:19:36.162Z",
+  "isPublished": true,
+  "important": false,
+  "thumbnail": "./assets/cover.webp",
+  "authorIds": [
+    "4qxMXWdrh7v64CpHGlBJIF"
+  ],
+  "tagIds": [
+    "6KJkzvTBJHJr0EhsYAoiYU",
+    "1CqSFxN27uylM2jase4bjK"
+  ],
+  "body": "./body.md"
+}

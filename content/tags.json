@@ -1,0 +1,188 @@
+[
+  {
+    "id": "18ZfElcC45eGcLp5iESyTF",
+    "name": "サークル展示"
+  },
+  {
+    "id": "1CqSFxN27uylM2jase4bjK",
+    "name": "2022オープンキャンパス"
+  },
+  {
+    "id": "1g8ZX6qdVFiDu8BqFSnByy",
+    "name": "Unity"
+  },
+  {
+    "id": "1ph61khWZHJbw9aUT57TP7",
+    "name": "合同イベント"
+  },
+  {
+    "id": "1umSJ1YATstEVZ0yT6X8qC",
+    "name": "2023年度新歓企画"
+  },
+  {
+    "id": "1xYyXKHIRbm57PUUwJOxzu",
+    "name": "Web",
+    "color": "#ffffff"
+  },
+  {
+    "id": "291okc237btWHG4aGR4sO7",
+    "name": "Next.js"
+  },
+  {
+    "id": "2A64cT03SitLrFxTW4Zgx4",
+    "name": "点群データ"
+  },
+  {
+    "id": "2EgcYjxJP3h1LDV8Yy1bwH",
+    "name": "OGP"
+  },
+  {
+    "id": "2L56iAMDxqDckxSKqleN2K",
+    "name": "Nuxt.js"
+  },
+  {
+    "id": "2LFyOvmdqIe5BYCKEZNk6o",
+    "name": "2026年度新歓企画"
+  },
+  {
+    "id": "2LgbLWzflZIXX42jsfH2WK",
+    "name": "blog"
+  },
+  {
+    "id": "2MCdg7PjTXXLdu5u5iXv2E",
+    "name": "Advent Calendar 2022"
+  },
+  {
+    "id": "2eoAWXMekEVUSq0esX7sQQ",
+    "name": "ゲーム",
+    "color": "#7db4d6"
+  },
+  {
+    "id": "2fXV4ix2QzxVcVFJGvQQHf",
+    "name": "Cloudflare"
+  },
+  {
+    "id": "2iMXMF2SLUSzi7Bvpqygic",
+    "name": "関数グラフアート"
+  },
+  {
+    "id": "2paIKdb9CUgZNiRqXAX1X9",
+    "name": "las"
+  },
+  {
+    "id": "3RWC11gvytSfm1XFwZfkAO",
+    "name": "GraphQL"
+  },
+  {
+    "id": "3WoQ57Pc7Lsg0ta7CH4uhD",
+    "name": "オープンキャンパス2023"
+  },
+  {
+    "id": "3YuGqB4OrGrcFqCXb8T3yD",
+    "name": "イラスト"
+  },
+  {
+    "id": "3igPRzn7fg9GtGt7KKwssG",
+    "name": "新歓企画"
+  },
+  {
+    "id": "3pkpTG7vkeHBqWEYVcEV6G",
+    "name": "Advent Calendar 2023"
+  },
+  {
+    "id": "45om2dDA5mGMngmzueTQLD",
+    "name": "ハンズオン"
+  },
+  {
+    "id": "4DJcMlujDFww2Joa322rnX",
+    "name": "プログラミング"
+  },
+  {
+    "id": "4NkxqHaVGTivdCJJcW0zCD",
+    "name": "Nginx"
+  },
+  {
+    "id": "4P0hreVGlCdy9BhExfuPNU",
+    "name": "プログラミング言語"
+  },
+  {
+    "id": "4tSfjMAtc1bk3exzT2DWpG",
+    "name": "Azure"
+  },
+  {
+    "id": "50dSQ9OFjyMyEpkFBY2VQY",
+    "name": "mastodon"
+  },
+  {
+    "id": "5LhOVoPS7gRH18PfbTjtm0",
+    "name": "docker"
+  },
+  {
+    "id": "5pRwkNGFoV4ngxiMmE607B",
+    "name": "newcomers"
+  },
+  {
+    "id": "68ichI00B9ew5zOzvYJIvH",
+    "name": "Rust"
+  },
+  {
+    "id": "6BZzaC27WSTi0rHhcjZfzG",
+    "name": "模擬店"
+  },
+  {
+    "id": "6KJkzvTBJHJr0EhsYAoiYU",
+    "name": "お知らせ"
+  },
+  {
+    "id": "6QnIcjz5A4jbesOyEI1Xdt",
+    "name": "オプティム"
+  },
+  {
+    "id": "6c0Te5yPuDUvXIMXxvq0X6",
+    "name": "Threejs"
+  },
+  {
+    "id": "7czSMdYiqyLKK5rIx5OAgq",
+    "name": "フロントエンド"
+  },
+  {
+    "id": "7kGBa1zj7cDW0MvSUDcIsz",
+    "name": "Python"
+  },
+  {
+    "id": "7mSs943ZaHUI1uNc1bufNs",
+    "name": "工大祭"
+  },
+  {
+    "id": "9ADgPYgaS0DIH64gp7GJq",
+    "name": "バックエンド"
+  },
+  {
+    "id": "BY58pIy1HqRInJb9Ug9Iv",
+    "name": "React"
+  },
+  {
+    "id": "FQddTvFGu3OLB8qvF8i78",
+    "name": "工大祭2023"
+  },
+  {
+    "id": "M2bo8OKbEQWkaGaokHCZh",
+    "name": "Brainfuck"
+  },
+  {
+    "id": "R1fOg5Sv1FQ4EiMI7hbXc",
+    "name": "OC2025"
+  },
+  {
+    "id": "bzVV7xxgHm2ObQI27I8va",
+    "name": "CG"
+  },
+  {
+    "id": "cU6X10QWq5GJGvuGGNzWy",
+    "name": "Markdown"
+  },
+  {
+    "id": "glEPlJpYWgZImZ6jDBa8H",
+    "name": "ruby_on_rails"
+  }
+]

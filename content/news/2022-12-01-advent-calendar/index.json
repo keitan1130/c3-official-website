@@ -1,0 +1,19 @@
+{
+  "id": "2wZGZDaJVzQX5cMNAcz88I",
+  "title": "C3 Advent Calendar 2022開催中！",
+  "digest": "C3 Advent Calendar 2022を開催中です！！部員が書いた各自の技術領域などに関する記事を公開しています！",
+  "createdAt": "2022-12-01T10:03:09.888Z",
+  "updatedAt": "2026-04-03T15:12:46.839Z",
+  "isPublished": true,
+  "important": false,
+  "thumbnail": "./assets/cover.png",
+  "authorIds": [
+    "7wOtNoUgUPFo1EhzSgoxGs",
+    "5sMs2rpHj96OJS2CHDiqyc"
+  ],
+  "tagIds": [
+    "6KJkzvTBJHJr0EhsYAoiYU",
+    "2MCdg7PjTXXLdu5u5iXv2E"
+  ],
+  "body": "./body.md"
+}

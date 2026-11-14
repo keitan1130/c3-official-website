@@ -1,0 +1,17 @@
+{
+  "id": "6B3wNHoFRCgMKtHFLpvySd",
+  "title": "C3 公式サイトがリニューアルしました！",
+  "digest": "昨年から行っていたC3 公式サイトのリニューアルが終わりリリースされました。一部、使用できない機能がありますが、基本的なものの実装が終わっています。今回のリニューアルでブログ機能が実装されましたので、今後部員のブログが追加されていく予定です。",
+  "createdAt": "2022-07-11T05:55:00.897Z",
+  "updatedAt": "2022-07-12T03:19:01.500Z",
+  "isPublished": true,
+  "important": true,
+  "thumbnail": "./assets/cover.webp",
+  "authorIds": [
+    "5sMs2rpHj96OJS2CHDiqyc"
+  ],
+  "tagIds": [
+    "6KJkzvTBJHJr0EhsYAoiYU"
+  ],
+  "body": "./body.md"
+}
