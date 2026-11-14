@@ -9,6 +9,7 @@ const results = [];
 try {
  for(const width of [390,1440]) {
   const page = await browser.newPage({viewport:{width,height:1000},colorScheme:"light"});
+  await page.route(url=>url.pathname==="/works",route=>route.fulfill({json:{works:[],limit:20,page:1,total_count:0}}));
   const errors=[];
   const external=[];
   page.on("pageerror",error=>errors.push(error.message));
@@ -56,5 +57,5 @@ try {
   await page.screenshot({path:`test-results/pages/about-${width}.png`,fullPage:true});
   await page.close();
  }
- console.log(JSON.stringify({stage:STAGE,pages:results,oldCommunityIs404:true,noLocalContentApiCalls:true}));
+ console.log(JSON.stringify({stage:STAGE,pages:results,oldCommunityIs404:true,noContentfulForStaticPages:true,worksApiFixture:true}));
 } finally {await browser.close();}
