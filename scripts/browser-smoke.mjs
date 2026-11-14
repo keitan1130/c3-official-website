@@ -34,7 +34,7 @@ try {
     await page.goto(BASE+"/news");
     await page.getByRole("heading",{name:"お知らせ",exact:true,level:1}).waitFor();
     const directories=await fs.readdir("content/news");
-    const entries=(await Promise.all(directories.map(async directory => JSON.parse(await fs.readFile(`content/news/${directory}/index.json`,"utf8"))))).filter(entry => entry.isPublished === true);
+    const entries=(await Promise.all(directories.map(async directory => JSON.parse(await fs.readFile(`content/news/${directory}/index.json`,"utf8")))));
     assert.equal(await page.getByRole("article").count(),entries.length);
     for(const entry of entries) {
       await page.goto(BASE+"/news/"+entry.id);

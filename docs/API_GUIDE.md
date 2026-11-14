@@ -8,7 +8,7 @@ API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) �
 
 - 紹介・分野・お知らせはローカル `content/` を正とします。`scripts/prepare-content.mjs` が参照を検査し、`src/generated/contentData.ts` を生成します。表示側は `src/util/contentRepository.ts` を利用します。
 - 著者プロフィールは `src/util/authorRepository.ts` からContentfulの公開 `user` を取得します。プロフィールをローカルへ固定せず、`/author/:id` と著者別ブログ一覧を維持します。
-- ブログは `src/util/blogRepository.ts` でContentfulと外部ブログAPIを取得し、`source` とIDを組み合わせて区別します。本文は `MarkdownPreview` で表示します。
+- ブログは `src/util/blogRepository.ts` でContentfulと外部ブログAPIを取得し、IDのみで識別します。UUIDはToybox、それ以外はContentfulへ取得します。本文は `MarkdownPreview` で表示します。
 - 外部ブログの `user.id` をContentfulの著者IDとして検索しません。外部サービス側の著者ページへリンクします。
 - ホームとAboutの掲載作品は `src/util/workRepository.ts` から `GET /works?limit=20&page=1&sort=newest&visibility=public` で最新の公開作品を最大20件取得します。認証情報は送らず、ブログと接続先を共有し、レスポンスの契約はAPIごとに扱います。
 
@@ -25,10 +25,10 @@ API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) �
 ## 通信とエラー処理
 
 - Goバックエンドの `/works` と `/api/v1/blogs` へブラウザから接続します。ブログはGoバックエンド既存の転送機能を使い、Vite / Pages Functionsにはプロキシを追加しません。CORSの整理は保留中です。
-- Contentfulはページングして取得します。著者別ブログは `fields.user.sys.id` で絞り込みます。
+- Contentful一覧はselectで本文を除外し、ページングして取得します。著者別ブログは `fields.user.sys.id` で絞り込み、本文を除いた全件を取得します。Toybox一覧は既存の `disable_pagination=true` による全件取得を維持します。既存APIは本文も必ず返すため、本文の転送削減にはAPI側の対応が必要です。
 - 独立したブログ取得は並行実行し、一方の失敗は部分失敗として表示します。全失敗・正常な空結果・404・通信エラーを区別し、再試行を用意します。
 - ブログ通信の失敗で紹介・ニュース・作品欄を表示不能にしません。
-- SWR keyにはpath・query・source等、結果を変える値を含めます。
+- SWR keyには記事ID・著者IDなど、結果を変える値を含めます。
 - APIのsnake_caseを内部型へ変換する処理はAPI境界へまとめます。公開GETに不要な認証情報やcookieを転送しません。
 - 実API・CORSの確認と、fixtureやローカル検査の成功を区別して報告します。
 
@@ -36,4 +36,4 @@ API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) �
 
 ブログの転送にはGoバックエンド側の `LEGACY_TOYBOX_BASE_URL` 設定が必要です。未設定ならブログAPIは503を返します。この設定はfrontendの環境変数には含めません。
 
-取得元を省略したブログ詳細はContentfulの不在・取得失敗時に外部ブログも検索します。一方の取得元が失敗し、他方が404の場合は取得失敗として表示します。関連記事・カルーセルの識別にもsourceとIDを組み合わせます。
+ブログ詳細は `/blog/:id` に統一します。ID形式に対応したサービスのみ取得し、404と通信エラーを区別します。最近の記事・カルーセルもIDだけで識別します。ブログ一覧は全件を取得し、タグは取得済みの全記事を絞り込みます。

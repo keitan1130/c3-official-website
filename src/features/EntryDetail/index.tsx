@@ -8,7 +8,6 @@ import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
 import Paper from "@/shared/ui/Paper";
 import { getTag } from "@/util/contentRepository";
-import { getEntryIdentity } from "@/util/entryIdentity";
 import { formatDateTime } from "@/util/formatDateTime";
 
 import type { BlogEntry, Entry } from "@/shared/types/content";
@@ -86,14 +85,12 @@ const EntryDetail = ({ entry, kind, recent }: EntryDetailProps) => {
         <aside className={styles["sidebar"]} aria-label={`最近の${label}`}>
           <h2>最近の{label}</h2>
           {recent
-            .filter(
-              (item) => getEntryIdentity(item) !== getEntryIdentity(entry),
-            )
+            .filter((item) => item.id !== entry.id)
             .slice(0, 3)
             .map((item) => (
               <Link
-                key={getEntryIdentity(item)}
-                to={`/${kind}/${item.id}${"source" in item ? `?source=${item.source}` : ""}`}
+                key={item.id}
+                to={`/${kind}/${encodeURIComponent(item.id)}`}
               >
                 {item.thumbnail && (
                   <img src={item.thumbnail} alt="" loading="lazy" />

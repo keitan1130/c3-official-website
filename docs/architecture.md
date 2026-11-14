@@ -61,19 +61,19 @@ CSSは各コンポーネントの `index.module.css` が所有し、全体の色
 | `/news` | NewsPage → EntryCard一覧 | ローカル公開お知らせ |
 | `/news/:id` | NewsDetailPage → EntryDetail | ローカル公開お知らせ |
 | `/blog` | BlogPage → BlogStatus / EntryCard一覧 | Contentful + Go経由の外部ブログ |
-| `/blog/:id` | BlogDetailPage → BlogStatus / EntryDetail | `source`に応じたブログAPI |
+| `/blog/:id` | BlogDetailPage → BlogStatus / EntryDetail | ID形式に応じたブログAPI |
 | `/author/:id` | AuthorPage → AuthorProfile / EntryCard一覧 | Contentful著者・その著者のブログ |
 | その他 | NotFoundPage | 404表示 |
 
-一覧の `?tag=` はタグ名でクライアント内絞り込みを行います。ブログ詳細の `?source=contentful` / `?source=toybox` は取得元を指定します。その他のsourceは404画面です。旧分野ID、`/contact`、`/contact/thanks` は現在のルートにはありません。
+一覧の `?tag=` はタグ名でクライアント内絞り込みを行います。ブログ詳細は `/blog/:id` に統一し、UUIDはToybox、それ以外のIDはContentfulから取得します。両サービスのIDは重複しない前提です。取得元のクエリ指定は使用しません。旧分野ID、`/contact`、`/contact/thanks` は現在のルートにはありません。
 
 `AppLayout` はヘッダー・フッター・本文へのスキップリンク・Suspenseを提供します。ページのlazy import待ちでも共通レイアウトを維持します。ハッシュなしのページ遷移では先頭へ移動し、Markdownの見出しハッシュは本文読込後に復元します。
 
 ## ローカルコンテンツの生成
 
 1. `prepare-content.mjs` が `content/` のフォルダを探索し、JSONを読み込みます。
-2. ID / slug重複、公開お知らせの必須値・日時・著者ID形式・タグ参照、分野の表示順設定、参照ファイルの範囲・存在・25 MiB上限を検査します。著者IDがContentfulに実在するかはこの処理では確認しません。
-3. `isPublished: true` のお知らせだけを公開データへ含め、作成日時の新しい順、同時刻はID順に並べます。下書きの本文・素材は生成モジュールへ取り込みません。
+2. `local-content.mjs` がID / slug・タグIDの形式と重複、お知らせの必須値・タイムゾーン付き日時・更新日時の前後関係・著者ID配列・タグ参照、分野の表示順、参照ファイルの範囲・存在・25 MiB上限を検査します。著者IDがContentfulに実在するかは確認しません。
+3. `content/news/` の全記事を公開データへ含め、作成日時の新しい順、同時刻はID順に並べます。公開・重要フラグと下書き機能はありません。ホームの「重要なお知らせ」も全ニュースを使います。
 4. `./assets/...` はViteの `?url` importへ、本文は `?raw` の動的importへ変換します。共通接頭辞のある素材名は長い参照から置換し、URLの一部だけが置換されるのを防ぎます。
 5. `src/generated/contentData.ts` を出力し、`contentRepository.ts` が検索関数と `CONTENT` を公開します。
 
@@ -87,9 +87,9 @@ CSSは各コンポーネントの `index.module.css` が所有し、全体の色
 | --- | --- | --- |
 | 著者1人 | Contentful `/spaces/{space}/environments/master/entries?content_type=user&sys.id={id}&include=1&limit=100` | `getAuthor` |
 | 著者一覧 | 同上、`skip`で全ページ取得 | `getAuthors`（現在のページから直接は使用しない） |
-| ブログ一覧 | Contentful entries、`content_type=blog&include=2&limit=100&order=-sys.createdAt`、skipで全件取得 | `getBlogs` |
-| Contentfulブログ詳細 | 上記に `sys.id` を指定 | `getBlog` |
-| 著者別ブログ | 上記に `fields.user.sys.id` を指定 | `getAuthorBlogs` |
+| ブログ一覧 | Contentful entries、`content_type=blog&include=2&order=-sys.createdAt`、selectで本文を除外、limit=100 / skipで全件取得 | `getBlogs` |
+| Contentfulブログ詳細 | 上記に `sys.id` を指定、本文も取得 | `getBlog` |
+| 著者別ブログ | 一覧条件に `fields.user.sys.id` を指定、本文を除いた全件取得 | `getAuthorBlogs` |
 | 外部ブログ一覧 | Go backend `GET /api/v1/blogs?disable_pagination=true` | `getBlogs` |
 | 外部ブログ詳細 | Go backend `GET /api/v1/blogs/{id}` | `getBlog` |
 | 掲載作品 | Go backend `GET /works?limit=20&page=1&sort=newest&visibility=public` | `getPublicWorks` |
@@ -106,23 +106,27 @@ Contentfulには公開用DeliveryトークンをAuthorization headerで渡しま
 
 | データ | SWR key / 状態 |
 | --- | --- |
-| ブログ一覧 | `"blogs"`。ホームとブログ一覧で共有 |
-| ブログ詳細 | `["blog", id, source または "auto"]` |
+| ブログ一覧 | `"blogs"`。ホーム・ブログ一覧・最近の記事で共有。ホームは取得結果の先頭5件を表示 |
+| ブログ詳細 | `["blog", id]` |
 | 著者 | `["author", id]`。著者バッジと著者ページで共有 |
-| 著者別ブログ | `["author-blogs", id]`。著者取得成功後に取得 |
+| 著者別ブログ | `["author-blogs", id]`。著者取得成功後に全件取得 |
 | 公開作品 | `["public-works", API_BASE_URL, WORKS_LIMIT]`。ホームとAboutで共有 |
 
-ブログの識別は `source + id` を用います。リストのReact key、関連記事の除外、カルーセルのドットに同じ規則を適用します。URLにもsourceを含めます。
+ブログの識別・React key・最近の記事からの除外・URLはIDだけを使います。内部の `source` は著者の表示方法など、取得元に応じた変換に使用します。
 
 一覧はContentfulと外部ブログを並行取得します。一方だけ失敗すると成功側を表示し、部分失敗と再試行を出します。両方失敗するとエラー、成功した空配列は正常な0件です。取得失敗を404として扱いません。
 
-詳細はsource指定時にはその取得元だけを使用します。省略時はContentfulを先に調べ、見つからない場合やContentful取得失敗時に外部ブログを調べます。外部ブログも404で、Contentful側が取得失敗していた場合は通信エラーを返します。両方の取得元で不在を確認できた場合に404画面となります。
+詳細はID形式で取得先を決め、そのサービスで不在なら404画面、取得失敗なら通信エラーを表示します。別サービスへのフォールバックは行いません。
+
+ブログ・著者別一覧の全件取得は維持し、追加読込のUIは設けません。タグは取得済みの全記事を絞り込みます。
+
+Contentful一覧はselectで本文を取得対象から外し、詳細表示時に取得します。Toybox一覧APIは本文を必ず返すため、既存の全件取得を維持します。フロントでは表示用概要を200文字に制限しますが、本文の転送量を削減するものではありません。Toyboxの本文転送の削減にはAPI側の対応が必要です。
 
 自動エラー再試行は抑え、各画面に再試行操作があります。SWRの通常のキャッシュ共有・再検証は維持します。紹介・お知らせの本文は外部ブログの通信障害に依存しません。
 
 ## Markdown・島レイアウト・テーマ
 
-C3紹介、分野、記事詳細は共通の `Paper` を使い、`--paper-color`、角丸、影、内側余白を揃えます。外枠は `--content-read-width: 1300px` を上限とし、左右余白は通常32px、599px以下で16pxです。Paperの内側は通常40px、スマホ16px。記事詳細はこの外枠内に本文と300pxのサイドバーを配置し、1000px以下で縦並びにします。
+C3紹介、分野、記事詳細は共通の `Paper` を使い、`--paper-color`、角丸、影、内側余白を揃えます。外枠は `--content-read-width: 1300px` を上限とし、左右余白は通常32px、599px以下で16pxです。Paperの内側は通常40px、スマホ16px。お知らせ詳細はこの外枠内に本文と300pxのサイドバーを配置し、1000px以下で縦並びにします。ブログ詳細は画面幅によらず本文の下に最近のブログを配置します。
 
 `MarkdownPreview` はGFM・数式・改行・raw HTMLを解析し、sanitize後にKaTeXや見出しリンクなどを組み立てます。script / iframe / SVG等を除外し、URLのprotocol制限・ID衝突対策を維持します。許可した色・文字サイズ・画像幅だけを装飾として扱います。画像拡大は共通Dialog、コードコピーはToastを使用します。
 
@@ -132,7 +136,7 @@ C3紹介、分野、記事詳細は共通の `Paper` を使い、`--paper-color`
 
 ## ビルド後の配信
 
-`npm run build` はコンテンツ生成 → TypeScript → Vite → `prepare-pages.mjs` の順です。postbuildはローカル設定から静的ルートごとのHTMLにtitle・description・OGP・canonicalを埋め込み、OGP画像・sitemap・robots・404・`_redirects` を生成します。静的ルート数は公開お知らせ・分野の件数に応じて変わります。
+`npm run build` はコンテンツ生成 → TypeScript → Vite → `prepare-pages.mjs` の順です。postbuildは `local-content.mjs` の共通読込・検証結果から静的ルートごとのHTMLにtitle・description・OGP・canonicalを埋め込み、OGP画像・sitemap・robots・404・`_redirects` を生成します。静的ルート数は公開お知らせ・分野の件数に応じて変わります。
 
 `PageMeta` はブラウザ内遷移後のtitle・OGP・canonicalを更新し、404には `noindex`、通常ページへの復帰時には解除します。クライアントの更新だけで、ブログ詳細・著者の初期HTMLに個別OGPが付くわけではありません。
 
@@ -143,7 +147,7 @@ Cloudflare向けrewriteは `/blog/*` と `/author/*` のSPA表示用です。未
 - `VITE_CTF_SPACE_ID`：Contentful space。
 - `VITE_CTF_CDA_ACCESS_TOKEN`：公開可能なDeliveryトークン。
 - `VITE_API_BASE_URL`：Go backendのベースURL。`/works`・`/api/v1`を含めません。
-- `SITE_URL`：postbuildのcanonical originを上書きするビルド用設定。省略時は `content/site/index.json`。
+- `SITE_URL`：コンテンツ生成とpostbuildのcanonical originを共通で上書きするビルド用設定。省略時は `content/site/index.json`。`SITE_URL=https://example.com npm run build` のように同じビルド全体へ渡します。確定したoriginは生成データにも含め、画面遷移後も維持します。
 
 `VITE_*` はブラウザ配信に含まれます。実値や管理用・Previewトークンは文書・テンプレートに保存しません。Vite環境変数を変更したときは開発サーバーの再起動、公開用には再ビルドが必要です。
 

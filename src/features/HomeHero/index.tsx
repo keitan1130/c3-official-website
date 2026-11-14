@@ -32,7 +32,6 @@ const HomeHero = () => {
       )}
     </>
   );
-  const important = CONTENT.news.filter((entry) => entry.isImportant);
   return (
     <section className={styles["hero"]}>
       <div className={styles["left"]}>
@@ -44,11 +43,7 @@ const HomeHero = () => {
         <div className={styles["desktop-news"]}>{ticker}</div>
       </div>
       <div className={styles["carousel"]}>
-        <Carousel
-          entries={important.length ? important : news}
-          kind="news"
-          label="重要なお知らせ"
-        />
+        <Carousel entries={CONTENT.news} kind="news" label="重要なお知らせ" />
       </div>
       <div className={styles["mobile-news"]}>{ticker}</div>
     </section>

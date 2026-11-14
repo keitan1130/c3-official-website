@@ -14,7 +14,7 @@ interface EntryCardProps {
 }
 const EntryCard = ({ entry, kind }: EntryCardProps) => {
   const blog = "source" in entry ? entry : undefined;
-  const url = `/${kind}/${entry.id}${blog ? `?source=${blog.source}` : ""}`;
+  const url = `/${kind}/${encodeURIComponent(entry.id)}`;
   const tags =
     blog?.tags ??
     entry.tagIds.flatMap((id) => {

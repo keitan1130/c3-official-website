@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useSWR from "swr";
 
 import styles from "./index.module.css";
@@ -10,17 +10,12 @@ import { getBlog, getBlogs } from "@/util/blogRepository";
 
 const BlogDetailPage = () => {
   const { id = "" } = useParams();
-  const [params] = useSearchParams();
-  const source = params.get("source") ?? undefined;
-  const isValidSource =
-    !source || source === "contentful" || source === "toybox";
-  const entry = useSWR(
-    isValidSource ? ["blog", id, source ?? "auto"] : null,
-    () => getBlog(id, source),
-    { shouldRetryOnError: false },
-  );
-  const recent = useSWR("blogs", getBlogs, { shouldRetryOnError: false });
-  if (!isValidSource) return <NotFoundPage />;
+  const entry = useSWR(["blog", id], () => getBlog(id), {
+    shouldRetryOnError: false,
+  });
+  const recent = useSWR("blogs", getBlogs, {
+    shouldRetryOnError: false,
+  });
   if (entry.error || entry.isLoading)
     return (
       <div className={styles["status"]}>

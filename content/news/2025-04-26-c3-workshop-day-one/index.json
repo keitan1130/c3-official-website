@@ -4,7 +4,6 @@
   "digest": "超感覚C3講座1日目実施しました！",
   "createdAt": "2025-04-26T15:15:38.693Z",
   "updatedAt": "2025-04-27T03:52:26.092Z",
-  "isPublished": true,
   "thumbnail": "./assets/cover.png",
   "authorIds": [
     "7keoGLfOtBGjh9YtIPuilk"
@@ -12,6 +11,5 @@
   "tagIds": [
     "5pRwkNGFoV4ngxiMmE607B"
   ],
-  "body": "./body.md",
-  "isImportant": true
+  "body": "./body.md"
 }

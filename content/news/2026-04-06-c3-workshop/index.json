@@ -4,7 +4,6 @@
   "digest": "超感覚C3講座開講決定！",
   "createdAt": "2026-04-06T05:15:46.799Z",
   "updatedAt": "2026-04-08T04:31:17.008Z",
-  "isPublished": true,
   "thumbnail": "./assets/cover.png",
   "authorIds": [
     "3eRJf9Ovte0xuqbv4D7z61"
@@ -14,6 +13,5 @@
     "5pRwkNGFoV4ngxiMmE607B",
     "3igPRzn7fg9GtGt7KKwssG"
   ],
-  "body": "./body.md",
-  "isImportant": true
+  "body": "./body.md"
 }

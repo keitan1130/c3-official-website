@@ -4,7 +4,6 @@
   "digest": "超感覚C3講座とは？彼女は？年収は？調べてみました！",
   "createdAt": "2025-04-07T15:53:34.916Z",
   "updatedAt": "2025-04-08T07:22:16.765Z",
-  "isPublished": true,
   "thumbnail": "./assets/cover.png",
   "authorIds": [
     "7keoGLfOtBGjh9YtIPuilk"
@@ -13,6 +12,5 @@
     "3igPRzn7fg9GtGt7KKwssG",
     "5pRwkNGFoV4ngxiMmE607B"
   ],
-  "body": "./body.md",
-  "isImportant": true
+  "body": "./body.md"
 }

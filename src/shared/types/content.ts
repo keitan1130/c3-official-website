@@ -21,8 +21,6 @@ export interface Entry {
   thumbnail: string;
   authorIds: string[];
   tagIds: string[];
-  isImportant: boolean;
-  isPublished: boolean;
   body: BodyLoader;
 }
 export interface Community {

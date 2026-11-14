@@ -19,12 +19,6 @@ const PageMeta = ({
   useEffect(() => {
     document.title = `${title} | C3`;
     const canonical = new URL(location.pathname, CONTENT.site.canonicalOrigin);
-    const source = new URLSearchParams(location.search).get("source");
-    if (
-      location.pathname.startsWith("/blog/") &&
-      (source === "toybox" || source === "contentful")
-    )
-      canonical.searchParams.set("source", source);
     const setMeta = (key: string, content: string, property = false) => {
       const attribute = property ? "property" : "name";
       let element = document.head.querySelector<HTMLMetaElement>(
@@ -57,14 +51,7 @@ const PageMeta = ({
       document.head.append(link);
     }
     link.href = canonical.href;
-  }, [
-    title,
-    description,
-    image,
-    isNoIndex,
-    location.pathname,
-    location.search,
-  ]);
+  }, [title, description, image, isNoIndex, location.pathname]);
   return null;
 };
 export default PageMeta;

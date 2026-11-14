@@ -18,7 +18,7 @@ try {
  for(const sample of result.samples){
    if(!sample && allowCors)continue;
    assert.ok(sample);
-   await page.goto(`${BASE}/blog/${sample.id}?source=${sample.source}`);
+   await page.goto(`${BASE}/blog/${sample.id}`);
    await page.getByRole("heading",{name:sample.title,exact:true,level:1}).first().waitFor();
    await page.getByText("読み込み中…",{exact:true}).waitFor({state:"hidden"});
    assert.equal(await page.getByRole("alert").count(),0);

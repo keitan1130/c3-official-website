@@ -8,7 +8,6 @@ import EntryCard from "@/features/EntryCard";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
 import { getBlogs } from "@/util/blogRepository";
-import { getEntryIdentity } from "@/util/entryIdentity";
 
 const BlogPage = () => {
   const [params] = useSearchParams();
@@ -33,7 +32,7 @@ const BlogPage = () => {
       />
       <div className={styles["grid"]}>
         {entries?.map((entry) => (
-          <EntryCard key={getEntryIdentity(entry)} entry={entry} kind="blog" />
+          <EntryCard key={entry.id} entry={entry} kind="blog" />
         ))}
       </div>
       {entries?.length === 0 && <p>該当するブログはありません。</p>}

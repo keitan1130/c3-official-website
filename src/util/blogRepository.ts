@@ -45,7 +45,10 @@ class BlogApiError extends Error {
 }
 const secureUrl = (url: string) =>
   url.startsWith("//") ? `https:${url}` : url;
-const normalizeContentful = (data: ContentfulBlogs): BlogEntry[] =>
+const normalizeContentful = (
+  data: ContentfulBlogs,
+  isDetail = false,
+): BlogEntry[] =>
   data.items.map((item) => {
     const file =
       data.includes?.Asset?.find(
@@ -66,30 +69,30 @@ const normalizeContentful = (data: ContentfulBlogs): BlogEntry[] =>
       thumbnail: secureUrl(file),
       authorIds: (item.fields.user ?? []).map((user) => user.sys.id),
       tagIds: tags.map((tag) => tag.id),
-      isPublished: true,
-      isImportant: false,
-      body: () => Promise.resolve(item.fields.body ?? ""),
+      body: isDetail
+        ? () => Promise.resolve(item.fields.body ?? "")
+        : () => loadBlogBody(item.sys.id),
       source: "contentful",
       authors: [],
       tags,
     };
   });
-const normalizeToybox = (item: ToyboxBlog): BlogEntry => {
+const normalizeToybox = (item: ToyboxBlog, isDetail = false): BlogEntry => {
   const published = item.published_at;
   const later = (date: string) =>
     published && Date.parse(published) > Date.parse(date) ? published : date;
   return {
     id: item.id,
     title: item.title,
-    digest: item.body_text,
+    digest: item.body_text.replace(/\s+/g, " ").slice(0, 200),
     createdAt: later(item.created_at),
     updatedAt: later(item.updated_at),
     thumbnail: secureUrl(item.thumbnail.url),
     authorIds: [item.user.id],
     tagIds: item.tags.map((tag) => tag.id),
-    isPublished: true,
-    isImportant: false,
-    body: () => Promise.resolve(item.body_text),
+    body: isDetail
+      ? () => Promise.resolve(item.body_text)
+      : () => loadBlogBody(item.id),
     source: "toybox",
     authors: [
       {
@@ -104,11 +107,14 @@ const normalizeToybox = (item: ToyboxBlog): BlogEntry => {
     tags: item.tags,
   };
 };
+const CONTENTFUL_LIST_FIELDS =
+  "sys,fields.title,fields.digest,fields.thumbnail,fields.user,fields.tags";
 const getContentful = async (
   params: Record<string, string>,
+  isDetail = false,
 ): Promise<BlogEntry[]> => {
-  const space = import.meta.env.VITE_CTF_SPACE_ID,
-    token = import.meta.env.VITE_CTF_CDA_ACCESS_TOKEN;
+  const space = import.meta.env.VITE_CTF_SPACE_ID;
+  const token = import.meta.env.VITE_CTF_CDA_ACCESS_TOKEN;
   if (!space || !token)
     throw new Error("Contentful blog delivery is not configured");
   const entries: BlogEntry[] = [];
@@ -120,9 +126,10 @@ const getContentful = async (
     for (const [key, value] of Object.entries({
       content_type: "blog",
       include: "2",
-      limit: "100",
+      limit: isDetail ? "1" : "100",
       skip: String(entries.length),
       order: "-sys.createdAt",
+      ...(isDetail ? {} : { select: CONTENTFUL_LIST_FIELDS }),
       ...params,
     }))
       url.searchParams.set(key, value);
@@ -131,12 +138,16 @@ const getContentful = async (
     });
     if (!response.ok) throw new BlogApiError(response.status);
     const data = (await response.json()) as ContentfulBlogs;
-    if (!Array.isArray(data.items) || typeof data.total !== "number")
+    if (
+      !Array.isArray(data.items) ||
+      !Number.isInteger(data.total) ||
+      data.total < 0
+    )
       throw new Error("Invalid Contentful blogs response");
     total = data.total;
     if (!data.items.length && entries.length < total)
       throw new Error("Contentful blog pagination ended early");
-    entries.push(...normalizeContentful(data));
+    entries.push(...normalizeContentful(data, isDetail));
   } while (entries.length < total);
   return entries;
 };
@@ -154,10 +165,14 @@ export const getBlogs = async (): Promise<BlogListResult> => {
     getContentful({}),
     toyboxRequest<{ blogs: ToyboxBlog[] }>(
       "/blogs?disable_pagination=true",
-    ).then((data) => data.blogs.map(normalizeToybox)),
+    ).then((data) => {
+      if (!Array.isArray(data.blogs))
+        throw new Error("Invalid Toybox blogs response");
+      return data.blogs.map((item) => normalizeToybox(item));
+    }),
   ]);
-  const entries: BlogEntry[] = [],
-    unavailableSources: string[] = [];
+  const entries: BlogEntry[] = [];
+  const unavailableSources: string[] = [];
   for (const [index, result] of results.entries()) {
     if (result.status === "fulfilled") entries.push(...result.value);
     else unavailableSources.push(index === 0 ? "Contentful" : "Toybox");
@@ -166,35 +181,31 @@ export const getBlogs = async (): Promise<BlogListResult> => {
     throw new Error("ブログを読み込めませんでした。");
   return {
     entries: entries.sort(
-      (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
+      (a, b) =>
+        Date.parse(b.createdAt) - Date.parse(a.createdAt) ||
+        a.id.localeCompare(b.id),
     ),
     unavailableSources,
   };
 };
-export const getBlog = async (
-  id: string,
-  source?: string,
-): Promise<BlogEntry | undefined> => {
-  let contentfulError: unknown;
-  if (source !== "toybox") {
-    try {
-      const entries = await getContentful({ "sys.id": id });
-      if (entries[0] || source === "contentful") return entries[0];
-    } catch (error) {
-      if (source === "contentful") throw error;
-      contentfulError = error;
-    }
-  }
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const getBlog = async (id: string): Promise<BlogEntry | undefined> => {
+  if (!/^[A-Za-z0-9_-]+$/.test(id)) return undefined;
+  if (!UUID_PATTERN.test(id))
+    return (await getContentful({ "sys.id": id }, true))[0];
   try {
     return normalizeToybox(
       await toyboxRequest<ToyboxBlog>(`/blogs/${encodeURIComponent(id)}`),
+      true,
     );
   } catch (error) {
-    if (error instanceof BlogApiError && error.status === 404) {
-      // An unavailable source may still contain this ID; do not report a false 404.
-      if (contentfulError) throw contentfulError;
-      return undefined;
-    }
+    if (error instanceof BlogApiError && error.status === 404) return undefined;
     throw error;
   }
+};
+const loadBlogBody = async (id: string): Promise<string> => {
+  const entry = await getBlog(id);
+  if (!entry) throw new Error("ブログが見つかりません。");
+  return entry.body();
 };

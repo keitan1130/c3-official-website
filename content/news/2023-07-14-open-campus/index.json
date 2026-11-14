@@ -4,7 +4,6 @@
   "digest": "今年も特設サイトを公開！！現地ではサークル展示中！",
   "createdAt": "2023-07-14T23:46:15.678Z",
   "updatedAt": "2026-04-03T15:11:36.023Z",
-  "isPublished": true,
   "thumbnail": "./assets/cover.png",
   "authorIds": [
     "5sMs2rpHj96OJS2CHDiqyc",
@@ -13,6 +12,5 @@
   "tagIds": [
     "3WoQ57Pc7Lsg0ta7CH4uhD"
   ],
-  "body": "./body.md",
-  "isImportant": false
+  "body": "./body.md"
 }

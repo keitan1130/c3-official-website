@@ -4,7 +4,6 @@
   "digest": "今年も新歓企画やります！楽しい企画を準備しているので、とりあえず見て！",
   "createdAt": "2023-04-13T03:33:07.473Z",
   "updatedAt": "2026-04-03T15:12:29.887Z",
-  "isPublished": true,
   "thumbnail": "./assets/cover.png",
   "authorIds": [
     "Nf4ERyJLOVKfgD81CG2NR"
@@ -13,6 +12,5 @@
     "1umSJ1YATstEVZ0yT6X8qC",
     "3igPRzn7fg9GtGt7KKwssG"
   ],
-  "body": "./body.md",
-  "isImportant": false
+  "body": "./body.md"
 }

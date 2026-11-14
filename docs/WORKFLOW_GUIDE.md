@@ -22,7 +22,7 @@ npm / Git コマンドは `c3-official-website/` で実行します。
 | ページ / ルーティング | 直接 URL、再読込、旧 ID、アンカー、末尾スラッシュ、404、戻る・進む |
 | 外部取得 | loading、空、404、通信失敗、同じ route の再試行。失敗してもローカル本文が開けること |
 | メニュー / dialog | click、Tab、Enter / Space、必要な矢印キー、Escape、外側 click、focus 復帰 |
-| Markdown / content | sanitize、本文・メディア表示、ID重複・参照。新規フォルダの追加だけで一覧へ反映され、下書きの本文・画像が配信されないこと |
+| Markdown / content | sanitize、本文・メディア表示、ID重複・参照。新規フォルダの追加だけで一覧へ反映され、全記事のHTML・画像が生成されること |
 | UI / テーマ | ライトは同じ環境で現行サイトと比較。ダークは配色・操作を検証し、切替・選択保存・再読込・モバイル配置も確認 |
 
 命名・build・Storybook のコマンドと CI 範囲は [開発環境と CI](development-and-ci.md) を参照します。
