@@ -12,7 +12,7 @@
 - 機能固有の UI・API・hook・store は `src/features/<Feature>/` に置きます。
 - 汎用 UI は `src/shared/ui/`、共有型は `src/shared/types/`、UI 非依存の共有関数は `src/util/`。局所型は利用箇所の近くに置きます。
 - 本文・メタデータ・写真・動画は `content/` のページ・記事フォルダ内にまとめます。例: `content/about/`、`content/news/<date>-<slug>/`。画像・動画等の素材は各フォルダの `assets/` にまとめ、相対パスからビルド時に配信用URLへ解決します。詳細は [コンテンツ構成](content-structure.md) に従います。
-- `src/assets/` は import して使う UI 素材、`dist/` は生成物です。生成物を手動編集しません。
+- `src/assets/` は共通ロゴ・アイコン・動画読み込み用画像等、import して使う UI 素材、`dist/` は生成物です。生成物を手動編集しません。
 - 新しい部品の前に shared UI と feature 内の既存部品を検索します。Hygenで既存テンプレートを利用できます。
 
 ページ・機能・再利用部品に責務を分けます。

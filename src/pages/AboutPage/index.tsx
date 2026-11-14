@@ -1,5 +1,6 @@
 import styles from "./index.module.css";
 
+import c3Logo from "@/assets/c3-logo.webp";
 import BodyContent from "@/features/BodyContent";
 import CommunityLinks from "@/features/CommunityLinks";
 import FeaturedWorks from "@/features/FeaturedWorks";
@@ -12,7 +13,7 @@ const AboutPage = () => (
     <PageMeta title="C3について" description={CONTENT.about.summary} />
     <Breadcrumbs items={[{ label: "C3について" }]} />
     <h1 className={styles["title"]}>C3について</h1>
-    <img className={styles["logo"]} src={CONTENT.site.logo} alt="C3" />
+    <img className={styles["logo"]} src={c3Logo} alt="C3" />
     <BodyContent load={CONTENT.about.body} />
     <h2 className={styles["section-title"]}>各分野について</h2>
     <CommunityLinks />

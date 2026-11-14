@@ -53,7 +53,6 @@ export function prepareContent(root = ROOT, output = OUTPUT) {
   if (new Set(site.communities).size !== site.communities.length || site.communities.some((slug) => !communities.some(({value}) => value.slug === slug))) throw new Error("Invalid community order");
   communities.sort((a,b) => site.communities.indexOf(a.value.slug)-site.communities.indexOf(b.value.slug));
   const render = (items) => `[${items.map(({value,directory}) => serialize(value,directory)).join(",")}]`;
-  site.logo = "./assets/s_logo.webp"; site.poster = "./assets/loading.webp";
   const body = `{about:${serialize(READ(path.join(root,"about/index.json")),path.join(root,"about"))},site:${serialize(site,path.join(root,"site"))},communities:${render(communities)},news:${render(news)},tags:${JSON.stringify(tags)}}`;
   const preamble = [...imports].map(([file,name]) => `import ${name} from ${JSON.stringify(path.relative(path.dirname(output),file).split(path.sep).join("/")+"?url")};`).join("\n");
   fs.mkdirSync(path.dirname(output),{recursive:true});

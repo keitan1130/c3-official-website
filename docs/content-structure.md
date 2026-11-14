@@ -5,8 +5,6 @@
 ```text
 content/
   site/index.json                 # サイト名・リンク・分野の順序
-  site/assets/                    # 共通ロゴ等
-  home/index.json                 # ホームの見出し
   about/index.json
   about/body.md
   communities/<slug>/index.json   # game・3dcg・hack・2dcg・music
@@ -17,6 +15,8 @@ content/
   news/YYYY-MM-DD-topic/assets/
   tags.json
 ```
+
+共通ロゴ・アイコン・動画読み込み用画像は `src/assets/` に配置し、UIからimportして使用します。記事・紹介本文に付属する素材は `content/` 内の各 `assets/` に配置します。
 
 本文は `body.md`、設定は `index.json`、素材は `assets/` に統一します。本文やJSONから `./assets/cover.jpg` のように相対参照します。写真を `public/` へ二重コピーする必要はありません。
 

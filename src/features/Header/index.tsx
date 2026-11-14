@@ -18,6 +18,7 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 
 import styles from "./index.module.css";
 
+import c3Logo from "@/assets/c3-logo.webp";
 import toyboxIcon from "@/assets/toybox-icon.png";
 import ThemeToggle from "@/features/ThemeToggle";
 import { CONTENT } from "@/util/contentRepository";
@@ -104,11 +105,7 @@ const Header = () => {
                 {isOpen ? <CloseIcon /> : <MenuIcon />}
               </button>
               <Link to="/" aria-label="C3 ホーム">
-                <img
-                  className={styles["logo"]}
-                  src={CONTENT.site.logo}
-                  alt="C3"
-                />
+                <img className={styles["logo"]} src={c3Logo} alt="C3" />
               </Link>
             </div>
             <ThemeToggle />

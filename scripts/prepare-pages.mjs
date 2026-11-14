@@ -8,7 +8,7 @@ const escape=(text)=>String(text).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&l
 const metadata=(title,description,url,image="/ogp/site.webp",isError=false)=>template.replace(/<title>[^<]*<\/title>/,`<title>${escape(title===site.title?title:`${title} | C3`)}</title>`).replace(/<meta name="description"[^>]*\/?\s*>/g,"").replace("</head>",`<meta name="description" content="${escape(description)}"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:type" content="website"><meta property="og:url" content="${escape(url)}"><meta property="og:image" content="${escape(new URL(image,origin).href)}"><meta name="twitter:card" content="summary_large_image"><link rel="canonical" href="${escape(url)}">${isError?'<meta name="robots" content="noindex">':""}</head>`);
 const routes=[];
 function emit(route,title,description,image){const file=route==="/"?"dist/index.html":path.join("dist",route.slice(1)+".html");fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,metadata(title,description,origin+route,image));routes.push(route);}
-fs.mkdirSync("dist/ogp",{recursive:true});fs.copyFileSync("content/site/assets/s_logo.webp","dist/ogp/site.webp");
+fs.mkdirSync("dist/ogp",{recursive:true});fs.copyFileSync("src/assets/c3-logo.webp","dist/ogp/site.webp");
 emit("/",site.title,site.description);
 const about=read("content/about/index.json");emit("/about",about.title,about.summary);
 emit("/news","お知らせ",site.description);emit("/blog","ブログ",site.description);

@@ -2,11 +2,12 @@ import { useParams } from "react-router-dom";
 
 import styles from "./index.module.css";
 
+import videoLoading from "@/assets/video-loading.png";
 import BodyContent from "@/features/BodyContent";
 import NotFoundPage from "@/pages/NotFoundPage";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
-import { CONTENT, getCommunity } from "@/util/contentRepository";
+import { getCommunity } from "@/util/contentRepository";
 
 const CommunityPage = () => {
   const { slug } = useParams();
@@ -19,8 +20,8 @@ const CommunityPage = () => {
       <h1 className={styles["title"]}>{community.name}</h1>
       <div className={styles["video"]}>
         <video
+          poster={videoLoading}
           key={community.id}
-          poster={CONTENT.site.poster}
           preload="metadata"
           playsInline
           muted

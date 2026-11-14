@@ -51,8 +51,6 @@ export interface ContentData {
     worksUrl: string;
     communities: string[];
     links: { title: string; url: string }[];
-    logo: string;
-    poster: string;
   };
 }
 export interface BlogEntry extends Entry {

@@ -12,7 +12,6 @@ test("new article folders are discovered, drafts stay out, and broken published 
  try {
   for(const name of ["communities","news"])fs.mkdirSync(path.join(root,name),{recursive:true});
   write("tags.json",[]);write("site/index.json",{communities:[]});
-  write("site/assets/s_logo.webp","logo");write("site/assets/loading.webp","poster");
   write("about/index.json",{body:"./body.md"});write("about/body.md","About");
   const article={id:"new-news",title:"Added article",body:"./body.md",thumbnail:"./assets/cover.png",isPublished:true,createdAt:"2026-11-14T00:00:00Z",updatedAt:"2026-11-14T00:00:00Z",authorIds:[],tagIds:[]};
   write("news/readable-folder/index.json",article);write("news/readable-folder/body.md","![photo](./assets/cover.png)");write("news/readable-folder/assets/cover.png","image");

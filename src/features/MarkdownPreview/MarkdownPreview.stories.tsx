@@ -1,8 +1,8 @@
 import { expect, spyOn, userEvent, waitFor, within } from "storybook/test";
 
-import sampleImage from "../../../content/site/assets/s_logo.webp";
 import MarkdownPreview from "./index";
 
+import sampleImage from "@/assets/c3-logo.webp";
 import ToastProvider from "@/shared/ui/Toast/ToastProvider";
 import markdownSyntaxSample from "@/stories/markdownSyntaxSample.md?raw";
 

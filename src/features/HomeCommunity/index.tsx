@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import styles from "./index.module.css";
 
-import { CONTENT } from "@/util/contentRepository";
+import videoLoading from "@/assets/video-loading.png";
 
 import type { Community } from "@/shared/types/content";
 
@@ -21,7 +21,7 @@ const HomeCommunity = ({ community, isReversed }: HomeCommunityProps) => (
       aria-label={`${community.name}を詳しく見る`}
     >
       <video
-        poster={CONTENT.site.poster}
+        poster={videoLoading}
         preload="metadata"
         playsInline
         muted
