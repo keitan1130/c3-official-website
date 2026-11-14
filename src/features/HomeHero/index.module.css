@@ -48,6 +48,7 @@
   color: var(--font-color);
 }
 .ticker-link {
+  background: var(--paper-color);
   display: block;
   color: var(--font-color);
   text-decoration: none;

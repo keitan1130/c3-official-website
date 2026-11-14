@@ -46,6 +46,7 @@
   font-size: 18px;
 }
 .tags a {
+  background: var(--paper-color);
   border: 1px solid var(--border-color);
   padding: 1px 8px;
   border-radius: 20px;
@@ -61,7 +62,12 @@
   margin: 40px 7% 0;
 }
 .sidebar {
+  box-sizing: border-box;
+  align-self: flex-start;
   width: 300px;
+  padding: 20px;
+  border-radius: 20px;
+  background: var(--paper-color);
 }
 .sidebar h2 {
   font-size: 24px;

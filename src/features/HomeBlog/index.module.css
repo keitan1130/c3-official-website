@@ -13,6 +13,7 @@
   height: min(37.5vw, 720px);
 }
 .all {
+  background: var(--paper-color);
   display: block;
   width: 240px;
   height: 60px;

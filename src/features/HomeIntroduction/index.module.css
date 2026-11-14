@@ -40,6 +40,7 @@
   background: linear-gradient(to top, var(--background-color), transparent);
 }
 .text a {
+  background: var(--paper-color);
   display: block;
   width: 240px;
   height: 60px;

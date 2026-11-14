@@ -61,6 +61,7 @@
   background: linear-gradient(to top, var(--background-color) 60%, transparent);
 }
 .text > a {
+  background: var(--paper-color);
   position: absolute;
   bottom: 10px;
   width: 65%;

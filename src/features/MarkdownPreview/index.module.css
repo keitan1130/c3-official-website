@@ -54,6 +54,7 @@
   }
 
   details {
+    background-color: var(--paper-color);
     margin: 1rem 0;
     padding: 0.75rem 1rem;
     border: 1px solid var(--border-color);
@@ -240,7 +241,7 @@
 
   /* Code */
   code {
-    background-color: var(--background-color);
+    background-color: var(--paper-color);
     padding: 0.2em 0.4em;
     border-radius: 3px;
     font-family: "Consolas", "Monaco", "Courier New", monospace;
@@ -252,7 +253,7 @@
   pre {
     width: 100%;
     box-sizing: border-box;
-    background-color: var(--background-color);
+    background-color: var(--paper-color);
     color: var(--font-color);
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -274,7 +275,7 @@
     border-left: 4px solid var(--border-color);
     padding: 0.5rem 1rem;
     margin: 1rem 0;
-    background-color: var(--background-color);
+    background-color: var(--paper-color);
     color: var(--font-muted-color);
     font-style: italic;
   }
@@ -353,6 +354,7 @@
 
   /* Tables */
   table {
+    background-color: var(--paper-color);
     border-collapse: collapse;
     width: 100%;
     margin: 1.5rem 0;
@@ -361,7 +363,7 @@
   }
 
   thead {
-    background-color: var(--background-color);
+    background-color: var(--paper-color);
     border-bottom: 2px solid var(--border-color);
   }
 
@@ -381,7 +383,7 @@
 
   tbody tr {
     &:nth-child(even) {
-      background-color: var(--background-color);
+      background-color: var(--paper-color);
     }
 
     &:hover {

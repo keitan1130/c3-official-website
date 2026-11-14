@@ -48,6 +48,7 @@
   font-size: 12px;
 }
 .tags a {
+  background: var(--paper-color);
   border-radius: 20px;
   border: 1px solid var(--border-color);
   padding: 0 7px;
