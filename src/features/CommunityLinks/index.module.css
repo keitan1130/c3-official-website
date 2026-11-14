@@ -1,0 +1,26 @@
+.links {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2vw, 50px);
+}
+.links a {
+  width: clamp(120px, 20vw, 170px);
+  height: clamp(120px, 20vw, 170px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: clamp(20px, 4.5vw, 30px);
+  color: var(--font-color);
+  text-decoration: none;
+  gap: clamp(10px, 3vw, 20px);
+  font-size: 23px;
+}
+.links a:hover {
+  background: var(--primary-soft-color);
+}
+.links svg {
+  width: clamp(45px, 4vw, 55px);
+  height: clamp(45px, 4vw, 55px);
+}
