@@ -17,7 +17,7 @@ const PageMeta = ({
 }: PageMetaProps) => {
   const location = useLocation();
   useEffect(() => {
-    document.title = title === CONTENT.site.title ? title : `${title} | C3`;
+    document.title = `${title} | C3`;
     const canonical = new URL(location.pathname, CONTENT.site.canonicalOrigin);
     const source = new URLSearchParams(location.search).get("source");
     if (
