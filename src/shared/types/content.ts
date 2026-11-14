@@ -44,7 +44,6 @@ export interface ContentData {
   communities: Community[];
   news: Entry[];
   tags: Tag[];
-  works: FeaturedWork[];
   site: {
     title: string;
     description: string;
