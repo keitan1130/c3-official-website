@@ -40,7 +40,9 @@ const EntryDetail = ({ entry, kind, recent }: EntryDetailProps) => {
         />
         <div className={styles["label"]}>C3 {label}</div>
       </div>
-      <div className={styles["columns"]}>
+      <div
+        className={`${styles["columns"]}${kind === "blog" ? ` ${styles["blog-columns"]}` : ""}`}
+      >
         <Paper className={styles["article"]}>
           <article>
             {entry.thumbnail && (
