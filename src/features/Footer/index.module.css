@@ -1,108 +1,60 @@
 .footer {
   display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  background: var(--footer-background);
-  color: var(--footer-color);
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--page-margin);
+  color: var(--font-muted-color);
 }
-.identity {
-  width: 25%;
-  padding: 60px 0 0 2%;
-  box-sizing: border-box;
-  font-size: 18px;
+
+.external-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
 }
-.identity img {
-  display: block;
-  margin-bottom: 40px;
-}
-.center {
-  width: 50%;
-  text-align: center;
-}
-.links {
+
+.external-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8%;
-  padding-top: 179px;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  border-radius: 8px;
+  color: var(--font-muted-color);
 }
-.links a {
-  color: var(--footer-color);
+
+.external-link:focus-visible {
+  outline: 2px solid var(--font-color);
+  outline-offset: 2px;
 }
-.links svg {
-  width: 60px;
-  height: 60px;
+
+.link-icon {
+  display: flex;
+  width: 24px;
+  height: 24px;
 }
+
+.link-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .external-link:hover {
+    background: var(--primary-soft-color);
+    color: var(--font-color);
+  }
+}
+
 .copyright {
-  margin: 0;
-  padding: 120px 0 56px;
-  font-size: 20px;
-}
-.top {
-  width: 25%;
-  padding-top: 60px;
+  display: block;
+  color: var(--font-muted-color);
+  font-size: 12px;
   text-align: center;
-  color: var(--footer-color);
-  text-decoration: none;
-  font-size: 20px;
-}
-.top svg {
-  width: 40px;
-  height: 40px;
-}
-@media (max-width: 1200px) {
-  .identity {
-    width: 85%;
-    order: 1;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 40px 20px 0;
-  }
-  .identity img {
-    width: 90px;
-    height: 90px;
-    margin: 0;
-  }
-  .center {
-    width: 100%;
-    order: 3;
-  }
-  .top {
-    width: 15%;
-    order: 2;
-  }
-  .links {
-    padding-top: 32px;
-    gap: 30px;
-  }
-  .links svg {
-    width: 40px;
-    height: 40px;
-  }
-  .copyright {
-    margin: 0;
-    padding: 50px 0 39px;
-    font-size: 15px;
-  }
-}
-@media (max-width: 510px) {
-  .identity {
-    width: 80%;
-    padding-left: 16px;
-    font-size: 12px;
-    gap: 12px;
-  }
-  .identity img {
-    width: 60px;
-    height: 60px;
-  }
-  .top {
-    width: 20%;
-    font-size: 12px;
-  }
-  .copyright {
-    margin: 0;
-    font-size: 12px;
-  }
 }
