@@ -1,13 +1,19 @@
 // Run against Vite with fixture environment settings; all API traffic is intercepted.
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
+import { loadContent } from "./local-content.mjs";
 
 const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
 const browser = await chromium.launch({ headless: true });
 const thumbnail = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="400" height="200" fill="gray"/></svg>');
 const uuid = index => `fac206ed-32a0-4fdb-b3e8-${String(index).padStart(12,"0")}`;
-const toyboxBlogs = Array.from({length:45},(_,index)=>({id:uuid(index),title:`Toybox ${index}`,body_text:"## Fixture body\n\nAvailable",created_at:new Date(Date.UTC(2026,0,1)-index*86400000).toISOString(),updated_at:"2026-01-01T00:00:00Z",thumbnail:{url:thumbnail},tags:[],user:{id:"external-author",name:"Fixture author"}}));
-const contentfulBlogs = Array.from({length:105},(_,index)=>({sys:{id:`cf${index}`,createdAt:new Date(Date.UTC(2026,0,2)-index*86400000).toISOString(),updatedAt:"2026-01-02T00:00:00Z"},fields:{title:`Contentful ${index}`,body:"## Fixture body",digest:"Summary",user:[],tags:[]}}));
+const toyboxBlogs = Array.from({length:45},(_,index)=>({id:uuid(index),title:`Toybox ${index}`,body_text:"## Fixture body\n\nAvailable",created_at:new Date(Date.UTC(2026,0,1)-index*86400000).toISOString(),updated_at:"2026-01-01T00:00:00Z",thumbnail:{url:thumbnail},tags:[],user:{id:uuid(1000+index),name:"Fixture author"}}));
+const newsAuthorIds=[...new Set(loadContent().news.flatMap(({value})=>value.authorIds))];
+const authorIds=[...new Set([...Array.from({length:105},(_,index)=>`author${index}`),...newsAuthorIds])];
+const contentfulAuthors=authorIds.map((id,index)=>({sys:{id},fields:{name:id==="author1"?"Fixture profile":`Fixture author ${index}`,icon:{sys:{id:"avatar"}},introduction:"Fixture introduction"}}));
+const authorAssets=[{sys:{id:"avatar"},fields:{file:{url:thumbnail}}}];
+let omitIncludedAuthors=false;
+const contentfulBlogs = Array.from({length:105},(_,index)=>({sys:{id:`cf${index}`,createdAt:new Date(Date.UTC(2026,0,2)-index*86400000).toISOString(),updatedAt:"2026-01-02T00:00:00Z"},fields:{title:`Contentful ${index}`,body:"## Fixture body",digest:"Summary",user:[{sys:{id:`author${index}`}}],tags:[]}}));
 let isContentfulUnavailable=false, isToyboxUnavailable=false;
 try {
  const page = await browser.newPage({viewport:{width:1440,height:1000}});
@@ -17,11 +23,15 @@ try {
  await page.route(/cdn\.contentful\.com/,route=>{
   const url=new URL(route.request().url());requests.push(url);
   if(isContentfulUnavailable)return route.fulfill({status:503,json:{}});
-  if(url.searchParams.get("content_type")==="user")return route.fulfill({json:{items:[{sys:{id:"author1"},fields:{name:"Fixture profile"}}],total:1}});
+  if(url.searchParams.get("content_type")==="user") {
+   const id=url.searchParams.get("sys.id"),skip=Number(url.searchParams.get("skip")??0),limit=Number(url.searchParams.get("limit")??100);
+   const authors=id?contentfulAuthors.filter(author=>author.sys.id===id):contentfulAuthors;
+   return route.fulfill({json:{items:authors.slice(skip,skip+limit),total:authors.length,includes:{Asset:authorAssets}}});
+  }
   const id=url.searchParams.get("sys.id"), skip=Number(url.searchParams.get("skip")??0), limit=Number(url.searchParams.get("limit")??100);
   const found=id?contentfulBlogs.filter(item=>item.sys.id===id):contentfulBlogs;
   const items=found.slice(skip,skip+limit).map(item=>url.searchParams.has("select")?{...item,fields:{...item.fields,body:undefined}}:item);
-  return route.fulfill({json:{items,total:found.length}});
+  return route.fulfill({json:{items,total:found.length,includes:{Entry:omitIncludedAuthors?[]:contentfulAuthors,Asset:authorAssets}}});
  });
  await page.route("**/api/v1/blogs**",route=>{
   const url=new URL(route.request().url());requests.push(url);
@@ -46,13 +56,44 @@ try {
   assert.equal(await page.locator('a[href*="source="]').count(),0);
   const article=await page.getByRole("article").boundingBox(), recent=await page.getByRole("complementary").boundingBox();
   assert.ok(recent.y>=article.y+article.height);
-  if(id.startsWith("cf"))assert.ok(!requests.some(url=>url.pathname.endsWith(`/blogs/${id}`)));
-  else assert.ok(!requests.some(url=>url.searchParams.get("sys.id")===id));
+  if(id.startsWith("cf")) {
+   assert.ok(!requests.some(url=>url.pathname.endsWith(`/blogs/${id}`)));
+   assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
+   assert.equal(await page.getByRole("link",{name:"Fixture author 0",exact:true}).count(),1);
+  }
+  else {
+   assert.ok(!requests.some(url=>url.searchParams.get("sys.id")===id));
+   assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
+   const authorLink=page.getByRole("link",{name:"Fixture author",exact:true});
+   assert.equal(await authorLink.getAttribute("href"),`${loadContent().site.worksUrl}users/${uuid(1000)}`);
+   assert.equal(await authorLink.getAttribute("target"),"_blank");
+   assert.equal(await page.locator(`a[href="/author/${uuid(1000)}"]`).count(),0);
+  }
  }
+ requests.length=0;
  await page.goto(BASE+"/blog");
  await page.waitForFunction(()=>document.querySelectorAll("article").length===150);
+ assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
+ assert.equal(await page.locator('article a[href^="/author/"]').count(),105);
+ assert.equal(await page.getByRole("link",{name:"Fixture author",exact:true}).count(),45);
  assert.equal(await page.getByRole("button",{name:"もっと見る",exact:true}).count(),0);
  assert.ok(requests.filter(url=>url.searchParams.get("content_type")==="blog"&&!url.searchParams.has("sys.id")).every(url=>url.searchParams.get("select")&&!url.searchParams.get("select").includes("fields.body")));
+ // Missing included authors share one paginated collection, also reused by news.
+ omitIncludedAuthors=true;
+ requests.length=0;
+ await page.goto(BASE+"/blog");
+ await page.getByRole("link",{name:"Fixture author 104",exact:true}).waitFor();
+ const authorRequests=()=>requests.filter(url=>url.searchParams.get("content_type")==="user");
+ assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
+ assert.ok(authorRequests().every(url=>!url.searchParams.has("sys.id")));
+ await page.getByRole("button",{name:"メニューを開く",exact:true}).click();
+ await page.getByRole("link",{name:"お知らせ",exact:true}).click();
+ await page.getByRole("heading",{name:"お知らせ",exact:true,level:1}).waitFor();
+ const expectedNewsAuthors=loadContent().news.reduce((count,{value})=>count+value.authorIds.length,0);
+ assert.equal(await page.locator('article a[href^="/author/"]').count(),expectedNewsAuthors);
+ assert.equal(await page.getByRole("link",{name:"著者",exact:true}).count(),0);
+ assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
+ omitIncludedAuthors=false;
  await page.goto(BASE+"/author/author1");
  await page.waitForFunction(()=>document.querySelectorAll("article").length===105);
  requests.length=0;
@@ -74,7 +115,31 @@ try {
   return {count:list.entries.length,unavailable:list.unavailableSources,hasError};
  });
  assert.deepEqual(partial,{count:45,unavailable:["Contentful"],hasError:true});
+ // A Contentful outage does not affect a Toybox detail or its UUID author.
+ requests.length=0;
+ await page.goto(BASE+`/blog/${uuid(0)}`);
+ await page.getByRole("heading",{name:"Toybox 0",exact:true}).waitFor();
+ await page.getByRole("heading",{name:"Fixture body",exact:true}).waitFor();
+ assert.equal(await page.getByRole("link",{name:"Fixture author",exact:true}).getAttribute("href"),`${loadContent().site.worksUrl}users/${uuid(1000)}`);
+ assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
+ assert.ok(!requests.some(url=>url.searchParams.get("sys.id")===uuid(0)||url.searchParams.get("sys.id")===uuid(1000)));
+ // A Toybox outage does not affect a Contentful detail or its included author.
+ isContentfulUnavailable=false;
  isToyboxUnavailable=true;
+ requests.length=0;
+ await page.goto(BASE+"/blog/cf0");
+ await page.getByRole("heading",{name:"Contentful 0",exact:true}).waitFor();
+ await page.getByRole("heading",{name:"Fixture body",exact:true}).waitFor();
+ assert.equal(await page.getByRole("link",{name:"Fixture author 0",exact:true}).getAttribute("href"),"/author/author0");
+ assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
+ assert.ok(!requests.some(url=>url.pathname.endsWith("/blogs/cf0")));
+ const reversePartial=await page.evaluate(async()=>{
+  const {getBlogs}=await import("/src/util/blogRepository.ts");
+  const result=await getBlogs();
+  return {count:result.entries.length,unavailable:result.unavailableSources};
+ });
+ assert.deepEqual(reversePartial,{count:105,unavailable:["Toybox"]});
+ isContentfulUnavailable=true;
  await page.goto(BASE+"/blog");
  await page.getByText("ブログを読み込めませんでした。",{exact:false}).waitFor();
  isContentfulUnavailable=false;isToyboxUnavailable=false;
@@ -146,5 +211,5 @@ try {
  await page.clock.runFor(5100);
  assert.notEqual(await carousel.getByRole("link").getAttribute("href"),pausedSlide);
  assert.deepEqual(errors,[]);
- console.log("Verified ID-only blog URLs, UUID routing, lists without Contentful bodies, all blog/author entries, partial/full failures and retry, noindex recovery, menu scroll restoration/navigation and persistent carousel pause (API fixtures).");
+ console.log("Verified ID-only blog URLs, UUID routing, lists without Contentful bodies, all blog/author entries, included authors without extra requests and shared batched author fallback, UUID Toybox authors, independent source outages, partial/full failures and retry, noindex recovery, menu scroll restoration/navigation and persistent carousel pause (API fixtures).");
 } finally {await browser.close();}

@@ -1,6 +1,6 @@
 import type { Author } from "@/shared/types/content";
 
-interface ContentfulUser {
+export interface ContentfulUser {
   sys: { id: string };
   fields: {
     name?: string;
@@ -50,7 +50,9 @@ const getPage = async (
     throw new Error("Invalid author delivery response");
   return data;
 };
-const normalizeAuthors = (page: ContentfulUserCollection): Author[] =>
+export const normalizeContentfulAuthors = (
+  page: Pick<ContentfulUserCollection, "items" | "includes">,
+): Author[] =>
   page.items.map(({ sys, fields }) => {
     const asset = page.includes?.Asset?.find(
       (item) => item.sys.id === fields.icon?.sys.id,
@@ -84,7 +86,7 @@ export const getAuthor = async (
   id: string,
   signal?: AbortSignal,
 ): Promise<Author | undefined> =>
-  normalizeAuthors(await getPage({ "sys.id": id }, signal))[0];
+  normalizeContentfulAuthors(await getPage({ "sys.id": id }, signal))[0];
 export const getAuthors = async (signal?: AbortSignal): Promise<Author[]> => {
   const authors: Author[] = [];
   let total = 0;
@@ -93,7 +95,7 @@ export const getAuthors = async (signal?: AbortSignal): Promise<Author[]> => {
     total = page.total;
     if (!page.items.length && authors.length < total)
       throw new Error("Author pagination ended early");
-    authors.push(...normalizeAuthors(page));
+    authors.push(...normalizeContentfulAuthors(page));
   } while (authors.length < total);
   return authors;
 };

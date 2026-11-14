@@ -87,7 +87,7 @@ CSSは各コンポーネントの `index.module.css` が所有し、全体の色
 | 用途 | 接続先と主要条件 | 内部の入口 |
 | --- | --- | --- |
 | 著者1人 | Contentful `/spaces/{space}/environments/master/entries?content_type=user&sys.id={id}&include=1&limit=100` | `getAuthor` |
-| 著者一覧 | 同上、`skip`で全ページ取得 | `getAuthors`（現在のページから直接は使用しない） |
+| 著者一覧 | Contentful entries、`content_type=user&include=1&limit=100`、`skip`で全ページ取得 | `getAuthors`（著者情報を持たないバッジの共通取得） |
 | ブログ一覧 | Contentful entries、`content_type=blog&include=2&order=-sys.createdAt`、selectで本文を除外、limit=100 / skipで全件取得 | `getBlogs` |
 | Contentfulブログ詳細 | `sys.id`・limit=1を指定、selectによる本文除外は行わない | `getBlog` |
 | 著者別ブログ | 一覧条件に `fields.user.sys.id` を指定、本文を除いた全件取得 | `getAuthorBlogs` |
@@ -101,7 +101,7 @@ Contentfulには公開用DeliveryトークンをAuthorization headerで渡しま
 
 `workRepository.ts` は `works` 配列を確認し、必要な型・`visibility: public` を満たす項目だけを最大20件へ制限して `FeaturedWork` に変換します。ブログと作品は同じAPIベースURLを使いますが、レスポンス形式は共通ではありません。
 
-外部ブログの著者はレスポンス内の情報を表示し、作品サイトの著者ページへリンクします。Contentful著者IDとして再検索しません。Contentful記事・ローカルお知らせの著者は `AuthorBadge` がContentfulから取得します。
+外部ブログの著者はレスポンス内の情報を表示し、作品サイトの著者ページへリンクします。Contentful著者IDとして再検索しません。Contentfulブログは `include=2` の `includes.Entry`・`includes.Asset` から著者名とアイコンを変換してバッジへ渡し、著者ごとの追加取得を行いません。ローカルお知らせや参照先の著者情報が含まれないブログでは、`AuthorBadge` が共通の著者一覧を100件ずつ取得して共有します。
 
 ## キャッシュ・識別・失敗時の動作
 
@@ -109,7 +109,8 @@ Contentfulには公開用DeliveryトークンをAuthorization headerで渡しま
 | --- | --- |
 | ブログ一覧 | `"blogs"`。ホーム・ブログ一覧・最近の記事で共有。ホームは取得結果の先頭5件を表示 |
 | ブログ詳細 | `["blog", id]` |
-| 著者 | `["author", id]`。著者バッジと著者ページで共有 |
+| 著者プロフィール | `["author", id]`。著者ページで取得 |
+| 著者バッジの補完 | `"authors"`。共通の著者一覧を使用し、再マウント・フォーカス復帰・再接続による自動再取得を行わない |
 | 著者別ブログ | `["author-blogs", id]`。著者取得成功後に全件取得 |
 | 公開作品 | `["public-works", API_BASE_URL, WORKS_LIMIT]`。ホームとAboutで共有 |
 

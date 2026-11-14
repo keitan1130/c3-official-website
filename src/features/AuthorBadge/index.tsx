@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 
 import styles from "./index.module.css";
 
-import { getAuthor } from "@/util/authorRepository";
+import { getAuthors } from "@/util/authorRepository";
 import { CONTENT } from "@/util/contentRepository";
 
 import type { Author } from "@/shared/types/content";
@@ -13,12 +13,12 @@ interface AuthorBadgeProps {
   author?: Author;
 }
 const AuthorBadge = ({ id, author }: AuthorBadgeProps) => {
-  const { data, error } = useSWR(
-    author ? null : ["author", id],
-    () => getAuthor(id),
+  const { data, error } = useSWRImmutable(
+    author ? null : "authors",
+    () => getAuthors(),
     { shouldRetryOnError: false },
   );
-  const value = author ?? data;
+  const value = author ?? data?.find((item) => item.id === id);
   const label = value?.name || (error ? "著者情報を取得できません" : "著者");
   const children = (
     <>

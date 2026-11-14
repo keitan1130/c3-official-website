@@ -1,4 +1,8 @@
 import { getApiUrl } from "@/util/apiConfig";
+import {
+  type ContentfulUser,
+  normalizeContentfulAuthors,
+} from "@/util/authorRepository";
 
 import type { BlogEntry, BlogListResult } from "@/shared/types/content";
 
@@ -21,7 +25,7 @@ interface ContentfulBlogs {
   total: number;
   includes?: {
     Asset?: { sys: { id: string }; fields: { file?: { url?: string } } }[];
-    Entry?: { sys: { id: string }; fields: { name?: string } }[];
+    Entry?: ContentfulUser[];
   };
 }
 /** @apiContract */
@@ -48,8 +52,20 @@ const secureUrl = (url: string) =>
 const normalizeContentful = (
   data: ContentfulBlogs,
   isDetail = false,
-): BlogEntry[] =>
-  data.items.map((item) => {
+): BlogEntry[] => {
+  const authorIds = new Set(
+    data.items.flatMap((item) =>
+      (item.fields.user ?? []).map((user) => user.sys.id),
+    ),
+  );
+  const authors = normalizeContentfulAuthors({
+    items: (data.includes?.Entry ?? []).filter((entry) =>
+      authorIds.has(entry.sys.id),
+    ),
+    includes: data.includes,
+  });
+  const authorsById = new Map(authors.map((author) => [author.id, author]));
+  return data.items.map((item) => {
     const file =
       data.includes?.Asset?.find(
         (asset) => asset.sys.id === item.fields.thumbnail?.sys.id,
@@ -73,10 +89,14 @@ const normalizeContentful = (
         ? () => Promise.resolve(item.fields.body ?? "")
         : () => loadBlogBody(item.sys.id),
       source: "contentful",
-      authors: [],
+      authors: (item.fields.user ?? []).flatMap((user) => {
+        const author = authorsById.get(user.sys.id);
+        return author ? [author] : [];
+      }),
       tags,
     };
   });
+};
 const normalizeToybox = (item: ToyboxBlog, isDetail = false): BlogEntry => {
   const published = item.published_at;
   const later = (date: string) =>
