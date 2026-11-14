@@ -43,7 +43,6 @@ export interface ContentData {
   about: { id: string; title: string; summary: string; body: BodyLoader };
   communities: Community[];
   news: Entry[];
-  authors: Author[];
   tags: Tag[];
   works: FeaturedWork[];
   site: {

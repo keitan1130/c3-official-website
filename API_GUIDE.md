@@ -43,7 +43,7 @@ Go の `/works` と旧 `/api/v1/works` のレスポンスを同一視しませ�
 
 ## 著者と掲載作品
 
-Contentful の公開 `user` 全36名は回収済みで、ローカルプロフィールとして旧 `/author/:id` を維持します。
+Contentful の公開 `user` 全36名は回収済みで、プロフィールはContentfulから都度取得して旧 `/author/:id` を維持します。
 著者別ブログ一覧は Contentful の `fields.user.sys.id` で取得します。
 Toyboxブログ内の `user.id` を Contentful の `user` ID として検索しません。source を保持し、既存の Toybox 著者リンクの扱いを実装時に照合します。
 掲載作品の初期選定に旧APIを一度参照する場合でも、公開アプリの作品欄はローカルデータを読みます。手動管理用の構成は [コンテンツ構成](docs/content-structure.md) に従います。

@@ -24,7 +24,7 @@
 | ホーム紹介・C3について | Contentful `c3Introduction` | ローカル Markdown / メタデータ |
 | 各分野 | Contentful `eachCommunity` | ローカル Markdown / 動画 |
 | お知らせ | Contentful `news` / `tag` / `user` | ローカル Markdown / メタデータ |
-| 著者プロフィール | Contentful `user` | 全36名のプロフィールと旧 URL、著者別Contentfulブログ一覧を維持 |
+| 著者プロフィール | Contentful `user` | 全36名のプロフィールと著者別ブログ一覧をContentfulから取得し、旧URLを維持 |
 | ブログ | Contentful `blog` と Toybox `/blogs` | 取得を継続し、Toybox の MarkdownPreview で本文を表示。本文のローカル回収は対象外 |
 | 作品欄 | Toybox `/works?limit=30` | `content/featured-works/<slug>/` に情報と画像をまとめた静的ファイル管理へ移行 |
 | お問い合わせ | Vue 内のフォーム | 使用していないため、フォーム・完了画面・ナビの導線を新版から削除 |

@@ -25,7 +25,7 @@
 | 対象 | 方針 |
 | --- | --- |
 | `/blog` / `/blog/:id` | Contentful＋Toybox から引き続き取得。本文は Toybox の MarkdownPreview で表示。本文のローカル回収は対象外 |
-| `/author/:id` | Contentful の公開プロフィール36名すべてと旧URLを維持。著者別のContentfulブログ一覧も維持 |
+| `/author/:id` | Contentfulから36名全員のプロフィールを取得し、旧URLを維持。著者別のContentfulブログ一覧も取得 |
 | ホーム / About の作品欄 | `content/featured-works/` で掲載作品と表示順を管理し、各作品フォルダの `assets/` に画像を置く。実行時の `/works` 取得をなくす |
 | JP / ENの位置 | 言語表示を削除し、Toyboxのライト / ダーク切替ボタンへ置換。PC・モバイルそれぞれの旧表示位置を使用。翻訳ページは新設しない |
 

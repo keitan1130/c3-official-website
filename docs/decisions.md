@@ -11,7 +11,7 @@
 | テーマ切替 | JP / EN表示をToyboxのライト / ダーク切替ボタンへ置換。PC・モバイルとも既存の言語表示位置。選択保存・OS初期値もToyboxと同じ |
 | ローカル記事管理 | `content/about/`、`content/news/<date>-<slug>/` 等の単位で本文・写真・表示設定を同居。新規ニュースはフォルダ追加で自動反映 |
 | ホーム / About の作品欄 | frontend 内の各作品フォルダで情報・画像を管理し、共通ファイルで表示順を指定。実行時の作品APIは不要 |
-| 著者 | Contentful の公開プロフィール36名すべて、旧 `/author/:id`、著者別Contentfulブログ一覧を維持 |
+| 著者 | Contentfulの公開プロフィール36名すべてをAPIから取得し、旧 `/author/:id` と著者別Contentfulブログ一覧を維持。ローカルにプロフィール・画像を管理しない |
 | お問い合わせ | フォーム・完了画面・Header / Footer の導線を新版から削除。旧 `/contact` / `/contact/thanks` は404。sitemap に含めない |
 | 欠損画像 | `C3 Advent Calendar 2022開催中！` の404画像参照を運用本文から削除。回収原本は保持 |
 | 公開先 | Cloudflare Pages |
@@ -20,7 +20,7 @@
 ## 著者36名の取得元
 
 回収元は Contentful Delivery API の `user` 型で、保存先は `migration/snapshots/2026-11-14/entries/user/`。
-36件の JSON は Contentful のエントリ ID を持ち、名前・アイコン・紹介文・SNS等の公開フィールドを保持する。すべての人に全フィールドがあるとは限らない。
+回収原本は調査時の記録としてGit対象外に保持しているが、運用データとしては使わない。最新のプロフィール・アイコン・SNS等はContentful APIから取得する。
 
 旧 `../web/pages/author/_id.vue` は次の2つを取得している。
 

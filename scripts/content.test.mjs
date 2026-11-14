@@ -10,7 +10,7 @@ test("new article folders are discovered, drafts stay out, and broken published 
  const root=path.join(temporary,"content");
  const write=(name,value)=>{const file=path.join(root,name);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,typeof value==="string"?value:JSON.stringify(value));};
  try {
-  for(const name of ["authors","communities","news","featured-works"])fs.mkdirSync(path.join(root,name),{recursive:true});
+  for(const name of ["communities","news","featured-works"])fs.mkdirSync(path.join(root,name),{recursive:true});
   write("tags.json",[]);write("site/index.json",{communities:[]});
   write("site/assets/s_logo.webp","logo");write("site/assets/loading.webp","poster");
   write("about/index.json",{body:"./body.md"});write("about/body.md","About");write("featured-works/index.json",{items:[]});

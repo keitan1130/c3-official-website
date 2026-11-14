@@ -84,10 +84,6 @@ def main():
     for entry in entries('news'):
         f = fields(entry); entry_id = entry['sys']['id']; directory = output / 'news' / (entry['sys']['createdAt'][:10] + '-' + NEWS_SLUGS[entry_id])
         write(directory, {'id': entry_id, 'title': f['title'].strip(), 'digest': f.get('digest',''), 'createdAt': entry['sys']['createdAt'], 'updatedAt': entry['sys']['updatedAt'], 'isPublished': True, 'isImportant': f.get('important',False), 'thumbnail': media(directory, f['thumbnail'], 'cover'), 'authorIds': [x['sys']['id'] for x in f.get('user',[])], 'tagIds': [x['sys']['id'] for x in f.get('tags',[])]}, body(directory,f.get('body','')))
-    for number, entry in enumerate(entries('user'), 1):
-        f=fields(entry); slug=re.sub('[^a-z0-9]+','-', f['name'].lower()).strip('-') or 'member'
-        directory=output / 'authors' / (slug + '-' + str(number).zfill(2))
-        write(directory, {'id': entry['sys']['id'], 'name': f['name'], 'introduction': f.get('introduction',''), 'avatar': media(directory,f['icon'],'avatar') if f.get('icon') else None, 'links': {k:v for k,v in f.items() if k in ('twitter','qiita','gitHub','zenn','homePage') and isinstance(v,str) and re.match(r'https?://[^/]+/?.+',v)}})
     tags=[{'id':e['sys']['id'], **fields(e)} for e in entries('tag')]
     (output/'tags.json').write_text(json.dumps(tags,ensure_ascii=False,indent=2)+'\n')
     write(output/'site', {'title': 'Composite Computer Club [ C3 ]', 'description': '九州工業大学情報工学部のComposite Computer Club公式サイト', 'worksUrl': 'https://toybox.compositecomputer.club/', 'communities': ['2dcg','3dcg','game','hack','music'], 'links': [{'title':'ToyBox','url':'https://toybox.compositecomputer.club/'},{'title':'Twitter','url':'https://twitter.com/c3_kyutech'},{'title':'GitHub','url':'https://github.com/Kyutech-C3'},{'title':'YouTube','url':'https://www.youtube.com/channel/UCeRY2jujVBYRqmilrCZytFw'}]})
@@ -96,7 +92,7 @@ def main():
         target=output/'site'/'assets'/name;target.parent.mkdir(exist_ok=True);shutil.copyfile(Path('../web/assets/image')/name,target)
     write(output/'featured-works',{'items':[]})
     Path('migration/content-conversion.json').write_text(json.dumps({'snapshot':str(snapshot),'assets':records,'removedDiscordImageReferences':1},ensure_ascii=False,indent=2)+'\n')
-    print('Converted about, 5 communities, 16 news, 36 authors and 46 tags; asset references:',len(records))
+    print('Converted about, 5 communities, 16 news and 46 tags (authors remain live in Contentful); asset references:',len(records))
 
 
 if __name__ == '__main__':
