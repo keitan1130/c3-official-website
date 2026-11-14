@@ -27,7 +27,9 @@
     "new:news": "node scripts/new-news.mjs",
     "test:content": "node --test scripts/content.test.mjs",
     "postbuild": "node scripts/prepare-pages.mjs",
-    "test:browser": "node scripts/browser-smoke.mjs 5"
+    "test:browser": "node scripts/browser-smoke.mjs 5",
+    "preview:pages": "node scripts/preview-pages.mjs",
+    "test:pages": "node scripts/verify-pages.mjs"
   },
   "lint-staged": {
     "./src/**/*.{js,jsx,ts,tsx,css,json,jsonc}": "npx biome check --write"
