@@ -9,7 +9,8 @@ import Header from "@/features/Header";
 const AppLayout = () => {
   const location = useLocation();
   useEffect(() => {
-    if (!location.hash) window.scrollTo({ top: 0, behavior: "instant" });
+    if (location.pathname && !location.hash)
+      window.scrollTo({ top: 0, behavior: "instant" });
   }, [location.pathname, location.hash]);
   return (
     <>
