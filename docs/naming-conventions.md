@@ -1,7 +1,7 @@
 # 命名規則
 
 Toybox の `FRONTEND_GUIDE.md`、`check-naming-conventions.js`、`check-kebab-case.js` を基に移行しました。
-既存コードの例外を新規・変更コードへ広げません。機械検査スクリプト自体はまだ未導入です。
+既存コードの例外を新規・変更コードへ広げません。機械検査スクリプトは導入済みです。Reactのlazy等で作るコンポーネントはPascalCaseを許可します。
 
 ## TypeScript / React
 

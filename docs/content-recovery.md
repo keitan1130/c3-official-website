@@ -97,4 +97,4 @@ python3 scripts/export-public-content.py --output migration/snapshots/2026-11-14
 - カルーセル・動画の実再生と Markdown の表示、PC / モバイル UI を比較する。
 - 本番ブログ API の稼働構成・CORS を確認する。ブログは取得継続、作品欄は静的ファイル管理に確定済み。
 
-現時点では React の雛形、運用用 `content/`、UI 移植、ブラウザ比較、デプロイは未実施。
+この回収調査の時点では実装前だった。現在の運用用content・UI・検証の進捗は [段階別結果](implementation-results.md) を参照。デプロイは未実施。

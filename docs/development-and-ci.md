@@ -64,7 +64,7 @@ npm run test:storybook
 
 `npm run ci` は命名検査 → `src` と対象設定ファイルの Biome check → TypeScript / Vite build です。
 Toybox では Biome の対象設定は `biome.json`、`package.json`、3つの tsconfig です。全ファイルが自動で対象になるわけではありません。
-Storybook 操作テスト・content 参照チェック・原本のハッシュ検査はこのコマンドに含まれていません。
+content参照の生成・検査と、新規記事検出・下書き除外のテストをCIコマンドへ追加済みです。Storybookのブラウザ検査は引き続きローカルで実行します。
 
 ## GitHub Actions の CI 方針
 

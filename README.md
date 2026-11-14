@@ -55,4 +55,21 @@ npm run new:news -- 2026-11-14-event-guide
 npm run dev
 ```
 
-生成された記事のindex.json・body.mdとassets/を編集します。thumbnailを指定し、isPublishedをtrueにすると公開対象になります。段階2ではデータ読込を実装済みで、実際の一覧画面は段階5で実装します。
+生成された記事のindex.json・body.mdとassets/を編集します。thumbnailを指定し、isPublishedをtrueにすると公開対象になります。記事の追加・編集は一覧と詳細へ自動反映します。著者プロフィールはContentfulから取得します。
+
+## ローカル起動と確認
+
+```bash
+npm ci
+cp .env.sample .env.local
+# .env.localに公開用のContentful配信設定とToybox API baseを設定
+npm run dev
+
+# 公開成果物の作成とPages静的ルートのローカル確認
+npm run ci
+npm run test:pages
+npm run preview:pages
+```
+
+`preview:pages` はCloudflare本体ではなく、生成ファイルのルート・初期HTML・404を確認するローカル配信モデルです。
+Toybox APIは直接接続し、CORSは後続で整理します。プロキシはありません。詳細・著者ページの初期OGP、本番配信、完全なUI同等性は未完了です。

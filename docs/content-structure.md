@@ -5,7 +5,7 @@
 現在の `migration/snapshots/` は取得元のID・フィールド・URLを残すための原本で、普段の更新では編集しない。
 日常の編集先は `content/`。**ページ・記事ごとに本文、写真、動画、表示設定を同じフォルダにまとめる。**
 以前の案のように記事本文と写真を `content/` と `public/media/` に分けず、対象記事のフォルダだけで更新できる構成にする。
-以下は雛形生成・変換時の**予定構成**であり、読込機能や運用用ファイルはまだ実装していない。
+以下を基本構成としてローカル読込・記事検出・変換を実装済み。細部と進捗は [段階別結果](implementation-results.md) を参照する。
 `src/` は Toybox frontend と同じ責務分割とし、CSS は各ページ・コンポーネントの `index.module.css` に分割する。
 
 ```text
@@ -135,7 +135,14 @@ HTML構造・操作・レイアウトは `src/pages/` と `src/features/`、CSS�
 
 ## 新しいニュースの追加例
 
-以下は公開する実記事ではなく、雛形導入時に用意するテンプレートの例。
+以下は公開する実記事ではなく、実装済みの新規記事作成コマンドと編集例。
+
+```bash
+npm run new:news -- 2026-11-14-event-guide
+npm run dev
+```
+
+コマンドは下書きのindex.json・body.md・assets/を作る。画像を配置してthumbnailを指定し、公開状態を変える。
 
 1. `content/news/2026-11-14-event-guide/` を作る。
 2. `index.json` と `body.md` を置き、写真を同じフォルダの `assets/` に入れる。
