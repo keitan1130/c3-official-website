@@ -1,6 +1,6 @@
 # Cloudflare Pages 配信方針
 
-2026-11-14 に公開先を Cloudflare Pages、本番ドメインを `compositecomputer.club` と確定。
+公開先はCloudflare Pages、本番ドメインは `compositecomputer.club`。
 実際の Pages プロジェクト設定・Git連携・DNSへの変更・デプロイはまだ実施していない。
 
 ## ビルドと成果物
@@ -8,7 +8,6 @@
 - このプロジェクトの Git root を build root とし、Vite の成果物 `dist/` を公開する。
 - build command は `npm run build`。命名・Biome・型・content の検査は公開前の品質確認として別途実行する。
 - ローカル・GitHub Actions・Pages の Node を26系に揃え、Pages build 環境で利用可能か導入時に確認する。
-- `migration/snapshots/` や不要な原本は成果物へ含めない。
 
 React / Vite の build command と出力先は [Cloudflare Reactガイド](https://developers.cloudflare.com/pages/framework-guides/deploy-a-react-site/) に沿う。
 Git連携と Direct Upload のどちらを既存プロジェクトが使っているか確認し、実際の構成に沿って公開手順を仕上げる。
@@ -25,8 +24,8 @@ Git連携と Direct Upload のどちらを既存プロジェクトが使って�
 ## メディア
 
 紹介・分野・お知らせ・掲載作品のメディアは `content/` 内の各ページ・記事フォルダに本文と同居させる。ビルド時に公開対象の参照を配信用URLへ解決し、`dist/` の成果物をPagesに配信する。
-Pages の1ファイル上限は25 MiB。今回の回収メディアの最大ファイルは12,250,146 bytesで、この上限内である。新しい掲載素材も build時に確認する。[Pages Limits](https://developers.cloudflare.com/pages/platform/limits/)
-原本を無条件に圧縮する必要はない。実機の再生・表示・読込を確認し、必要に応じて最適化する。
+Pages の1ファイル上限は25 MiB。素材のサイズはビルド前のコンテンツ検査で確認する。[Pages Limits](https://developers.cloudflare.com/pages/platform/limits/)
+実機の再生・表示・読込を確認し、必要に応じて最適化する。
 
 ## 切替と復旧
 
@@ -34,11 +33,10 @@ Pages の1ファイル上限は25 MiB。今回の回収メディアの最大フ�
 - カスタムドメイン設定と既存DNSを確認し、現行 `compositecomputer.club` を継続する。[Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/)
 - 切替前に旧配信設定と復旧対象の deployment を特定する。新版の本番確認に失敗した場合の戻し方を残す。
 - 独自cache設定がある場合はPagesの配信との整合を確認する。不要な全域cache削除は行わない。
-- 公開完了の基準は [実装ロードマップ](implementation-roadmap.md) の段階9〜10に従う。
 
 ## ブログ接続とCORS
 
-ブログは `VITE_TOYBOX_API_BASE_URL` の公開APIへブラウザから直接接続する。ユーザー指定によりVite / Pages Functionsの同一originプロキシは導入しない。CORSは後で整理する。現在はローカルoriginでToyboxがCORS拒否となることを確認しており、両APIのブラウザ接続完了とは扱わない。Contentful側の取得と部分失敗時の表示は確認済み。
+ブログは `VITE_TOYBOX_API_BASE_URL` の公開APIへブラウザから直接接続する。Vite / Pages Functionsの同一originプロキシは導入しない。CORSは後で整理する。現在はローカルoriginで外部ブログAPIがCORS拒否となることを確認しており、両APIのブラウザ接続完了とは扱わない。Contentful側の取得と部分失敗時の表示は確認済み。
 
 ## 現在の成果物と残事項
 

@@ -1,21 +1,21 @@
 # フロントエンド実装ガイド
 
-Toybox の実装ガイドを公式サイト用に移行したものです。作業範囲は [AGENTS.md](AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)、命名の正本は [命名規則](docs/naming-conventions.md) です。
-以下を実装規則とします。進捗は [段階別結果](docs/implementation-results.md) を参照してください。
+作業範囲は [AGENTS.md](AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)、命名の正本は [命名規則](docs/naming-conventions.md) です。
+以下を実装規則とします。
 
 ## 技術と配置
 
-- UI は現行公式サイトと同じに保ち、コードのファイル構成は Toybox frontend と同じ責務分割・ファイル配置に揃えます。
-- React / TypeScript strict / Vite / React Router、CSS Modules、Biome、Storybook を Toybox から継承します。
+- UI は現行公式サイトと同じに保ち、コードはページ・機能・汎用部品の責務で配置します。
+- React / TypeScript strict / Vite / React Router、CSS Modules、Biome、Storybook を使用します。
 - `main.tsx` は起動と Provider、`App.tsx` はルート定義、`features/AppLayout/` は Header・Outlet・Footer の共通配置を担当します。
 - `src/pages/` はルート単位の構成と parameter の受け渡しに絞り、feature を組み合わせます。
 - 機能固有の UI・API・hook・store は `src/features/<Feature>/` に置きます。
 - 汎用 UI は `src/shared/ui/`、共有型は `src/shared/types/`、UI 非依存の共有関数は `src/util/`。局所型は利用箇所の近くに置きます。
 - 本文・メタデータ・写真・動画は `content/` のページ・記事フォルダ内にまとめます。例: `content/about/`、`content/news/<date>-<slug>/`。画像・動画等の素材は各フォルダの `assets/` にまとめ、相対パスからビルド時に配信用URLへ解決します。詳細は [コンテンツ構成](docs/content-structure.md) に従います。
 - `src/assets/` は import して使う UI 素材、`dist/` は生成物です。生成物を手動編集しません。
-- 新しい部品の前に shared UI と feature 内の既存部品を検索します。Hygen は設定・テンプレートを導入してから利用します。
+- 新しい部品の前に shared UI と feature 内の既存部品を検索します。Hygenで既存テンプレートを利用できます。
 
-旧 Vue ファイルをそのまま一対一で巨大な TSX に移すのではなく、Toybox と同じ構造でページ・機能・再利用部品に分けます。
+ページ・機能・再利用部品に責務を分けます。
 各コンポーネントは `ComponentName/index.tsx` と `ComponentName/index.module.css` を基本単位にします。
 機能内の子コンポーネントも、独立した責務を持つ場合は子ディレクトリへ分けます。機能固有の `api/`・`hook/`・`store/` は必要になった時点で追加します。
 構成例は [コンテンツ構成のディレクトリ図](docs/content-structure.md) を参照します。
@@ -25,7 +25,7 @@ Toybox の実装ガイドを公式サイト用に移行したものです。作�
 - `pages/<Page>/index.module.css` は、そのページ固有の外枠・セクション配置を担当します。
 - `features/<Feature>/index.module.css` と子コンポーネントの同名ファイルは、それぞれの機能・部品の見た目とレスポンシブ表示を担当します。
 - `shared/ui/<Component>/index.module.css` は汎用部品の見た目を担当します。ページ専用の配置を汎用部品へ混ぜません。
-- `src/index.css` は reset・基本フォント・共通トークン、`src/App.css` はアプリ全体に必要な最小限の定義に限定します。各画面・部品の CSS をこの2ファイルに集約しません。
+- `src/index.css` はreset・基本フォント・共通トークンに限定します。各画面・部品のCSSをこのファイルに集約しません。
 - Header・Footer・記事カード・Markdown 本文等のスタイルをページから横断的に上書きせず、所有するコンポーネント側に置きます。Markdown の要素セレクタも MarkdownPreview のルート class 内に閉じます。
 - 静的な見た目は TSX の `style` や `<style>` へ埋め込まず、CSS Modules に記述します。計測値・座標等の動的な値だけ必要に応じて inline style / CSS custom property で渡します。
 - media query は対象部品の CSS に同居させます。旧サイトのブレークポイント・寸法・動作を維持し、分割により表示差や他ページへのスタイル漏れが起きていないか確認します。
@@ -33,33 +33,33 @@ Toybox の実装ガイドを公式サイト用に移行したものです。作�
 
 ## UI と Markdown
 
-- サイト全体の色・余白・フォント・画像比率・動作の比較元は現行公式サイトです。ブログ等のMarkdown本文は明示された方針に従い、Toybox の MarkdownPreview の UI を使います。ナビやページ全体をToyboxの画面デザインには変更しません。
+- サイト全体の色・余白・フォント・画像比率・動作の比較元は現行公式サイトです。ブログ等のMarkdown本文は明示された方針に従い、MarkdownPreviewのUI を使います。
 - 旧 SCSS の値を CSS custom property へ移す場合も、見た目を維持します。色リテラルは原則 `src/index.css` の `:root` に集約し、CSS Modules / TSX では用途を表す `var(--...)` を使います。
-- 新しい色を追加する前に既存トークンを確認します。色名と適用先は公式サイトのデザインに合わせ、Toybox の配色をそのまま適用しません。
-- Markdown の表示は Toybox から移植する `MarkdownPreview` に統一します。sanitize schema、見出し、コード、画像等の依存もまとめて移植します。
-- 移植元実装には GFM・数式・raw HTML の解析と sanitize・メディア対応があります。ガイドの古い機能説明だけで判断せず、実装と実文書を照合します。
+- 新しい色を追加する前に既存トークンを確認します。色名と適用先は公式サイトのデザインに合わせ、共通トークンを使います。
+- Markdown の表示は `MarkdownPreview` に統一します。sanitize schema、見出し、コード、画像等の依存もあわせて確認します。
+- Markdown実装には GFM・数式・raw HTML の解析と sanitize・メディア対応があります。ガイドの古い機能説明だけで判断せず、実装と実文書を照合します。
 - 原文をそのまま raw HTML として注入しません。sanitize を緩めるときは必要な要素・属性と実際の回帰を確認します。
-- 初期移行は画像・動画の原本を優先します。WebP 化や再圧縮は UI 比較後の別作業です。ロゴ・SVG は適切な形式を維持します。
+- 画像・動画の変換時は画質と表示を確認します。ロゴ・SVG は適切な形式を維持します。
 - カード全体のリンクに別リンクを入れず、著者・記事・外部リンクの操作対象を独立させます。
 
 ## ライト / ダーク切替
 
-- HeaderのJP / EN表示を取り除き、その位置にToyboxと同じライト / ダーク切替ボタンを置きます。PCは旧言語表示の位置、モバイルはメニュー内の旧言語表示の位置に配置します。
-- 移植元は Toybox の `features/Header/index.tsx` のアイコンボタンと `util/theme.ts`。`Button`、月 / 太陽アイコン、現在の状態に応じた切替先のラベルを再利用します。
+- Headerとモバイルメニューにライト / ダーク切替ボタンを配置します。
+- テーマ状態は `util/theme.ts` に集約します。`Button`、月 / 太陽アイコン、現在の状態に応じた切替先のラベルを再利用します。
 - ライト時は月アイコンと「ダークモードに切り替え」、ダーク時は太陽アイコンと「ライトモードに切り替え」。TabとEnter / Spaceでも操作できるようにします。
-- Toyboxと同じく保存済みの `theme` を優先し、未保存ならOS設定、取得できなければライトを初期値とします。選択をlocalStorageに保存し、保存できなくても現在の画面では切り替えられるようにします。
+- 保存済みの `theme` を優先し、未保存ならOS設定、取得できなければライトを初期値とします。選択をlocalStorageに保存し、保存できなくても現在の画面では切り替えられるようにします。
 - `main.tsx` のReact描画前に初期化し、`data-theme` / `data-color-mode` と共有通知でHeader・本文・Markdown・dialog等の状態を揃えます。PC用とモバイル用で独立したテーマ状態を持ちません。
 - ライトは現行公式サイトの配色を維持します。ダーク用トークンは `src/index.css` の `:root[data-theme="dark"]` に集約し、各CSS Modulesは共通トークンを参照します。レイアウトは両テーマで維持します。
-- Toyboxのテーマ管理・操作を再利用しつつ、公式サイトの配色を定義します。背景・文字・カード・リンク・境界・hover・focus・Markdownを確認し、写真・動画・ロゴ自体は自動反転しません。
+- 共通テーマ管理と公式サイトの配色を使います。背景・文字・カード・リンク・境界・hover・focus・Markdownを確認し、写真・動画・ロゴ自体は自動反転しません。
 - Storybookでも同じテーマ管理を使います。切替・再読込・保存不可・モバイル配置を確認し、ライトは旧サイトと比較、ダークは追加仕様として表示とコントラストを確認します。
 
 ## データと状態管理
 
-- 静的な紹介・分野・お知らせは `contentRepository.ts` に読込・型変換・参照解決を集約します。表示のたびに Contentful を呼びません。
-- ブログは Contentful＋Toybox の API 境界を分け、失敗してもローカル本文の表示を止めません。作品欄はローカルの掲載作品データを使い、実行時に作品APIを呼びません。
-- SWR は外部取得の cache が必要な場合に使い、Zustand は複数画面で共有するクライアント状態に使います。静的 Markdown や局所状態のために導入を強制しません。
+- 静的コンテンツは `scripts/prepare-content.mjs` で参照を解決・生成し、`contentRepository.ts` を通じて表示します。表示のたびに Contentful を呼びません。
+- ブログは Contentfulと外部ブログ の API 境界を分け、失敗してもローカル本文の表示を止めません。作品欄はローカルの掲載作品データを使い、実行時に作品APIを呼びません。
+- SWRは外部取得のcacheに使います。局所状態はReactのstateで管理し、静的Markdownのために状態管理ライブラリを追加しません。
 - SWR の Suspense を採用する場合は loading / error boundary / 再試行を一式で設計します。ルートで有効化済みと仮定しません。
-- SWR key には response を変える path / query / source を含めます。同一 ID の Contentful と Toybox データを混同しません。
+- SWR key には response を変える path / query / source を含めます。同一 ID の Contentfulと外部ブログ データを混同しません。
 - 再試行時に無関係な cache を全消去しません。正常な空配列と通信失敗、404 と通信エラーを区別します。
 - 非同期完了後の更新では unmount・画面遷移後に古い結果を反映しないよう AbortController 等で保護します。
 - Toast 等の通知が必要なら共有 Provider に集約します。認証 Provider・ProtectedRoute は公式サイトに必要と決まるまで持ち込みません。
@@ -69,7 +69,7 @@ Toybox の実装ガイドを公式サイト用に移行したものです。作�
 - `strict`、未使用コードの検査を維持し、`any` や不要な型アサーションを避けます。
 - Props・データ・store の型を明示します。API 契約の field は境界で保持し、内部型への変換を明示します。
 - feature をまたぐ import は原則 `@/`、同居 CSS や近接ファイルは相対 import。形式は Biome に従います。
-- list key・比較・選択には安定 ID を使い、index や表示名を識別子にしません。旧IDは参照用に保持します。分野の公開URLは決定したslugを使い、旧IDのURLへの転送は作りません。
+- list key・比較・選択には安定 ID を使い、index や表示名を識別子にしません。分野の公開URLはslugを使い、ID形式のURLへの転送は作りません。
 - button、input、link に適切な HTML 要素、accessible name、disabled 状態、画像の alt を設定します。
 - menu / dialog はキーボード、Escape、外側クリック、focus 復帰を確認します。再利用できる部品があれば重複実装しません。
 - 直接 URL・再読込・アンカーを確認します。React Router の fallback だけでは配信サーバーの SPA fallback や HTTP 404 は保証されません。
