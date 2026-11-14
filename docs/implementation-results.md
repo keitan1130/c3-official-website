@@ -40,3 +40,10 @@
 - 検証: CI相当・contentテスト・HeaderのStorybook操作テストが成功。ブラウザでテーマの再読込保持、メニュー開閉・Escapeを確認。
 - 著者についてブラウザから実際のContentful APIへ接続し、36名・個別プロフィール・存在しないIDを確認。
 - UIの厳密な比較と各ページの確認は段階4以降で継続する。
+
+## 4. Aboutと5分野
+
+- Aboutと5分野の本文・ローカル動画・静的作品欄・分野リンクを実装。分野はslug URLのみ、旧IDのURLは404画面。
+- 検証: npm run ciが成功。390 / 1440pxのAboutと5分野（計12表示）、本文の読込、動画metadata読込、横はみ出しなし、Contentful/Toybox API不要、旧分野URLの404画面をブラウザで確認。
+- HTTP404ステータスの実現はPages配信の段階8で対応。
+- Aboutの比較画像をmigration/ui-candidate/へローカル保存。本文の見た目は指定されたToybox MarkdownPreview。完全な画素一致は未達成として段階8で比較を継続。
