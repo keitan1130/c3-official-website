@@ -25,9 +25,10 @@
     "prestorybook": "npm run content:prepare",
     "prebuild-storybook": "npm run content:prepare",
     "new:news": "node scripts/new-news.mjs",
-    "test:content": "node --test scripts/content.test.mjs",
+    "test:content": "node --test scripts/content.test.mjs scripts/pages.test.mjs",
     "postbuild": "node scripts/prepare-pages.mjs",
     "test:browser": "node scripts/browser-smoke.mjs 5",
+    "test:review": "node scripts/review-smoke.mjs",
     "preview:pages": "node scripts/preview-pages.mjs",
     "test:pages": "node scripts/verify-pages.mjs"
   },

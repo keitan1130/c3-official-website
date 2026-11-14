@@ -22,7 +22,7 @@ export function prepareContent(root = ROOT, output = OUTPUT) {
       if (!file.startsWith(`${directory}${path.sep}`)) throw new Error(`Invalid body: ${file}`);
       const text = fs.readFileSync(file, "utf8");
       const matches = [...new Set(text.match(/\.\/assets\/[^\s<>"'()\]]+/g) ?? [])];
-      const replacements = matches.map((relative) => `.replaceAll(${JSON.stringify(relative)}, ${assetReference(directory, relative)})`).join("");
+      const replacements = matches.sort((a,b) => b.length-a.length).map((relative) => `.replaceAll(${JSON.stringify(relative)}, ${assetReference(directory, relative)})`).join("");
       const importPath = path.relative(path.dirname(output), file).split(path.sep).join("/");
       return `() => import(${JSON.stringify(importPath + "?raw")}).then(module => module.default${replacements})`;
     }
@@ -48,9 +48,9 @@ export function prepareContent(root = ROOT, output = OUTPUT) {
     if (!Array.isArray(item.authorIds) || item.authorIds.some((id) => typeof id !== "string" || !id.trim())) throw new Error(`Unknown author: ${item.id}`);
     if (!Array.isArray(item.tagIds) || item.tagIds.some((id) => !tagIds.has(id))) throw new Error(`Unknown tag: ${item.id}`);
   }
-  news.sort((a,b) => b.value.createdAt.localeCompare(a.value.createdAt) || a.value.id.localeCompare(b.value.id));
+  news.sort((a,b) => Date.parse(b.value.createdAt)-Date.parse(a.value.createdAt) || a.value.id.localeCompare(b.value.id));
   const site = READ(path.join(root, "site/index.json"));
-  if (new Set(site.communities).size !== site.communities.length || site.communities.some((slug) => !communities.some(({value}) => value.slug === slug))) throw new Error("Invalid community order");
+  if (site.communities.length !== communities.length || new Set(site.communities).size !== site.communities.length || site.communities.some((slug) => !communities.some(({value}) => value.slug === slug))) throw new Error("Invalid community order");
   communities.sort((a,b) => site.communities.indexOf(a.value.slug)-site.communities.indexOf(b.value.slug));
   const render = (items) => `[${items.map(({value,directory}) => serialize(value,directory)).join(",")}]`;
   const body = `{about:${serialize(READ(path.join(root,"about/index.json")),path.join(root,"about"))},site:${serialize(site,path.join(root,"site"))},communities:${render(communities)},news:${render(news)},tags:${JSON.stringify(tags)}}`;

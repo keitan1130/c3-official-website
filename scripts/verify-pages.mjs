@@ -12,7 +12,9 @@ for(const url of urls){
  const image=new URL(html.match(/<meta property="og:image" content="([^\"]+)"/)[1]);
  assert.ok(fs.existsSync(path.join(root,image.pathname)));
 }
-assert.equal(urls.length,25);
+const readEntries=directory=>fs.readdirSync(directory,{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>JSON.parse(fs.readFileSync(path.join(directory,entry.name,"index.json"),"utf8")));
+const expected=["/","/about","/news","/blog",...readEntries("content/communities").map(entry=>`/community/${entry.slug}`),...readEntries("content/news").filter(entry=>entry.isPublished === true).map(entry=>`/news/${entry.id}`)];
+assert.deepEqual(urls.map(url=>url.pathname).sort(),expected.sort());
 assert.ok(!sitemap.includes('/contact'));
 assert.ok(!sitemap.includes('5Ay58j7CHdYFqKShRbr5tD'));
 assert.match(fs.readFileSync("dist/404.html","utf8"),/noindex/);

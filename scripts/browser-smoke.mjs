@@ -33,17 +33,17 @@ try {
     await page.route(/cdn\.contentful\.com|kodomobeya/,route=>route.abort());
     await page.goto(BASE+"/news");
     await page.getByRole("heading",{name:"お知らせ",exact:true,level:1}).waitFor();
-    assert.equal(await page.getByRole("article").count(),16);
     const directories=await fs.readdir("content/news");
-    for(const directory of directories) {
-      const entry=JSON.parse(await fs.readFile(`content/news/${directory}/index.json`,"utf8"));
+    const entries=(await Promise.all(directories.map(async directory => JSON.parse(await fs.readFile(`content/news/${directory}/index.json`,"utf8"))))).filter(entry => entry.isPublished === true);
+    assert.equal(await page.getByRole("article").count(),entries.length);
+    for(const entry of entries) {
       await page.goto(BASE+"/news/"+entry.id);
       await page.getByRole("heading",{name:entry.title,exact:true,level:1}).first().waitFor();
       await page.getByText("読み込み中…",{exact:true}).waitFor({state:"hidden"});
       assert.equal(await page.getByRole("alert").count(),0);
     }
     await page.unrouteAll();
-    const id=JSON.parse(await fs.readFile(`content/news/${directories[0]}/index.json`,"utf8")).authorIds[0];
+    const id=entries[0]?.authorIds[0];
     if(id) {
       await page.goto(BASE+"/author/"+id);
       await page.getByRole("heading",{level:1}).waitFor();
