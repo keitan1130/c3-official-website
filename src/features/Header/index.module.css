@@ -94,8 +94,8 @@
   text-decoration: underline;
 }
 .columns svg {
-  width: 12px;
-  height: 12px;
+  width: 20px;
+  height: 20px;
 }
 .mobile-theme {
   display: none;
@@ -123,4 +123,9 @@
   .columns {
     gap: 10px;
   }
+}
+
+.columns a svg:last-child:not(:first-child) {
+  width: 12px;
+  height: 12px;
 }

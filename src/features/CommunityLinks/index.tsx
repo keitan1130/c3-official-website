@@ -1,24 +1,21 @@
 import { Link } from "react-router-dom";
-import CodeIcon from "@mui/icons-material/Code";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
-import PaletteIcon from "@mui/icons-material/Palette";
-import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
 
 import styles from "./index.module.css";
 
+import LegacyIcon from "@/shared/ui/LegacyIcon";
+
 const AREAS = [
-  { slug: "game", name: "GAME", Icon: SportsEsportsIcon },
-  { slug: "3dcg", name: "3DCG", Icon: ViewInArIcon },
-  { slug: "hack", name: "HACK", Icon: CodeIcon },
-  { slug: "2dcg", name: "2DCG", Icon: PaletteIcon },
-  { slug: "music", name: "MUSIC", Icon: MusicNoteIcon },
-];
+  { slug: "game", name: "GAME", icon: "gamepad" },
+  { slug: "3dcg", name: "3DCG", icon: "cubes" },
+  { slug: "hack", name: "HACK", icon: "laptop-code" },
+  { slug: "2dcg", name: "2DCG", icon: "palette" },
+  { slug: "music", name: "MUSIC", icon: "music" },
+] as const;
 const CommunityLinks = () => (
   <div className={styles["links"]}>
-    {AREAS.map(({ slug, name, Icon }) => (
+    {AREAS.map(({ slug, name, icon }) => (
       <Link key={slug} to={`/community/${slug}`}>
-        <Icon />
+        <LegacyIcon name={icon} />
         <span>{name}</span>
       </Link>
     ))}

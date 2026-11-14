@@ -1,19 +1,14 @@
-import GitHubIcon from "@mui/icons-material/GitHub";
-import Inventory2Icon from "@mui/icons-material/Inventory2";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import YouTubeIcon from "@mui/icons-material/YouTube";
-
 import styles from "./index.module.css";
 
+import LegacyIcon from "@/shared/ui/LegacyIcon";
 import { CONTENT } from "@/util/contentRepository";
 
 const ICONS = {
-  ToyBox: Inventory2Icon,
-  Twitter: TwitterIcon,
-  GitHub: GitHubIcon,
-  YouTube: YouTubeIcon,
-};
+  ToyBox: "box-open",
+  Twitter: "twitter",
+  GitHub: "github",
+  YouTube: "youtube",
+} as const;
 const Footer = () => (
   <footer className={styles["footer"]}>
     <div className={styles["identity"]}>
@@ -32,7 +27,7 @@ const Footer = () => (
               target="_blank"
               rel="noreferrer"
             >
-              {Icon ? <Icon /> : link.title}
+              {Icon ? <LegacyIcon name={Icon} /> : link.title}
             </a>
           );
         })}
@@ -42,7 +37,7 @@ const Footer = () => (
       </p>
     </div>
     <a className={styles["top"]} href="#top">
-      <KeyboardArrowUpIcon />
+      <LegacyIcon name="angle-up" />
       <br />
       PAGE TOP
     </a>

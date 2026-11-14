@@ -1,21 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
-import MenuIcon from "@mui/icons-material/Menu";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import styles from "./index.module.css";
 
 import ThemeToggle from "@/features/ThemeToggle";
+import LegacyIcon from "@/shared/ui/LegacyIcon";
 import { CONTENT } from "@/util/contentRepository";
 import { lockPageScroll } from "@/util/pageScroll";
 
 const NAVIGATION = [
-  { title: "HOME", url: "/" },
-  { title: "C3について", url: "/about" },
-  { title: "お知らせ", url: "/news" },
-  { title: "ブログ", url: "/blog" },
-];
+  { title: "HOME", url: "/", icon: "house" },
+  { title: "C3について", url: "/about", icon: "users" },
+  { title: "お知らせ", url: "/news", icon: "circle-info" },
+  { title: "ブログ", url: "/blog", icon: "file-lines" },
+] as const;
+const COMMUNITY_ICONS = {
+  game: "gamepad",
+  "3dcg": "cubes",
+  hack: "laptop-code",
+  "2dcg": "palette",
+  music: "music",
+} as const;
+const LINK_ICONS = {
+  ToyBox: "box-open",
+  Twitter: "twitter",
+  GitHub: "github",
+  YouTube: "youtube",
+} as const;
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -75,7 +87,7 @@ const Header = () => {
                 aria-controls="site-navigation"
                 onClick={() => setIsOpen(!isOpen)}
               >
-                {isOpen ? <CloseIcon /> : <MenuIcon />}
+                {isOpen ? <CloseIcon /> : <LegacyIcon name="bars" />}
               </button>
               <Link to="/" aria-label="C3 ホーム">
                 <img
@@ -99,14 +111,26 @@ const Header = () => {
               <ul>
                 {NAVIGATION.map((item) => (
                   <li key={item.url}>
-                    <Link to={item.url}>{item.title}</Link>
+                    <Link to={item.url}>
+                      <LegacyIcon name={item.icon} />
+                      {item.title}
+                    </Link>
                   </li>
                 ))}
               </ul>
               <ul>
                 {CONTENT.communities.map((item) => (
                   <li key={item.slug}>
-                    <Link to={`/community/${item.slug}`}>{item.name}</Link>
+                    <Link to={`/community/${item.slug}`}>
+                      <LegacyIcon
+                        name={
+                          COMMUNITY_ICONS[
+                            item.slug as keyof typeof COMMUNITY_ICONS
+                          ]
+                        }
+                      />
+                      {item.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -114,8 +138,11 @@ const Header = () => {
                 {CONTENT.site.links.map((item) => (
                   <li key={item.url}>
                     <a href={item.url} target="_blank" rel="noreferrer">
+                      <LegacyIcon
+                        name={LINK_ICONS[item.title as keyof typeof LINK_ICONS]}
+                      />
                       {item.title}
-                      <OpenInNewIcon />
+                      <LegacyIcon name="arrow-up-right-from-square" />
                     </a>
                   </li>
                 ))}
