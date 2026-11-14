@@ -1,6 +1,6 @@
 # フロントエンド実装ガイド
 
-作業範囲は [AGENTS.md](AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)、命名の正本は [命名規則](docs/naming-conventions.md) です。
+作業範囲は [AGENTS.md](../AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)、命名の正本は [命名規則](naming-conventions.md) です。
 以下を実装規則とします。
 
 ## 技術と配置
@@ -11,14 +11,14 @@
 - `src/pages/` はルート単位の構成と parameter の受け渡しに絞り、feature を組み合わせます。
 - 機能固有の UI・API・hook・store は `src/features/<Feature>/` に置きます。
 - 汎用 UI は `src/shared/ui/`、共有型は `src/shared/types/`、UI 非依存の共有関数は `src/util/`。局所型は利用箇所の近くに置きます。
-- 本文・メタデータ・写真・動画は `content/` のページ・記事フォルダ内にまとめます。例: `content/about/`、`content/news/<date>-<slug>/`。画像・動画等の素材は各フォルダの `assets/` にまとめ、相対パスからビルド時に配信用URLへ解決します。詳細は [コンテンツ構成](docs/content-structure.md) に従います。
+- 本文・メタデータ・写真・動画は `content/` のページ・記事フォルダ内にまとめます。例: `content/about/`、`content/news/<date>-<slug>/`。画像・動画等の素材は各フォルダの `assets/` にまとめ、相対パスからビルド時に配信用URLへ解決します。詳細は [コンテンツ構成](content-structure.md) に従います。
 - `src/assets/` は import して使う UI 素材、`dist/` は生成物です。生成物を手動編集しません。
 - 新しい部品の前に shared UI と feature 内の既存部品を検索します。Hygenで既存テンプレートを利用できます。
 
 ページ・機能・再利用部品に責務を分けます。
 各コンポーネントは `ComponentName/index.tsx` と `ComponentName/index.module.css` を基本単位にします。
 機能内の子コンポーネントも、独立した責務を持つ場合は子ディレクトリへ分けます。機能固有の `api/`・`hook/`・`store/` は必要になった時点で追加します。
-構成例は [コンテンツ構成のディレクトリ図](docs/content-structure.md) を参照します。
+構成例は [コンテンツ構成のディレクトリ図](content-structure.md) を参照します。
 
 ## CSS の分割
 
@@ -29,7 +29,7 @@
 - Header・Footer・記事カード・Markdown 本文等のスタイルをページから横断的に上書きせず、所有するコンポーネント側に置きます。Markdown の要素セレクタも MarkdownPreview のルート class 内に閉じます。
 - 静的な見た目は TSX の `style` や `<style>` へ埋め込まず、CSS Modules に記述します。計測値・座標等の動的な値だけ必要に応じて inline style / CSS custom property で渡します。
 - media query は対象部品の CSS に同居させます。旧サイトのブレークポイント・寸法・動作を維持し、分割により表示差や他ページへのスタイル漏れが起きていないか確認します。
-- class は kebab-case、参照は `styles["news-card"]` に統一します。詳細は [命名規則](docs/naming-conventions.md) に従います。
+- class は kebab-case、参照は `styles["news-card"]` に統一します。詳細は [命名規則](naming-conventions.md) に従います。
 
 ## UI と Markdown
 

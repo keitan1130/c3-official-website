@@ -1,6 +1,6 @@
 # API・データ取得ガイド
 
-作業範囲は [AGENTS.md](AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) を参照します。
+作業範囲は [AGENTS.md](../AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) を参照します。
 
 ## データ境界
 

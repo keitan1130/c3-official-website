@@ -1,6 +1,6 @@
 # 作業・検証・Git ガイド
 
-作業範囲と権限は [AGENTS.md](AGENTS.md) に従います。
+作業範囲と権限は [AGENTS.md](../AGENTS.md) に従います。
 npm / Git コマンドは `c3-official-website/` で実行します。
 
 ## 着手と変更
@@ -25,7 +25,7 @@ npm / Git コマンドは `c3-official-website/` で実行します。
 | Markdown / content | sanitize、本文・メディア表示、ID重複・参照。新規フォルダの追加だけで一覧へ反映され、下書きの本文・画像が配信されないこと |
 | UI / テーマ | ライトは同じ環境で現行サイトと比較。ダークは配色・操作を検証し、切替・選択保存・再読込・モバイル配置も確認 |
 
-命名・build・Storybook のコマンドと CI 範囲は [開発環境と CI](docs/development-and-ci.md) を参照します。
+命名・build・Storybook のコマンドと CI 範囲は [開発環境と CI](development-and-ci.md) を参照します。
 
 - まず変更に関係する検証に絞り、新しい変更・失敗・未解決の懸念がある場合だけ範囲を広げます。
 - Storybook の browser test はローカルで実行し、通常 CI には追加しません。

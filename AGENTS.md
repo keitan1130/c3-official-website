@@ -15,11 +15,11 @@ Vite + React + TypeScriptの公式サイトです。本文・素材は `content/
 
 | 作業 | 参照先 |
 | --- | --- |
-| React・TypeScript・CSS・Markdown・テーマ | [FRONTEND_GUIDE.md](FRONTEND_GUIDE.md) |
+| React・TypeScript・CSS・Markdown・テーマ | [FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) |
 | 命名 | [命名規則](docs/naming-conventions.md) |
 | 環境・scripts・CI・hooks | [開発環境とCI](docs/development-and-ci.md) |
-| API・データ取得 | [API_GUIDE.md](API_GUIDE.md) |
-| 検証・Git・報告 | [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) |
+| API・データ取得 | [API_GUIDE.md](docs/API_GUIDE.md) |
+| 検証・Git・報告 | [WORKFLOW_GUIDE.md](docs/WORKFLOW_GUIDE.md) |
 | 記事・写真・動画の管理 | [コンテンツ構成](docs/content-structure.md) |
 | 公開設定と制約 | [Cloudflare Pages](docs/cloudflare-pages.md) |
 

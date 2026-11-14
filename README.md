@@ -39,9 +39,9 @@ npm run test:storybook
 ## ガイド
 
 - [作業範囲](AGENTS.md)
-- [フロントエンド実装](FRONTEND_GUIDE.md)
-- [API・データ取得](API_GUIDE.md)
-- [作業・検証・Git](WORKFLOW_GUIDE.md)
+- [フロントエンド実装](docs/FRONTEND_GUIDE.md)
+- [API・データ取得](docs/API_GUIDE.md)
+- [作業・検証・Git](docs/WORKFLOW_GUIDE.md)
 - [開発環境とCI](docs/development-and-ci.md)
 - [命名規則](docs/naming-conventions.md)
 - [記事・素材の管理](docs/content-structure.md)

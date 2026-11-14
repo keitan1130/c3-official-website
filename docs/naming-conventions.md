@@ -32,7 +32,7 @@ API 契約型の boolean 命名例外は、命名検査スクリプトの `@apiC
 - class、CSS custom property、`data-*`、`aria-*` は kebab-case。
 - CSS Modules の参照は `styles["news-card"]` のブラケット記法。`styles.newsCard` は使いません。
 - コンポーネントの CSS は同居する `index.module.css`、グローバル定義は `src/index.css` に限定します。
-- 分割する範囲・各ファイルの責務・動的 inline style の扱いは [実装ガイドの CSS 分割規則](../FRONTEND_GUIDE.md#css-の分割) に従います。
+- 分割する範囲・各ファイルの責務・動的 inline style の扱いは [実装ガイドの CSS 分割規則](FRONTEND_GUIDE.md#css-の分割) に従います。
 - 色は共通トークンを参照します。命名チェッカーだけで配色や全スタイル規則を検査できるとはみなしません。
 
 ## コンテンツとスクリプト
@@ -40,7 +40,7 @@ API 契約型の boolean 命名例外は、命名検査スクリプトの `@apiC
 - `content/` のページ・記事フォルダとメディア名は、小文字英数字の kebab-case。例: `news/2026-11-14-event-guide/assets/venue.jpg`。
 - 旧 Contentful ID は JSON の `id` にそのまま保持します。運用フォルダは内容が分かるslugにします。
 - 本文は `body.md`、メタデータは `index.json`、画像・動画等の素材は同居する `assets/` に統一します。
-- Git branch / commit の規則は [作業ガイド](../WORKFLOW_GUIDE.md) に従います。
+- Git branch / commit の規則は [作業ガイド](WORKFLOW_GUIDE.md) に従います。
 
 ## 検査コマンド
 
