@@ -47,3 +47,16 @@ StorybookはVitestとPlaywright Chromiumを使います。表示例は `!test`�
 公開設定は [Cloudflare Pages](cloudflare-pages.md)、検証の選び方は [作業ガイド](WORKFLOW_GUIDE.md) を参照します。
 
 作品欄は開発サーバー起動中に `node scripts/works-smoke.mjs` で検証します。作品APIはfixtureに置き換え、ホーム／Aboutの20件表示・取得パラメータ・読込中・0件・失敗と再試行を検査します。実API・CORSの確認とは区別します。`TEST_BASE_URL` で開発サーバーのURLを指定できます。
+
+## レビュー時のAPI fixture検証
+
+別ターミナルで、実サービスに依存しないfixture用設定でViteを起動します。
+
+```bash
+VITE_CTF_SPACE_ID=fixture-space VITE_CTF_CDA_ACCESS_TOKEN=fixture-token VITE_API_BASE_URL=http://127.0.0.1:5191 npm run dev -- --host 127.0.0.1 --port 5191 --strictPort
+TEST_BASE_URL=http://127.0.0.1:5191 npm run test:review
+```
+
+`test:review` はブログのsourceとIDの衝突、Contentful障害時の外部ブログ検索、通信失敗と404の区別、noindex解除、メニューのスクロール固定・位置復元・focus復帰を検査します。API応答はPlaywrightで差し替えます。実API・CORSの確認にはなりません。
+
+`test:content` には下書き除外、参照画像の破損、共通接頭辞のある素材名、タイムゾーンの異なる作成日時の並び、分野表示順への追記漏れ、公開件数の変化に追従するPages成果物検査を含めます。`test:pages` は現在の `content/` と生成済みルート集合を照合します。

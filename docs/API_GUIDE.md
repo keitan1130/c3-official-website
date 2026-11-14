@@ -2,6 +2,8 @@
 
 作業範囲は [AGENTS.md](../AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md) を参照します。
 
+API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) を参照します。
+
 ## データ境界
 
 - 紹介・分野・お知らせはローカル `content/` を正とします。`scripts/prepare-content.mjs` が参照を検査し、`src/generated/contentData.ts` を生成します。表示側は `src/util/contentRepository.ts` を利用します。
@@ -33,3 +35,5 @@
 作品APIはホームとAboutでSWRキャッシュを共有します。読込中・0件・失敗と再試行を表示し、失敗しても作品サイトへのリンクを維持します。作品の直接接続に必要なCORSは公開先で別途確認します。
 
 ブログの転送にはGoバックエンド側の `LEGACY_TOYBOX_BASE_URL` 設定が必要です。未設定ならブログAPIは503を返します。この設定はfrontendの環境変数には含めません。
+
+取得元を省略したブログ詳細はContentfulの不在・取得失敗時に外部ブログも検索します。一方の取得元が失敗し、他方が404の場合は取得失敗として表示します。関連記事・カルーセルの識別にもsourceとIDを組み合わせます。

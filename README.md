@@ -38,6 +38,8 @@ npm run test:storybook
 
 ## ガイド
 
+- [現在の構成・API・データフロー](docs/architecture.md)
+- [レビューと検証記録](docs/review.md)
 - [作業範囲](AGENTS.md)
 - [フロントエンド実装](docs/FRONTEND_GUIDE.md)
 - [API・データ取得](docs/API_GUIDE.md)

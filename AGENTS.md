@@ -15,6 +15,7 @@ Vite + React + TypeScriptの公式サイトです。本文・素材は `content/
 
 | 作業 | 参照先 |
 | --- | --- |
+| 現在の構成・API・データフロー | [構成説明](docs/architecture.md) |
 | React・TypeScript・CSS・Markdown・テーマ | [FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) |
 | 命名 | [命名規則](docs/naming-conventions.md) |
 | 環境・scripts・CI・hooks | [開発環境とCI](docs/development-and-ci.md) |

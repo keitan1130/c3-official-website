@@ -18,7 +18,7 @@ Git連携と Direct Upload のどちらを既存プロジェクトが使って�
 - Pages はトップレベルの `404.html` の有無で SPA fallback の扱いが変わる。単純に404ファイルを追加するだけでは React の深いURLと両立しない可能性がある。[Serving Pages](https://developers.cloudflare.com/pages/configuration/serving-pages/)
 - 分野は `game` / `3dcg` / `hack` / `2dcg` / `music` のslug URLだけを有効にする。旧IDのURLへの転送ルールは作らず、直接アクセスはHTTP404を返す構成として検証する。
 - `/contact` / `/contact/thanks`、旧分野ID、不明な静的URLは生成した `404.html` でHTTP404にする。ブログ詳細と著者は `_redirects` の200 rewriteでSPAを表示するため、存在しない動的IDのHTTP404は未実装（画面は404になる）。
-- `postbuild` で25件の静的ルートHTMLに初期OGP・canonicalを生成する。紹介・分野・お知らせと一覧が対象。ブログ詳細・著者の個別初期OGPは未実装。
+- `postbuild` で公開お知らせ・分野に応じた静的ルートHTMLに初期OGP・canonicalを生成する。紹介・分野・お知らせと一覧が対象。ブログ詳細・著者の個別初期OGPは未実装。
 - ブログの実API・CORSは `pages.dev` の確認環境と現行ドメインで別々に確認する。
 
 ## メディア
@@ -40,7 +40,7 @@ Pages の1ファイル上限は25 MiB。素材のサイズはビルド前のコ�
 
 ## 現在の成果物と残事項
 
-- npm run buildのpostbuildで初期HTML・25件の静的sitemap・robots・OGP用画像・404.html・_redirectsを生成する。
+- npm run buildのpostbuildで初期HTML・公開コンテンツに応じた静的sitemap・robots・OGP用画像・404.html・_redirectsを生成する。
 - 動的なブログ詳細・著者のIDはローカルに固定していないため、現時点のsitemapには含めていない。公開前に動的ページの初期OGP・sitemap・HTTP404の方式を確定する。
 - `npm run preview:pages` はローカルの静的ルートモデルで、Cloudflare上での動作確認の代わりにはしない。
 - GitHub上のCI実行、既存Pagesプロジェクトへの接続、ドメイン切替は未実施。
