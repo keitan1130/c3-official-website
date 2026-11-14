@@ -1,3 +1,5 @@
+import { MemoryRouter } from "react-router-dom";
+
 import App from "@/App";
 
 import type { Meta, StoryObj } from "@storybook/react";

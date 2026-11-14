@@ -1,0 +1,16 @@
+.main {
+  margin-top: calc(clamp(50px, 12vw, 80px) + var(--header-top) * 2);
+  min-height: 60vh;
+}
+.skip {
+  position: fixed;
+  top: -100px;
+  left: 20px;
+  z-index: 200;
+  padding: 12px;
+  background: var(--paper-color);
+  color: var(--font-color);
+}
+.skip:focus {
+  top: 12px;
+}

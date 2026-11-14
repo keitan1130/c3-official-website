@@ -1,0 +1,7 @@
+.page {
+  padding: 50px 5vw;
+}
+.page h1 {
+  font-size: min(120px, 6vw);
+  line-height: 1.3;
+}

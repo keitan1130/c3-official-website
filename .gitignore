@@ -49,3 +49,5 @@ __pycache__/
 /migration/content-conversion.json
 
 /migration/featured-work-originals/
+
+/migration/ui-candidate/
