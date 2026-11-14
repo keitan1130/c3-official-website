@@ -35,3 +35,7 @@ Pages の1ファイル上限は25 MiB。今回の回収メディアの最大フ�
 - 切替前に旧配信設定と復旧対象の deployment を特定する。新版の本番確認に失敗した場合の戻し方を残す。
 - 独自cache設定がある場合はPagesの配信との整合を確認する。不要な全域cache削除は行わない。
 - 公開完了の基準は [実装ロードマップ](implementation-roadmap.md) の段階9〜10に従う。
+
+## ブログプロキシ
+
+Toyboxの公開ブログはブラウザの直接CORS接続に依存させず、`/api/toybox/blogs` と詳細URLをPages Functions経由で読む。Pagesにはserver側の `TOYBOX_API_BASE_URL` を設定する。Viteも同じ公開パスを開発用proxyへ接続する。GET以外とブログ以外は許可せず、Cookie / Authorizationを上流へ転送しない。
