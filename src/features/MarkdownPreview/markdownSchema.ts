@@ -1,0 +1,86 @@
+import { defaultSchema } from "rehype-sanitize";
+
+import { MARKDOWN_TEXT_STYLE_PATTERN } from "./rehypeMarkdownStyles";
+
+import type { Options } from "rehype-sanitize";
+
+// Markdown/GFM の出力と折りたたみに必要な要素だけを許可する。
+// clobberPrefix と URL の protocol 制限は既定の保護を維持する。
+export const MARKDOWN_SCHEMA: Options = {
+  ...defaultSchema,
+  tagNames: [
+    "a",
+    "audio",
+    "blockquote",
+    "br",
+    "code",
+    "del",
+    "details",
+    "em",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "hr",
+    "img",
+    "input",
+    "li",
+    "mark",
+    "ol",
+    "p",
+    "pre",
+    "section",
+    "source",
+    "span",
+    "strong",
+    "summary",
+    "sub",
+    "sup",
+    "table",
+    "tbody",
+    "td",
+    "th",
+    "thead",
+    "tr",
+    "track",
+    "ul",
+    "u",
+    "video",
+  ],
+  attributes: {
+    a: defaultSchema.attributes?.a ?? [],
+    audio: ["src"],
+    code: [
+      ...(defaultSchema.attributes?.code ?? []),
+      // remark-math の数式マーカーだけを通し、KaTeX の描画より前に入力を検査する。
+      ["className", "math-inline", "math-display"],
+    ],
+    details: ["open"],
+    h2: defaultSchema.attributes?.h2 ?? [],
+    img: [
+      "src",
+      "alt",
+      ["width", /^[1-9]\d{0,3}$/],
+      ["style", /^\s*width\s*:\s*[1-9]\d{0,3}px\s*;?\s*$/i],
+    ],
+    input: ["checked", ["disabled", true], ["type", "checkbox"]],
+    li: defaultSchema.attributes?.li ?? [],
+    ol: ["start", ...(defaultSchema.attributes?.ol ?? [])],
+    section: defaultSchema.attributes?.section ?? [],
+    source: ["src", "type"],
+    span: [["style", MARKDOWN_TEXT_STYLE_PATTERN]],
+    td: ["align"],
+    th: ["align"],
+    track: ["src", "kind", "srcLang", "label", "default"],
+    ul: defaultSchema.attributes?.ul ?? [],
+    video: ["src", "poster"],
+    "*": ["id", "title"],
+  },
+  protocols: {
+    ...defaultSchema.protocols,
+    poster: ["http", "https"],
+  },
+  strip: ["script", "style", "iframe", "object", "embed", "svg", "math"],
+};
