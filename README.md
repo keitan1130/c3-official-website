@@ -47,3 +47,12 @@ python3 scripts/export-public-content.py --output migration/snapshots/YYYY-MM-DD
 トークンや JavaScript バンドルは保存せず、ブログ本文も取得しません。
 失敗は `manifest.json` の `errors` に記録し、終了コードを 1 にします。
 取得中に停止した場合や manifest がない場合は未完了です。別の出力先で再実行してください。
+
+## 新しいニュースの作成
+
+```bash
+npm run new:news -- 2026-11-14-event-guide
+npm run dev
+```
+
+生成された記事のindex.json・body.mdとassets/を編集します。thumbnailを指定し、isPublishedをtrueにすると公開対象になります。段階2ではデータ読込を実装済みで、実際の一覧画面は段階5で実装します。

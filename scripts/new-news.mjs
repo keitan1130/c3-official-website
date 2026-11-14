@@ -8,7 +8,7 @@ if (fs.existsSync(DIRECTORY)) throw new Error("An article with this folder name 
 const DATE = `${SLUG.slice(0,10)}T12:00:00+09:00`;
 if (!Number.isFinite(Date.parse(DATE))) throw new Error("Invalid publication date");
 fs.mkdirSync(path.join(DIRECTORY,"assets"),{recursive:true});
-fs.writeFileSync(path.join(DIRECTORY,"index.json"), JSON.stringify({id:SLUG,title:"新しいお知らせ",digest:"概要を記入してください。",createdAt:DATE,updatedAt:DATE,isPublished:false,important:false,body:"./body.md",thumbnail:"",authorIds:[],tagIds:[]},null,2)+"\n");
+fs.writeFileSync(path.join(DIRECTORY,"index.json"), JSON.stringify({id:SLUG,title:"新しいお知らせ",digest:"概要を記入してください。",createdAt:DATE,updatedAt:DATE,isPublished:false,isImportant:false,body:"./body.md",thumbnail:"",authorIds:[],tagIds:[]},null,2)+"\n");
 fs.writeFileSync(path.join(DIRECTORY,"body.md"),"# 新しいお知らせ\n\n本文を記入してください。画像は同じフォルダの assets/ に置きます。\n");
 fs.writeFileSync(path.join(DIRECTORY,"assets/.gitkeep"),"");
 console.log(`Created draft: ${DIRECTORY}. Add thumbnail, edit body and set isPublished to true when ready.`);

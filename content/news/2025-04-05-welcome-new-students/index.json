@@ -5,7 +5,6 @@
   "createdAt": "2025-04-05T06:22:30.576Z",
   "updatedAt": "2025-04-05T06:26:41.198Z",
   "isPublished": true,
-  "important": true,
   "thumbnail": "./assets/cover.png",
   "authorIds": [
     "7keoGLfOtBGjh9YtIPuilk"
@@ -13,5 +12,6 @@
   "tagIds": [
     "5pRwkNGFoV4ngxiMmE607B"
   ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "isImportant": true
 }

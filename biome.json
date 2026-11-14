@@ -14,7 +14,8 @@
       "**/*.jsx",
       "**/*.css",
       "**/*.json",
-      "**/*.jsonc"
+      "**/*.jsonc",
+      "!**/generated"
     ]
   },
   "formatter": {
@@ -60,15 +61,31 @@
           "options": {
             "identifierOrder": "natural",
             "groups": [
-              { "type": false, "source": ["react*", "react/**"] },
-              { "type": false, "source": ":PACKAGE:" },
+              {
+                "type": false,
+                "source": ["react*", "react/**"]
+              },
+              {
+                "type": false,
+                "source": ":PACKAGE:"
+              },
               ":BLANK_LINE:",
-              { "type": false, "source": "./lib/**" },
-              { "type": false, "source": ":PATH:" },
+              {
+                "type": false,
+                "source": "./lib/**"
+              },
+              {
+                "type": false,
+                "source": ":PATH:"
+              },
               ":BLANK_LINE:",
-              { "type": false },
+              {
+                "type": false
+              },
               ":BLANK_LINE:",
-              { "type": true }
+              {
+                "type": true
+              }
             ]
           }
         }

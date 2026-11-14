@@ -21,7 +21,7 @@ export interface Entry {
   thumbnail: string;
   authorIds: string[];
   tagIds: string[];
-  important: boolean;
+  isImportant: boolean;
   isPublished: boolean;
   body: BodyLoader;
 }

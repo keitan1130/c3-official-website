@@ -5,7 +5,6 @@
   "createdAt": "2022-07-11T05:55:00.897Z",
   "updatedAt": "2022-07-12T03:19:01.500Z",
   "isPublished": true,
-  "important": true,
   "thumbnail": "./assets/cover.webp",
   "authorIds": [
     "5sMs2rpHj96OJS2CHDiqyc"
@@ -13,5 +12,6 @@
   "tagIds": [
     "6KJkzvTBJHJr0EhsYAoiYU"
   ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "isImportant": true
 }

@@ -157,7 +157,7 @@ HTML構造・操作・レイアウトは `src/pages/` と `src/features/`、CSS�
   "createdAt": "2026-11-14T12:00:00+09:00",
   "updatedAt": "2026-11-14T12:00:00+09:00",
   "isPublished": false,
-  "important": false,
+  "isImportant": false,
   "body": "./body.md",
   "thumbnail": "./assets/cover.jpg",
   "authorIds": [],
