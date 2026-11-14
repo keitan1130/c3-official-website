@@ -18,7 +18,7 @@
   margin: 60px auto;
   overflow: hidden;
   border-radius: 20px;
-  box-shadow: 8px 8px 8px var(--shadow-soft-color);
+  box-shadow: 0 2px 8px var(--shadow-soft-color);
 }
 .video video {
   width: 100%;

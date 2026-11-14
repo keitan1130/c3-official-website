@@ -24,7 +24,7 @@
   max-height: 600px;
   overflow: hidden;
   border-radius: 20px;
-  box-shadow: 0 10px 15px var(--shadow-soft-color);
+  box-shadow: 0 2px 8px var(--shadow-soft-color);
 }
 .hero img {
   width: 100%;
