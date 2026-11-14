@@ -13,12 +13,19 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:storybook": "vitest run --project storybook",
-    "ci": "npm run check:naming && npx biome check ./src ./biome.json ./package.json ./tsconfig.json ./tsconfig.app.json ./tsconfig.node.json && npm run build",
+    "ci": "npm run content:prepare && npm run check:naming && npx biome check ./src ./biome.json ./package.json ./tsconfig.json ./tsconfig.app.json ./tsconfig.node.json && npm run build",
     "format": "npx biome check --write ./src ./biome.json ./package.json ./tsconfig.json ./tsconfig.app.json ./tsconfig.node.json",
     "prepare": "husky",
     "new:ui": "hygen generator ui",
     "new:feature": "hygen generator feature",
-    "new:component": "hygen generator component"
+    "new:component": "hygen generator component",
+    "content:prepare": "node scripts/prepare-content.mjs",
+    "predev": "npm run content:prepare",
+    "prebuild": "npm run content:prepare",
+    "prestorybook": "npm run content:prepare",
+    "prebuild-storybook": "npm run content:prepare",
+    "new:news": "node scripts/new-news.mjs",
+    "test:content": "node --test scripts/content.test.mjs"
   },
   "lint-staged": {
     "./src/**/*.{js,jsx,ts,tsx,css,json,jsonc}": "npx biome check --write"
