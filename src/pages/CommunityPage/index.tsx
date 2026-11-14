@@ -7,6 +7,7 @@ import BodyContent from "@/features/BodyContent";
 import NotFoundPage from "@/pages/NotFoundPage";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
+import Paper from "@/shared/ui/Paper";
 import { getCommunity } from "@/util/contentRepository";
 
 const CommunityPage = () => {
@@ -17,22 +18,24 @@ const CommunityPage = () => {
     <div className={styles["page"]}>
       <PageMeta title={community.name} description={community.domain} />
       <Breadcrumbs items={[{ label: community.name }]} />
-      <h1 className={styles["title"]}>{community.name}</h1>
-      <div className={styles["video"]}>
-        <video
-          poster={videoLoading}
-          key={community.id}
-          preload="metadata"
-          playsInline
-          muted
-          autoPlay
-          loop
-          aria-label={`${community.name}紹介動画`}
-        >
-          <source src={community.mp4} type="video/mp4" />
-        </video>
-      </div>
-      <BodyContent load={community.body} />
+      <Paper>
+        <h1 className={styles["title"]}>{community.name}</h1>
+        <div className={styles["video"]}>
+          <video
+            poster={videoLoading}
+            key={community.id}
+            preload="metadata"
+            playsInline
+            muted
+            autoPlay
+            loop
+            aria-label={`${community.name}紹介動画`}
+          >
+            <source src={community.mp4} type="video/mp4" />
+          </video>
+        </div>
+        <BodyContent load={community.body} />
+      </Paper>
     </div>
   );
 };

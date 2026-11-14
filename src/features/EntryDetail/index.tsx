@@ -6,6 +6,7 @@ import AuthorBadge from "@/features/AuthorBadge";
 import BodyContent from "@/features/BodyContent";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
+import Paper from "@/shared/ui/Paper";
 import { getTag } from "@/util/contentRepository";
 import { formatDateTime } from "@/util/formatDateTime";
 
@@ -39,44 +40,46 @@ const EntryDetail = ({ entry, kind, recent }: EntryDetailProps) => {
         <div className={styles["label"]}>C3 {label}</div>
       </div>
       <div className={styles["columns"]}>
-        <article className={styles["article"]}>
-          {entry.thumbnail && (
-            <div className={styles["hero"]}>
-              <img src={entry.thumbnail} alt={`${entry.title}のサムネイル`} />
+        <Paper className={styles["article"]}>
+          <article>
+            {entry.thumbnail && (
+              <div className={styles["hero"]}>
+                <img src={entry.thumbnail} alt={`${entry.title}のサムネイル`} />
+              </div>
+            )}
+            <h1>{entry.title}</h1>
+            <div className={styles["tags"]}>
+              タグ：
+              {tags.map((tag) => (
+                <Link
+                  key={tag.id}
+                  to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
+                >
+                  {tag.name}
+                </Link>
+              ))}
             </div>
-          )}
-          <h1>{entry.title}</h1>
-          <div className={styles["tags"]}>
-            タグ：
-            {tags.map((tag) => (
-              <Link
-                key={tag.id}
-                to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
-              >
-                {tag.name}
-              </Link>
-            ))}
-          </div>
-          <div className={styles["authors"]}>
-            ユーザー：
-            {entry.authorIds.map((id) => (
-              <AuthorBadge
-                key={id}
-                id={id}
-                author={blog?.authors.find((author) => author.id === id)}
-              />
-            ))}
-          </div>
-          <p className={styles["date"]}>
-            投稿日：{formatDateTime(entry.createdAt)}
-          </p>
-          <p className={styles["date"]}>
-            更新日：{formatDateTime(entry.updatedAt)}
-          </p>
-          <div className={styles["body"]}>
-            <BodyContent load={entry.body} />
-          </div>
-        </article>
+            <div className={styles["authors"]}>
+              ユーザー：
+              {entry.authorIds.map((id) => (
+                <AuthorBadge
+                  key={id}
+                  id={id}
+                  author={blog?.authors.find((author) => author.id === id)}
+                />
+              ))}
+            </div>
+            <p className={styles["date"]}>
+              投稿日：{formatDateTime(entry.createdAt)}
+            </p>
+            <p className={styles["date"]}>
+              更新日：{formatDateTime(entry.updatedAt)}
+            </p>
+            <div className={styles["body"]}>
+              <BodyContent load={entry.body} />
+            </div>
+          </article>
+        </Paper>
         <aside className={styles["sidebar"]} aria-label={`最近の${label}`}>
           <h2>最近の{label}</h2>
           {recent

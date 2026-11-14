@@ -1,0 +1,16 @@
+.paper {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--paper-padding);
+  border-radius: 16px;
+  background: var(--paper-color);
+  color: var(--font-color);
+  box-shadow: 0 2px 8px var(--shadow-soft-color);
+}
+
+@media (max-width: 599px) {
+  .paper {
+    border-radius: 12px;
+  }
+}

@@ -1,12 +1,16 @@
 .page {
-  width: 70%;
-  max-width: 1500px;
+  width: calc(100% - var(--page-margin) * 2);
+  max-width: var(--content-read-width);
   margin: 0 auto 200px;
-  padding: 10px 0;
+  padding: 16px 0;
   color: var(--font-color);
+}
+.page > nav {
+  margin-bottom: 16px;
 }
 .title {
   font-size: 70px;
+  overflow-wrap: anywhere;
   font-weight: normal;
   margin: 0;
 }
@@ -22,9 +26,6 @@
   margin: 200px auto 50px;
 }
 @media (max-width: 1000px) {
-  .page {
-    width: 90%;
-  }
   .title {
     font-size: 63px;
   }
