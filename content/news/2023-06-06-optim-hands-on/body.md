@@ -37,7 +37,7 @@ iPhone 12 Pro以降のモデルで搭載された[LiDARセンサー](https://tim
 
 [申し込みフォーム](https://forms.office.com/pages/responsepage.aspx?id=8CvYb31Oq0OtIZ61pLtaDUGXgy_qFS9ImGoXTAC8wM1UMTJZS0FBMTlBSlo2QUNUU1IxWEhXMlVBUC4u)
 
-<img src="./assets/photo-02.png" style="width: 200px; height: 200px;" />
+<img src="./assets/photo-02.png" alt="申し込みフォームのQRコード" width="200" />
 
 ## 事前準備
 当日、環境構築等を行う時間がないため、参加する方は当日までに以下の事前準備を終わらせておいてください。

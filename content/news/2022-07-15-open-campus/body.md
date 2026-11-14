@@ -6,7 +6,7 @@
 
 __[OC2022特設サイトはこちら](https://oc2022.compositecomputer.club/)__
 
- __2021年度__のオープンキャンパス特設サイトも是非見てみてください！
+ **2021年度**のオープンキャンパス特設サイトも是非見てみてください！
 [OC2021特設サイトはこちら](https://oc2021.compositecomputer.club/)
 
 ### オンライン展覧会開催
@@ -14,7 +14,7 @@ __[OC2022特設サイトはこちら](https://oc2022.compositecomputer.club/)__
 
 __[オンライン展覧会参加申込はこちら](https://forms.gle/jnJhRN9A27DhbAEx8)__
 
-<span style="margin: 0 auto; font-style:bold;">スケジュール</span>
+**スケジュール**
 
 | 　　　　　　　　　　　　　　　　　　　  　　 | 7/16(土) | 7/17（日） |
 | ----------- | ---------- | ---------- |

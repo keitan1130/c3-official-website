@@ -11,7 +11,7 @@ __サークル展示__ は部員の作品やスコアアタックゲーム（ス
 内容：　
 - __C3部員の作品展示__
 - __スコアアタックゲーム（スペースファイター）__
-  - 決められたスコアを達成すると模擬店で販売しているグッズの__割引券__が貰えるよ！！！
+  - 決められたスコアを達成すると模擬店で販売しているグッズの**割引券**が貰えるよ！！！
 - __作業展示__
   - 部員がその場で作業を行うので、見るのもよし！質問するのもよし！です
   - イラストや３Dモデル、プログラミング、などの作業が見られるかも！！
@@ -32,16 +32,13 @@ __お品書き__
 | リングノート | 1000円 |
 | サークル本 ＋ ディスク | 1500円 |
 
-<br/>
-<div style="display: flex; width: 100%;">
-  <img src="./assets/photo-01.png" style="width: 50%; height: auto;" />
-  <img src="./assets/photo-02.png" style="width: 50%; height: auto;" />
-</div>
+![グッズ画像1](./assets/photo-01.png)
 
-<div style="display: flex; width: 100%;">
-  <img src="./assets/photo-03.png" style="width: 50%; height: auto;" />
-  <img src="./assets/photo-04.png" style="width: 50%; height: auto;" />
-</div>
+![グッズ画像2](./assets/photo-02.png)
+
+![グッズ画像3](./assets/photo-03.png)
+
+![グッズ画像4](./assets/photo-04.png)
 
 ![グッズ本](./assets/photo-05.png)
 
