@@ -1,7 +1,7 @@
 # フロントエンド実装ガイド
 
 Toybox の実装ガイドを公式サイト用に移行したものです。作業範囲は [AGENTS.md](AGENTS.md)、検証は [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)、命名の正本は [命名規則](docs/naming-conventions.md) です。
-以下は雛形導入後の実装規則です。現時点で `src/` はまだ生成していません。
+以下を実装規則とします。進捗は [段階別結果](docs/implementation-results.md) を参照してください。
 
 ## 技術と配置
 

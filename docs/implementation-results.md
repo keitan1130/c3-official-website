@@ -7,3 +7,11 @@
 - 公開ページが本文を描画することをブラウザで確認。旧お知らせ一覧のtitleが「ブログ - 一覧」になる既存不整合も確認し、新版はお知らせへ修正する。
 - Pagesの既存プロジェクト・Git連携・DNS設定は未接続。配信設計・ローカル実装は進め、本番切替の確認とは分ける。
 - 検証は段階の結果報告直前にまとめて実施。コミットは段階より細かい単位とする。
+
+## 1. 開発基盤
+
+- Toyboxのpackage / lockfile、Node 26、Vite / React / TypeScript、aliasを移植。
+- Biome、TS / CSS命名検査、Husky、Hygen、Storybook、GitHub Actionsを移植。
+- クリーンnpm ciに成功（sandboxのesbuild起動制限を通常権限で回避）。
+- npm run ci、npm run build-storybookが成功。GitHub上のCI実行は未確認。
+- この段階のAppは起動確認用で、公式サイトUIは段階3以降に実装する。

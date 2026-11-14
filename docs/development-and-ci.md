@@ -1,7 +1,7 @@
 # 開発環境と CI
 
 2026-11-14 に `/home/keitan/workspace/toybox/frontend` の実設定と親ディレクトリの開発ガイドを確認して移行した方針です。
-**このプロジェクトにはまだ package・Node 設定・GitHub Actions・Husky を導入していません。以下の npm コマンドは雛形導入後に使用します。**
+package・Node設定・GitHub Actions定義・Huskyは導入済みです。ローカル検証とGitHub上のCI実行を区別し、実行結果は段階別結果に記録します。
 
 ## 開発環境
 

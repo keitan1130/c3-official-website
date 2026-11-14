@@ -4,7 +4,10 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-createRoot(document.getElementById("root")!).render(
+const ROOT_ELEMENT = document.getElementById("root");
+if (!ROOT_ELEMENT) throw new Error("root element is missing");
+
+createRoot(ROOT_ELEMENT).render(
   <StrictMode>
     <App />
   </StrictMode>,
