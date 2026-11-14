@@ -47,3 +47,10 @@
 - 検証: npm run ciが成功。390 / 1440pxのAboutと5分野（計12表示）、本文の読込、動画metadata読込、横はみ出しなし、Contentful/Toybox API不要、旧分野URLの404画面をブラウザで確認。
 - HTTP404ステータスの実現はPages配信の段階8で対応。
 - Aboutの比較画像をmigration/ui-candidate/へローカル保存。本文の見た目は指定されたToybox MarkdownPreview。完全な画素一致は未達成として段階8で比較を継続。
+
+## 5. お知らせ・著者ページ
+
+- お知らせ一覧・16件の詳細・タグ絞込み・最近の記事・著者表示を実装。記事の追加・編集はVite起動中も自動検出して再生成。
+- 著者プロフィールはContentfulから取得し、著者別Contentfulブログ一覧も表示。Toybox著者をContentful IDと混同しない。
+- 検証: npm run ci成功。390 / 1440pxでお知らせ一覧16件と全16詳細（計32回）を確認。外部APIを遮断しても本文を表示でき、著者ページは実Contentfulで確認。
+- 厳密なUI比較とPagesのHTTP404は段階8で継続。
