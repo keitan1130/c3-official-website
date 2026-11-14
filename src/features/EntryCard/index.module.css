@@ -1,14 +1,14 @@
 .card {
   height: 440px;
   border-radius: 20px;
-  box-shadow: 0 0 10px var(--legacy-light-gray);
+  box-shadow: 0 0 10px var(--border-color);
   transition: box-shadow 0.3s;
   overflow: hidden;
   background: var(--paper-color);
   color: var(--font-color);
 }
 .card:hover {
-  box-shadow: 0 0 20px 2px var(--legacy-light-gray);
+  box-shadow: 0 0 20px 2px var(--border-color);
 }
 .primary {
   text-decoration: none;

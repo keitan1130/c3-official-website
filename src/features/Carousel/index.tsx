@@ -20,12 +20,7 @@ const Carousel = ({ entries, kind, label }: CarouselProps) => {
   const [isPaused, setIsPaused] = useState(false);
   const touchRef = useRef(0);
   useEffect(() => {
-    if (
-      isPaused ||
-      entries.length < 2 ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
+    if (isPaused || entries.length < 2) return;
     const timer = window.setInterval(
       () => setIndex((value) => (value + 1) % entries.length),
       5000,

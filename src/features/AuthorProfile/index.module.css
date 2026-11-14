@@ -17,7 +17,7 @@
 .profile h1 {
   font-size: 40px;
   margin: 0 0 20px;
-  border-bottom: 2px solid var(--legacy-light-blue);
+  border-bottom: 2px solid var(--primary-color);
 }
 .profile p {
   width: 70%;

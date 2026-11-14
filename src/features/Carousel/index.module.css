@@ -29,8 +29,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--footer-color);
-  background: var(--carousel-caption);
+  color: var(--on-primary-color);
+  background: color-mix(in srgb, var(--primary-color) 88%, transparent);
 }
 .title {
   font-size: 25px;

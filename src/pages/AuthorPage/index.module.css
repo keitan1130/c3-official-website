@@ -10,8 +10,8 @@
   text-align: center;
   margin: 50px auto 20px;
   border-radius: 50px;
-  background: var(--legacy-light-blue);
-  color: var(--on-primary-color);
+  background: var(--primary-pale-color);
+  color: var(--font-color);
   font-size: 18px;
   font-weight: normal;
 }

@@ -11,11 +11,7 @@ const HomeHero = () => {
   const [index, setIndex] = useState(0);
   const news = CONTENT.news.slice(0, 5);
   useEffect(() => {
-    if (
-      news.length < 2 ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
+    if (news.length < 2) return;
     const timer = window.setInterval(
       () => setIndex((value) => (value + 1) % news.length),
       6000,
