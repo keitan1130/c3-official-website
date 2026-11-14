@@ -1,32 +1,46 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import ArticleIcon from "@mui/icons-material/Article";
 import CloseIcon from "@mui/icons-material/Close";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import GroupsIcon from "@mui/icons-material/Groups";
+import HomeIcon from "@mui/icons-material/Home";
+import InfoIcon from "@mui/icons-material/Info";
+import LaptopMacIcon from "@mui/icons-material/LaptopMac";
+import MenuIcon from "@mui/icons-material/Menu";
+import MusicNoteIcon from "@mui/icons-material/MusicNote";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import PaletteIcon from "@mui/icons-material/Palette";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import ViewInArIcon from "@mui/icons-material/ViewInAr";
+import XIcon from "@mui/icons-material/X";
+import YouTubeIcon from "@mui/icons-material/YouTube";
 
 import styles from "./index.module.css";
 
+import toyboxIcon from "@/assets/toybox-icon.png";
 import ThemeToggle from "@/features/ThemeToggle";
-import LegacyIcon from "@/shared/ui/LegacyIcon";
 import { CONTENT } from "@/util/contentRepository";
 import { lockPageScroll } from "@/util/pageScroll";
 
 const NAVIGATION = [
-  { title: "HOME", url: "/", icon: "house" },
-  { title: "C3について", url: "/about", icon: "users" },
-  { title: "お知らせ", url: "/news", icon: "circle-info" },
-  { title: "ブログ", url: "/blog", icon: "file-lines" },
+  { title: "HOME", url: "/", icon: <HomeIcon /> },
+  { title: "C3について", url: "/about", icon: <GroupsIcon /> },
+  { title: "お知らせ", url: "/news", icon: <InfoIcon /> },
+  { title: "ブログ", url: "/blog", icon: <ArticleIcon /> },
 ] as const;
 const COMMUNITY_ICONS = {
-  game: "gamepad",
-  "3dcg": "cubes",
-  hack: "laptop-code",
-  "2dcg": "palette",
-  music: "music",
+  game: <SportsEsportsIcon />,
+  "3dcg": <ViewInArIcon />,
+  hack: <LaptopMacIcon />,
+  "2dcg": <PaletteIcon />,
+  music: <MusicNoteIcon />,
 } as const;
 const LINK_ICONS = {
-  ToyBox: "box-open",
-  Twitter: "twitter",
-  GitHub: "github",
-  YouTube: "youtube",
+  ToyBox: <img src={toyboxIcon} alt="" width={20} height={20} />,
+  Twitter: <XIcon />,
+  GitHub: <GitHubIcon />,
+  YouTube: <YouTubeIcon />,
 } as const;
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -87,7 +101,7 @@ const Header = () => {
                 aria-controls="site-navigation"
                 onClick={() => setIsOpen(!isOpen)}
               >
-                {isOpen ? <CloseIcon /> : <LegacyIcon name="bars" />}
+                {isOpen ? <CloseIcon /> : <MenuIcon />}
               </button>
               <Link to="/" aria-label="C3 ホーム">
                 <img
@@ -97,9 +111,7 @@ const Header = () => {
                 />
               </Link>
             </div>
-            <div className={styles["desktop-theme"]}>
-              <ThemeToggle />
-            </div>
+            <ThemeToggle />
           </div>
           <nav
             id="site-navigation"
@@ -112,7 +124,7 @@ const Header = () => {
                 {NAVIGATION.map((item) => (
                   <li key={item.url}>
                     <Link to={item.url}>
-                      <LegacyIcon name={item.icon} />
+                      {item.icon}
                       {item.title}
                     </Link>
                   </li>
@@ -122,13 +134,11 @@ const Header = () => {
                 {CONTENT.communities.map((item) => (
                   <li key={item.slug}>
                     <Link to={`/community/${item.slug}`}>
-                      <LegacyIcon
-                        name={
-                          COMMUNITY_ICONS[
-                            item.slug as keyof typeof COMMUNITY_ICONS
-                          ]
-                        }
-                      />
+                      {
+                        COMMUNITY_ICONS[
+                          item.slug as keyof typeof COMMUNITY_ICONS
+                        ]
+                      }
                       {item.name}
                     </Link>
                   </li>
@@ -138,18 +148,13 @@ const Header = () => {
                 {CONTENT.site.links.map((item) => (
                   <li key={item.url}>
                     <a href={item.url} target="_blank" rel="noreferrer">
-                      <LegacyIcon
-                        name={LINK_ICONS[item.title as keyof typeof LINK_ICONS]}
-                      />
+                      {LINK_ICONS[item.title as keyof typeof LINK_ICONS]}
                       {item.title}
-                      <LegacyIcon name="arrow-up-right-from-square" />
+                      <OpenInNewIcon />
                     </a>
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className={styles["mobile-theme"]}>
-              <ThemeToggle />
             </div>
           </nav>
         </div>

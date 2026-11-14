@@ -97,20 +97,7 @@
   width: 20px;
   height: 20px;
 }
-.mobile-theme {
-  display: none;
-}
 @media (max-width: 999px) {
-  .desktop-theme {
-    display: none;
-  }
-  .mobile-theme {
-    display: flex;
-    justify-content: center;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-color);
-    margin: 0 15%;
-  }
   .columns {
     padding: 20px 5vw 0;
     gap: 12px;

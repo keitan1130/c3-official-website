@@ -19,5 +19,3 @@ fs.writeFileSync("dist/_redirects","/blog/* /index.html 200\n/author/* /index.ht
 fs.writeFileSync("dist/robots.txt",`User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
 fs.writeFileSync("dist/sitemap.xml",`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${routes.map(route=>`<url><loc>${escape(origin+route)}</loc></url>`).join("")}</urlset>\n`);
 console.log(`Prepared ${routes.length} route HTML documents, initial OGP, 404, sitemap and Pages dynamic-route fallbacks.`);
-
-fs.copyFileSync("THIRD_PARTY_NOTICES.md", "dist/THIRD_PARTY_NOTICES.md");
