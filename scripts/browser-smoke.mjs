@@ -52,8 +52,8 @@ try {
   }
   await page.goto(BASE+"/about");
   await page.getByText("読み込み中…",{exact:true}).waitFor({state:"hidden"});
-  await fs.mkdir("migration/ui-candidate",{recursive:true});
-  await page.screenshot({path:`migration/ui-candidate/about-${width}.png`,fullPage:true});
+  await fs.mkdir("test-results/pages",{recursive:true});
+  await page.screenshot({path:`test-results/pages/about-${width}.png`,fullPage:true});
   await page.close();
  }
  console.log(JSON.stringify({stage:STAGE,pages:results,oldCommunityIs404:true,noLocalContentApiCalls:true}));

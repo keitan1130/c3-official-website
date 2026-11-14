@@ -38,16 +38,8 @@ storybook-static
 __pycache__/
 *.pyc
 
-# Local migration exports (raw documents and media)
-/migration/snapshots/
-
-# Local UI comparison captures
-/migration/ui-baseline/
-
 # Generated content registry
 /src/generated/
-/migration/content-conversion.json
 
-/migration/featured-work-originals/
-
-/migration/ui-candidate/
+# Local browser captures
+/test-results/

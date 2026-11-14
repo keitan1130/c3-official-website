@@ -4,7 +4,7 @@ import { chromium } from "playwright";
 const BASE=process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
 const browser=await chromium.launch({headless:true});
 try {
- await fs.mkdir("migration/ui-candidate",{recursive:true});
+ await fs.mkdir("test-results/home",{recursive:true});
  for(const width of [390,768,1440]){
   const page=await browser.newPage({viewport:{width,height:1000},colorScheme:"light",reducedMotion:"reduce"});
   const errors=[];page.on("pageerror",error=>errors.push(error.message));
@@ -22,12 +22,12 @@ try {
   const previous=await carousel.getByRole("link").getAttribute("href");
   await page.getByRole("button",{name:"重要なお知らせの次のスライド",exact:true}).click();
   assert.notEqual(await carousel.getByRole("link").getAttribute("href"),previous);
-  await page.screenshot({path:`migration/ui-candidate/home-${width}.png`,fullPage:true});
+  await page.screenshot({path:`test-results/home/home-${width}.png`,fullPage:true});
   if(width<1000)await page.getByRole("button",{name:"メニューを開く"}).click();
   await page.getByRole("button",{name:"ダークモードに切り替え"}).click();
   if(width<1000)await page.keyboard.press("Escape");
   assert.equal(await page.locator("html").getAttribute("data-theme"),"dark");
-  await page.screenshot({path:`migration/ui-candidate/home-dark-${width}.png`,fullPage:true});
+  await page.screenshot({path:`test-results/home/home-dark-${width}.png`,fullPage:true});
   assert.deepEqual(errors,[]);
   await page.close();
  }

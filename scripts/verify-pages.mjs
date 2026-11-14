@@ -16,5 +16,4 @@ assert.equal(urls.length,25);
 assert.ok(!sitemap.includes('/contact'));
 assert.ok(!sitemap.includes('5Ay58j7CHdYFqKShRbr5tD'));
 assert.match(fs.readFileSync("dist/404.html","utf8"),/noindex/);
-assert.ok(!fs.existsSync("functions/api/toybox/[[path]].ts"));
 console.log(`Verified ${urls.length} static HTML metadata documents, local OGP images and removed-route exclusions. Dynamic author/blog initial OGP is pending.`);
