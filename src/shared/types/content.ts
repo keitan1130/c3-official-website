@@ -30,7 +30,6 @@ export interface Community {
   slug: string;
   name: string;
   domain: string;
-  webm: string;
   mp4: string;
   body: BodyLoader;
 }

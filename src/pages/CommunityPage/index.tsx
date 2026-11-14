@@ -29,7 +29,6 @@ const CommunityPage = () => {
           loop
           aria-label={`${community.name}紹介動画`}
         >
-          <source src={community.webm} type="video/webm" />
           <source src={community.mp4} type="video/mp4" />
         </video>
       </div>

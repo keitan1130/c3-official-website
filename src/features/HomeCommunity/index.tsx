@@ -28,7 +28,6 @@ const HomeCommunity = ({ community, isReversed }: HomeCommunityProps) => (
         autoPlay
         loop
       >
-        <source src={community.webm} type="video/webm" />
         <source src={community.mp4} type="video/mp4" />
       </video>
     </Link>

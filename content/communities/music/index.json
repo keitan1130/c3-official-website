@@ -3,7 +3,6 @@
   "slug": "music",
   "name": "MUSIC",
   "domain": "DTM / Cubase 12 pro / Logic Pro X / Garage Band / studio one / Cakewalk / Domino / Medly / MuseScore / Neutrino / Vocaloid / Synthesizer V",
-  "webm": "./assets/hero.webm",
   "mp4": "./assets/hero.mp4",
   "body": "./body.md"
 }
