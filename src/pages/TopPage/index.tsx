@@ -5,10 +5,12 @@ import HomeBlog from "@/features/HomeBlog";
 import HomeCommunity from "@/features/HomeCommunity";
 import HomeHero from "@/features/HomeHero";
 import HomeIntroduction from "@/features/HomeIntroduction";
+import PageMeta from "@/shared/ui/PageMeta";
 import { CONTENT } from "@/util/contentRepository";
 
 const TopPage = () => (
   <>
+    <PageMeta title={CONTENT.site.title} />
     <HomeHero />
     <div className={styles["section"]}>
       <HomeIntroduction />

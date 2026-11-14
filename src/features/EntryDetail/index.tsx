@@ -5,6 +5,7 @@ import styles from "./index.module.css";
 import AuthorBadge from "@/features/AuthorBadge";
 import BodyContent from "@/features/BodyContent";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
+import PageMeta from "@/shared/ui/PageMeta";
 import { getTag } from "@/util/contentRepository";
 import { formatDateTime } from "@/util/formatDateTime";
 
@@ -26,6 +27,11 @@ const EntryDetail = ({ entry, kind, recent }: EntryDetailProps) => {
     });
   return (
     <section className={styles["entry"]}>
+      <PageMeta
+        title={entry.title}
+        description={entry.digest}
+        image={entry.thumbnail}
+      />
       <div className={styles["heading"]}>
         <Breadcrumbs
           items={[{ label, url: `/${kind}` }, { label: entry.title }]}

@@ -5,6 +5,7 @@ import styles from "./index.module.css";
 import BodyContent from "@/features/BodyContent";
 import NotFoundPage from "@/pages/NotFoundPage";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
+import PageMeta from "@/shared/ui/PageMeta";
 import { CONTENT, getCommunity } from "@/util/contentRepository";
 
 const CommunityPage = () => {
@@ -13,6 +14,7 @@ const CommunityPage = () => {
   if (!community) return <NotFoundPage />;
   return (
     <div className={styles["page"]}>
+      <PageMeta title={community.name} description={community.domain} />
       <Breadcrumbs items={[{ label: community.name }]} />
       <h1 className={styles["title"]}>{community.name}</h1>
       <div className={styles["video"]}>

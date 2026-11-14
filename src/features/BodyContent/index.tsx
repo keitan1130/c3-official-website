@@ -3,6 +3,7 @@ import styles from "./index.module.css";
 
 import MarkdownPreview from "@/features/MarkdownPreview";
 import Button from "@/shared/ui/Button";
+import ToastProvider from "@/shared/ui/Toast/ToastProvider";
 
 import type { BodyLoader } from "@/shared/types/content";
 
@@ -21,7 +22,9 @@ const BodyContent = ({ load }: BodyContentProps) => {
     );
   return (
     <div className={styles["body"]}>
-      <MarkdownPreview content={content} />
+      <ToastProvider>
+        <MarkdownPreview content={content} />
+      </ToastProvider>
     </div>
   );
 };

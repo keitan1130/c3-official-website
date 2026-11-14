@@ -185,6 +185,11 @@ const collectTypeScriptViolations = (file, sourceFile) => {
         file.endsWith(".stories.tsx") &&
         PASCAL_CASE_PATTERN.test(node.name.text)
       ) &&
+      !(
+        PASCAL_CASE_PATTERN.test(node.name.text) &&
+        ts.isCallExpression(node.initializer) &&
+        ["lazy", "memo", "forwardRef"].includes(node.initializer.expression.getText(sourceFile))
+      ) &&
       !UPPER_SNAKE_CASE_PATTERN.test(node.name.text)
     ) {
       report(

@@ -48,6 +48,7 @@ export interface ContentData {
   site: {
     title: string;
     description: string;
+    canonicalOrigin: string;
     worksUrl: string;
     communities: string[];
     links: { title: string; url: string }[];

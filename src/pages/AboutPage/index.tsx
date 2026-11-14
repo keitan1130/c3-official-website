@@ -4,10 +4,12 @@ import BodyContent from "@/features/BodyContent";
 import CommunityLinks from "@/features/CommunityLinks";
 import FeaturedWorks from "@/features/FeaturedWorks";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
+import PageMeta from "@/shared/ui/PageMeta";
 import { CONTENT } from "@/util/contentRepository";
 
 const AboutPage = () => (
   <div className={styles["page"]}>
+    <PageMeta title="C3について" description={CONTENT.about.summary} />
     <Breadcrumbs items={[{ label: "C3について" }]} />
     <h1 className={styles["title"]}>C3について</h1>
     <img className={styles["logo"]} src={CONTENT.site.logo} alt="C3" />

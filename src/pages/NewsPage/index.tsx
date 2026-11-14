@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 
 import EntryCard from "@/features/EntryCard";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
+import PageMeta from "@/shared/ui/PageMeta";
 import { CONTENT, getTag } from "@/util/contentRepository";
 
 const NewsPage = () => {
@@ -14,6 +15,7 @@ const NewsPage = () => {
   );
   return (
     <section className={styles["page"]}>
+      <PageMeta title="お知らせ" />
       <Breadcrumbs items={[{ label: "お知らせ一覧" }]} />
       <h1>お知らせ</h1>
       {tag && <p>タグ：{tag}</p>}

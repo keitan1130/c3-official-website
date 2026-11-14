@@ -6,6 +6,7 @@ import styles from "./index.module.css";
 import BlogStatus from "@/features/BlogStatus";
 import EntryCard from "@/features/EntryCard";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
+import PageMeta from "@/shared/ui/PageMeta";
 import { getBlogs } from "@/util/blogRepository";
 
 const BlogPage = () => {
@@ -19,6 +20,7 @@ const BlogPage = () => {
   );
   return (
     <section className={styles["page"]}>
+      <PageMeta title="ブログ" />
       <Breadcrumbs items={[{ label: "ブログ一覧" }]} />
       <h1>ブログ</h1>
       {tag && <p>タグ：{tag}</p>}

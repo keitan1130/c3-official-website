@@ -1,5 +1,7 @@
 import styles from "./index.module.css";
 
+import PageMeta from "@/shared/ui/PageMeta";
+
 import type { Author } from "@/shared/types/content";
 
 interface AuthorProfileProps {
@@ -7,6 +9,11 @@ interface AuthorProfileProps {
 }
 const AuthorProfile = ({ author }: AuthorProfileProps) => (
   <section className={styles["profile"]}>
+    <PageMeta
+      title={author.name}
+      description={author.introduction}
+      image={author.avatar ?? undefined}
+    />
     {author.avatar && (
       <img
         className={styles["avatar"]}
