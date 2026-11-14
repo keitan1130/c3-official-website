@@ -1,5 +1,6 @@
 import { expect, spyOn, userEvent, waitFor, within } from "storybook/test";
 
+import sampleImage from "../../../content/site/assets/s_logo.webp";
 import MarkdownPreview from "./index";
 
 import ToastProvider from "@/shared/ui/Toast/ToastProvider";
@@ -38,8 +39,7 @@ export const Empty: Story = { args: { content: "" } };
 export const ImageFullscreen: Story = {
   tags: ["test"],
   args: {
-    content:
-      "![拡大する画像](/toyboxtech.drawio.png)\n\n[![リンク付き画像](/favicon-192.png)](https://example.com)",
+    content: `![拡大する画像](${sampleImage})\n\n[![リンク付き画像](${sampleImage})](https://example.com)`,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -53,7 +53,7 @@ export const ImageFullscreen: Story = {
     await expect(dialog).toBeVisible();
     await expect(within(dialog).getByAltText("拡大する画像")).toHaveAttribute(
       "src",
-      "/toyboxtech.drawio.png",
+      sampleImage,
     );
     await expect(document.documentElement.scrollHeight).toBe(
       document.documentElement.clientHeight,
@@ -123,7 +123,7 @@ export const CodeFilesAndCopy: Story = {
   tags: ["test"],
   args: {
     content:
-      'インラインの `plain`\n\n```ts:src/main.ts\nconst message = "Toybox";\n```\n\n```\n  言語なし\n次の行\n```\n\n    インデント形式\n\n```unknown-language:example.txt\nunknown code\n```\n\n```ts\nconst value = 1;\n```',
+      'インラインの `plain`\n\n```ts:src/main.ts\nconst message = "C3";\n```\n\n```\n  言語なし\n次の行\n```\n\n    インデント形式\n\n```unknown-language:example.txt\nunknown code\n```\n\n```ts\nconst value = 1;\n```',
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -133,7 +133,7 @@ export const CodeFilesAndCopy: Story = {
       await userEvent.click(
         canvas.getAllByRole("button", { name: "コードをコピー" })[0],
       );
-      await expect(copy).toHaveBeenCalledWith('const message = "Toybox";');
+      await expect(copy).toHaveBeenCalledWith('const message = "C3";');
     } finally {
       copy.mockRestore();
     }

@@ -1,6 +1,6 @@
 # Markdown チートシート
 
-Toybox の作品説明で使える記法を、**表示例 → 入力する記法**の順にまとめています。作品詳細と編集画面のプレビューが対象です。
+公式サイトのMarkdown本文で使える記法を、**表示例 → 入力する記法**の順にまとめています。
 
 ## 見出し
 
@@ -737,12 +737,12 @@ sample@example.com
 ### 言語指定とシンタックスハイライト
 
 ```ts
-const message: string = "Toybox";
+const message: string = "C3";
 ```
 
 ````
 ```ts
-const message: string = "Toybox";
+const message: string = "C3";
 ```
 ````
 
@@ -750,7 +750,7 @@ const message: string = "Toybox";
 
 ```json
 {
-  "title": "Toybox",
+  "title": "C3",
   "tags": ["Markdown", "チートシート"]
 }
 ```
@@ -758,7 +758,7 @@ const message: string = "Toybox";
 ````
 ```json
 {
-  "title": "Toybox",
+  "title": "C3",
   "tags": ["Markdown", "チートシート"]
 }
 ```
@@ -849,12 +849,12 @@ int main(void) {
 ### ファイル名付きコード
 
 ```ts:src/main.ts
-const message = "Toybox";
+const message = "C3";
 ```
 
 ````
 ```ts:src/main.ts
-const message = "Toybox";
+const message = "C3";
 ```
 ````
 
@@ -1253,7 +1253,7 @@ HTML コメントは表示されません。入力した原文には残ります
    > リストの中に引用も入れられます。
 
    ```ts
-   const message = "Toybox";
+   const message = "C3";
    ```
 
 3. **検証**
@@ -1276,7 +1276,7 @@ HTML コメントは表示されません。入力した原文には残ります
    > リストの中に引用も入れられます。
 
    ```ts
-   const message = "Toybox";
+   const message = "C3";
    ```
 
 3. **検証**
@@ -1326,7 +1326,7 @@ HTML コメントは表示されません。入力した原文には残ります
 
 ### 未対応：Mermaid の図
 
-GitHub と Qiita では `mermaid` を指定したコードブロックを図にできます。Toybox ではコードとして表示され、図には変換されません。フェンス自体が Mermaid 記法の一部です。
+GitHub と Qiita では `mermaid` を指定したコードブロックを図にできます。C3 ではコードとして表示され、図には変換されません。フェンス自体が Mermaid 記法の一部です。
 
 ```mermaid
 flowchart LR
@@ -1342,14 +1342,14 @@ flowchart LR
 
 ### 未対応：Zenn と Qiita のコンテナ
 
-Zenn のメッセージと折りたたみ、Qiita の補足は Toybox では専用の枠になりません。Toybox のアラートは上記の `> [!NOTE]` 形式、折りたたみは `<details>` 形式です。
+Zenn のメッセージと折りたたみ、Qiita の補足は C3 では専用の枠になりません。C3 のアラートは上記の `> [!NOTE]` 形式、折りたたみは `<details>` 形式です。
 
 :::message
 Zenn のメッセージ
 :::
 
 :::details Zenn の折りたたみ
-中身は Toybox では折りたたまれません。
+中身は C3 では折りたたまれません。
 :::
 
 :::note info
@@ -1358,7 +1358,7 @@ Qiita の補足
 
 ### 未対応：外部サービスの埋め込み
 
-Zenn や Qiita では URL 単独行をカードや投稿の埋め込みとして扱う場合があります。Toybox では通常のリンクです。
+Zenn や Qiita では URL 単独行をカードや投稿の埋め込みとして扱う場合があります。C3 では通常のリンクです。
 
 https://qiita.com/Qiita/items/c686397e4a0f4f11683d
 
@@ -1384,7 +1384,7 @@ YAML front matter はメタデータとして解釈されません。文書先�
 
 ~~~yaml
 ---
-title: Toybox の作品
+title: C3 の作品
 tags:
   - markdown
 ---
@@ -1402,19 +1402,19 @@ MDX のコンポーネント、画像サイズを URL の末尾に書く方言�
 
 以下は安全性を確認するための入力です。スクリプト、埋め込み、SVG は表示されず、イベント属性、許可範囲外のCSS、危険な URL は使えない状態になる想定です。この段落の文字は残ります。
 
-<script>window.__toyboxMarkdownSampleExecuted = true</script>
-<iframe src="https://example.com" onload="window.__toyboxMarkdownSampleExecuted = true"></iframe>
-<svg onload="window.__toyboxMarkdownSampleExecuted = true"><circle r="5" /></svg>
+<script>window.__c3MarkdownSampleExecuted = true</script>
+<iframe src="https://example.com" onload="window.__c3MarkdownSampleExecuted = true"></iframe>
+<svg onload="window.__c3MarkdownSampleExecuted = true"><circle r="5" /></svg>
 
-<details open ontoggle="window.__toyboxMarkdownSampleExecuted = true" style="display:none"><summary onclick="window.__toyboxMarkdownSampleExecuted = true">属性を除去する折りたたみ</summary>
+<details open ontoggle="window.__c3MarkdownSampleExecuted = true" style="display:none"><summary onclick="window.__c3MarkdownSampleExecuted = true">属性を除去する折りたたみ</summary>
 
 安全性を確認する本文です。
 
 </details>
 
-[危険なスキームのリンク](javascript:window.__toyboxMarkdownSampleExecuted=true)
+[危険なスキームのリンク](javascript:window.__c3MarkdownSampleExecuted=true)
 
-<a href="javascript:window.__toyboxMarkdownSampleExecuted=true" onmouseover="window.__toyboxMarkdownSampleExecuted = true">HTML の危険なリンク</a>
+<a href="javascript:window.__c3MarkdownSampleExecuted=true" onmouseover="window.__c3MarkdownSampleExecuted = true">HTML の危険なリンク</a>
 
 ### 無効な画像幅と CSS
 
