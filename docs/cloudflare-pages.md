@@ -7,6 +7,7 @@
 
 - このプロジェクトの Git root を build root とし、Vite の成果物 `dist/` を公開する。
 - build command は `npm run build`。命名・Biome・型・content の検査は公開前の品質確認として別途実行する。
+- canonicalのoriginは `content/site/index.json` の `canonicalOrigin` を使う。上書きする場合はPagesのビルド環境変数に `SITE_URL` を設定し、コンテンツ生成とpostbuildの両方へ同じ値を渡す。`.env` への追記だけを前提にせず、ビルドプロセスの環境変数として設定する。
 - ローカル・GitHub Actions・Pages の Node を26系に揃え、Pages build 環境で利用可能か導入時に確認する。
 
 React / Vite の build command と出力先は [Cloudflare Reactガイド](https://developers.cloudflare.com/pages/framework-guides/deploy-a-react-site/) に沿う。
@@ -18,7 +19,7 @@ Git連携と Direct Upload のどちらを既存プロジェクトが使って�
 - Pages はトップレベルの `404.html` の有無で SPA fallback の扱いが変わる。単純に404ファイルを追加するだけでは React の深いURLと両立しない可能性がある。[Serving Pages](https://developers.cloudflare.com/pages/configuration/serving-pages/)
 - 分野は `game` / `3dcg` / `hack` / `2dcg` / `music` のslug URLだけを有効にする。旧IDのURLへの転送ルールは作らず、直接アクセスはHTTP404を返す構成として検証する。
 - `/contact` / `/contact/thanks`、旧分野ID、不明な静的URLは生成した `404.html` でHTTP404にする。ブログ詳細と著者は `_redirects` の200 rewriteでSPAを表示するため、存在しない動的IDのHTTP404は未実装（画面は404になる）。
-- `postbuild` で公開お知らせ・分野に応じた静的ルートHTMLに初期OGP・canonicalを生成する。紹介・分野・お知らせと一覧が対象。ブログ詳細・著者の個別初期OGPは未実装。
+- `postbuild` で `content/news/` の全記事と分野に応じた静的ルートHTMLに初期OGP・canonicalを生成する。紹介・分野・お知らせと一覧が対象。ブログ詳細・著者の個別初期OGPは未実装。
 - ブログの実API・CORSは `pages.dev` の確認環境と現行ドメインで別々に確認する。
 
 ## メディア

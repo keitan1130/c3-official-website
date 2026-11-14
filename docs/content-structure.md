@@ -29,7 +29,7 @@ npm run dev
 
 1. 生成されたフォルダの `index.json` でタイトル・概要・日時・著者ID・タグIDを編集します。
 2. `body.md` に本文を書き、写真等を `assets/` へ置きます。
-3. `thumbnail` を設定し、PCとモバイルでプレビューします。
+3. 仮のサムネイル `assets/cover.webp` を差し替えるか、別の画像を置いて `thumbnail` を変更します。PCとモバイルでプレビューします。
 4. `npm run ci` で検査してから変更を公開します。追加した全記事が配信対象です。
 
 ```json
@@ -47,6 +47,13 @@ npm run dev
 ```
 
 Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します。
+
+## Markdownの書き方
+
+- 見出し・箇条書き・リンク・画像・GFMの表など、`MarkdownPreview` が対応する記法を使います。日本語の文中の強調は `グッズの**割引券**が貰えます` のように `**` で囲みます。`__` は前後の文字によって強調にならない場合があります。
+- 画像は原則 `![画像の説明](./assets/photo.jpg)` で記述します。幅の指定が必要なら `<img src="./assets/photo.jpg" alt="画像の説明" width="200" />` を使えます。画像の高さやパーセント幅は指定できません。
+- `div` による中央寄せ・flex配置、`b` タグ、spanのmarginやfont-styleは表示側で除去されます。段落・空行・`**強調**`・画像を使って構成します。
+- 表内の `<br>` と、spanの許可された文字色・文字サイズは利用できます。raw HTMLの全要素・全スタイルに対応しているわけではありません。許可内容は [markdownSchema.ts](../src/features/MarkdownPreview/markdownSchema.ts) と [rehypeMarkdownStyles.ts](../src/features/MarkdownPreview/rehypeMarkdownStyles.ts) を参照してください。
 
 ## 自動検出とURL
 

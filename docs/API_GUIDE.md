@@ -6,7 +6,7 @@ API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) �
 
 ## データ境界
 
-- 紹介・分野・お知らせはローカル `content/` を正とします。`scripts/prepare-content.mjs` が参照を検査し、`src/generated/contentData.ts` を生成します。表示側は `src/util/contentRepository.ts` を利用します。
+- 紹介・分野・お知らせはローカル `content/` を正とします。`scripts/local-content.mjs` の共通読込・検証を使い、`prepare-content.mjs` が `src/generated/contentData.ts` を生成します。配信用HTMLも同じ検証結果を使います。表示側は `src/util/contentRepository.ts` を利用します。
 - 著者プロフィールは `src/util/authorRepository.ts` からContentfulの公開 `user` を取得します。プロフィールをローカルへ固定せず、`/author/:id` と著者別ブログ一覧を維持します。
 - ブログは `src/util/blogRepository.ts` でContentfulと外部ブログAPIを取得し、IDのみで識別します。UUIDはToybox、それ以外はContentfulへ取得します。本文は `MarkdownPreview` で表示します。
 - 外部ブログの `user.id` をContentfulの著者IDとして検索しません。外部サービス側の著者ページへリンクします。
@@ -25,7 +25,7 @@ API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) �
 ## 通信とエラー処理
 
 - Goバックエンドの `/works` と `/api/v1/blogs` へブラウザから接続します。ブログはGoバックエンド既存の転送機能を使い、Vite / Pages Functionsにはプロキシを追加しません。CORSの整理は保留中です。
-- Contentful一覧はselectで本文を除外し、ページングして取得します。著者別ブログは `fields.user.sys.id` で絞り込み、本文を除いた全件を取得します。Toybox一覧は既存の `disable_pagination=true` による全件取得を維持します。既存APIは本文も必ず返すため、本文の転送削減にはAPI側の対応が必要です。
+- Contentful一覧はselectで本文を除外し、APIのlimit / skipを使って100件ずつ取得して全件を集めます。画面にページングや「もっと見る」は設けません。著者別ブログは `fields.user.sys.id` で絞り込み、本文を除いた全件を取得します。Toybox一覧は既存の `disable_pagination=true` による全件取得を維持します。既存APIは本文も必ず返すため、本文の転送削減にはAPI側の対応が必要です。
 - 独立したブログ取得は並行実行し、一方の失敗は部分失敗として表示します。全失敗・正常な空結果・404・通信エラーを区別し、再試行を用意します。
 - ブログ通信の失敗で紹介・ニュース・作品欄を表示不能にしません。
 - SWR keyには記事ID・著者IDなど、結果を変える値を含めます。

@@ -55,11 +55,12 @@
 
 ## データと状態管理
 
-- 静的コンテンツは `scripts/prepare-content.mjs` で参照を解決・生成し、`contentRepository.ts` を通じて表示します。表示のたびに Contentful を呼びません。
+- 静的コンテンツは `scripts/local-content.mjs` で共通の読込・検証を行い、`prepare-content.mjs` で参照を解決・生成して、`contentRepository.ts` を通じて表示します。配信用HTMLの生成も同じ読込・検証処理を使います。ニュースは全件を公開・重要なお知らせの対象にします。
 - ブログは Contentfulと外部ブログ の API 境界を分け、失敗してもローカル本文の表示を止めません。作品欄はGoの公開作品APIから最新20件を取得し、ホームとAboutで共有します。
 - SWRは外部取得のcacheに使います。局所状態はReactのstateで管理し、静的Markdownのために状態管理ライブラリを追加しません。
 - SWR の Suspense を採用する場合は loading / error boundary / 再試行を一式で設計します。ルートで有効化済みと仮定しません。
-- SWR key には response を変える path / query / source を含めます。同一 ID の Contentfulと外部ブログ データを混同しません。
+- SWR key にはresponseを変える記事ID・著者IDなどを含めます。ブログはIDが重複しない前提で、詳細URLを `/blog/:id`、詳細キーを `["blog", id]` に統一します。UUIDはToybox、それ以外はContentfulから取得し、別サービスへのフォールバックは行いません。
+- ブログ・著者別ブログは全件取得を維持し、画面のページングは追加しません。Contentful一覧は本文を除外し、Toybox一覧は本文を含む既存レスポンスを使用します。
 - 再試行時に無関係な cache を全消去しません。正常な空配列と通信失敗、404 と通信エラーを区別します。
 - 非同期完了後の更新では unmount・画面遷移後に古い結果を反映しないよう AbortController 等で保護します。
 - Toast 等の通知が必要なら共有 Provider に集約します。認証 Provider・ProtectedRoute は公式サイトに必要と決まるまで持ち込みません。

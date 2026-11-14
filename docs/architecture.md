@@ -8,7 +8,8 @@ C3公式サイトはVite + React + TypeScriptのSPAです。独自のAPIサー�
 
 ```mermaid
 flowchart TD
-  Content[content の JSON・Markdown・素材] --> Prepare[prepare-content.mjs]
+  Content[content の JSON・Markdown・素材] --> Registry[local-content.mjs 共通読込・検証]
+  Registry --> Prepare[prepare-content.mjs]
   Prepare --> Generated[src/generated/contentData.ts]
   Generated --> Local[contentRepository.ts]
   Local --> UI[React ページ・feature]
@@ -22,7 +23,7 @@ flowchart TD
   SWR --> UI
   UI --> Markdown[BodyContent・MarkdownPreview]
   Build[Vite build] --> Dist[dist の JS・CSS・素材]
-  Content --> Pages[prepare-pages.mjs]
+  Registry --> Pages[prepare-pages.mjs]
   Dist --> Pages
   Pages --> Output[静的ルートHTML・OGP・sitemap・404・rewrite]
 ```
@@ -42,7 +43,7 @@ flowchart TD
 | `src/features/` | Header・記事カード・記事詳細・作品欄・Markdown表示などの機能 |
 | `src/shared/ui/` | Button・Dialog・Paper・Toast・パンくず・メタ情報などの共通部品 |
 | `src/shared/types/content.ts` | 内部のAuthor / Entry / BlogEntry / Community / FeaturedWork型 |
-| `src/util/` | API境界・データ変換・テーマ・スクロール固定・日付表示・記事識別 |
+| `src/util/` | API境界・データ変換・テーマ・スクロール固定・日付表示 |
 | `src/assets/` | UIで共有するロゴ・アイコン・動画poster |
 | `src/generated/` | コンテンツ生成物。Git管理外で手動編集しない |
 | `scripts/` | コンテンツ生成・記事ひな形作成・配信HTML生成・各種検証 |
@@ -71,7 +72,7 @@ CSSは各コンポーネントの `index.module.css` が所有し、全体の色
 
 ## ローカルコンテンツの生成
 
-1. `prepare-content.mjs` が `content/` のフォルダを探索し、JSONを読み込みます。
+1. `prepare-content.mjs` と `prepare-pages.mjs` が共通の `local-content.mjs` を使って `content/` のフォルダを探索し、JSONを読み込みます。
 2. `local-content.mjs` がID / slug・タグIDの形式と重複、お知らせの必須値・タイムゾーン付き日時・更新日時の前後関係・著者ID配列・タグ参照、分野の表示順、参照ファイルの範囲・存在・25 MiB上限を検査します。著者IDがContentfulに実在するかは確認しません。
 3. `content/news/` の全記事を公開データへ含め、作成日時の新しい順、同時刻はID順に並べます。公開・重要フラグと下書き機能はありません。ホームの「重要なお知らせ」も全ニュースを使います。
 4. `./assets/...` はViteの `?url` importへ、本文は `?raw` の動的importへ変換します。共通接頭辞のある素材名は長い参照から置換し、URLの一部だけが置換されるのを防ぎます。
@@ -88,7 +89,7 @@ CSSは各コンポーネントの `index.module.css` が所有し、全体の色
 | 著者1人 | Contentful `/spaces/{space}/environments/master/entries?content_type=user&sys.id={id}&include=1&limit=100` | `getAuthor` |
 | 著者一覧 | 同上、`skip`で全ページ取得 | `getAuthors`（現在のページから直接は使用しない） |
 | ブログ一覧 | Contentful entries、`content_type=blog&include=2&order=-sys.createdAt`、selectで本文を除外、limit=100 / skipで全件取得 | `getBlogs` |
-| Contentfulブログ詳細 | 上記に `sys.id` を指定、本文も取得 | `getBlog` |
+| Contentfulブログ詳細 | `sys.id`・limit=1を指定、selectによる本文除外は行わない | `getBlog` |
 | 著者別ブログ | 一覧条件に `fields.user.sys.id` を指定、本文を除いた全件取得 | `getAuthorBlogs` |
 | 外部ブログ一覧 | Go backend `GET /api/v1/blogs?disable_pagination=true` | `getBlogs` |
 | 外部ブログ詳細 | Go backend `GET /api/v1/blogs/{id}` | `getBlog` |
@@ -136,9 +137,9 @@ C3紹介、分野、記事詳細は共通の `Paper` を使い、`--paper-color`
 
 ## ビルド後の配信
 
-`npm run build` はコンテンツ生成 → TypeScript → Vite → `prepare-pages.mjs` の順です。postbuildは `local-content.mjs` の共通読込・検証結果から静的ルートごとのHTMLにtitle・description・OGP・canonicalを埋め込み、OGP画像・sitemap・robots・404・`_redirects` を生成します。静的ルート数は公開お知らせ・分野の件数に応じて変わります。
+`npm run build` はコンテンツ生成 → TypeScript → Vite → `prepare-pages.mjs` の順です。postbuildは `local-content.mjs` の共通読込・検証結果から静的ルートごとのHTMLにtitle・description・OGP・canonicalを埋め込み、OGP画像・sitemap・robots・404・`_redirects` を生成します。静的ルート数は `content/news/` の全記事と分野の件数に応じて変わります。
 
-`PageMeta` はブラウザ内遷移後のtitle・OGP・canonicalを更新し、404には `noindex`、通常ページへの復帰時には解除します。クライアントの更新だけで、ブログ詳細・著者の初期HTMLに個別OGPが付くわけではありません。
+HTMLのtitleは全ページで `ページ名 | C3` に統一し、トップページは `Composite Computer Club | C3` とします。`PageMeta` はブラウザ内遷移後のtitle・OGP・canonicalを更新し、404には `noindex`、通常ページへの復帰時には解除します。クライアントの更新だけで、ブログ詳細・著者の初期HTMLに個別OGPが付くわけではありません。
 
 Cloudflare向けrewriteは `/blog/*` と `/author/*` のSPA表示用です。未知の動的IDを画面で404にしてもHTTPステータスは200です。動的詳細の初期OGP・sitemap・HTTP404は残課題です。`preview:pages` は静的配信のローカルモデルで、本番環境を再現するものではありません。
 
