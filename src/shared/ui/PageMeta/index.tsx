@@ -7,11 +7,13 @@ interface PageMetaProps {
   title: string;
   description?: string;
   image?: string;
+  isNoIndex?: boolean;
 }
 const PageMeta = ({
   title,
   description = CONTENT.site.description,
   image,
+  isNoIndex = false,
 }: PageMetaProps) => {
   const location = useLocation();
   useEffect(() => {
@@ -35,6 +37,8 @@ const PageMeta = ({
       }
       element.content = content;
     };
+    if (isNoIndex) setMeta("robots", "noindex");
+    else document.head.querySelector('meta[name="robots"]')?.remove();
     setMeta("description", description);
     setMeta("og:title", title, true);
     setMeta("og:description", description, true);
@@ -53,7 +57,14 @@ const PageMeta = ({
       document.head.append(link);
     }
     link.href = canonical.href;
-  }, [title, description, image, location.pathname, location.search]);
+  }, [
+    title,
+    description,
+    image,
+    isNoIndex,
+    location.pathname,
+    location.search,
+  ]);
   return null;
 };
 export default PageMeta;

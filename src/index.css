@@ -95,6 +95,12 @@ body {
   background: var(--background-color);
   color: var(--font-color);
 }
+:root[data-scroll-locked="true"] body {
+  position: fixed;
+  inset-inline: 0;
+  top: calc(-1 * var(--page-scroll-top));
+}
+
 button,
 input,
 select,

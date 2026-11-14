@@ -175,16 +175,26 @@ export const getBlog = async (
   id: string,
   source?: string,
 ): Promise<BlogEntry | undefined> => {
+  let contentfulError: unknown;
   if (source !== "toybox") {
-    const entries = await getContentful({ "sys.id": id });
-    if (entries[0] || source === "contentful") return entries[0];
+    try {
+      const entries = await getContentful({ "sys.id": id });
+      if (entries[0] || source === "contentful") return entries[0];
+    } catch (error) {
+      if (source === "contentful") throw error;
+      contentfulError = error;
+    }
   }
   try {
     return normalizeToybox(
       await toyboxRequest<ToyboxBlog>(`/blogs/${encodeURIComponent(id)}`),
     );
   } catch (error) {
-    if (error instanceof BlogApiError && error.status === 404) return undefined;
+    if (error instanceof BlogApiError && error.status === 404) {
+      // An unavailable source may still contain this ID; do not report a false 404.
+      if (contentfulError) throw contentfulError;
+      return undefined;
+    }
     throw error;
   }
 };

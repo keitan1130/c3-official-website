@@ -6,6 +6,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import styles from "./index.module.css";
 
 import { getTag } from "@/util/contentRepository";
+import { getEntryIdentity } from "@/util/entryIdentity";
 import { formatDateTime } from "@/util/formatDateTime";
 
 import type { BlogEntry, Entry } from "@/shared/types/content";
@@ -96,7 +97,7 @@ const Carousel = ({ entries, kind, label }: CarouselProps) => {
           <div className={styles["dots"]}>
             {entries.map((item, position) => (
               <button
-                key={item.id}
+                key={getEntryIdentity(item)}
                 type="button"
                 aria-label={`${label}のスライド${position + 1}を表示`}
                 aria-current={
