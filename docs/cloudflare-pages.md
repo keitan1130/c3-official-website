@@ -23,7 +23,7 @@ Git連携と Direct Upload のどちらを既存プロジェクトが使って�
 
 ## メディア
 
-紹介・分野・お知らせ・掲載作品のメディアは `content/` 内の各ページ・記事フォルダに本文と同居させる。ビルド時に公開対象の参照を配信用URLへ解決し、`dist/` の成果物をPagesに配信する。
+紹介・分野・お知らせのメディアは `content/` 内の各ページ・記事フォルダに本文と同居させる。ビルド時に公開対象の参照を配信用URLへ解決し、`dist/` の成果物をPagesに配信する。
 Pages の1ファイル上限は25 MiB。素材のサイズはビルド前のコンテンツ検査で確認する。[Pages Limits](https://developers.cloudflare.com/pages/platform/limits/)
 実機の再生・表示・読込を確認し、必要に応じて最適化する。
 
@@ -44,3 +44,5 @@ Pages の1ファイル上限は25 MiB。素材のサイズはビルド前のコ�
 - 動的なブログ詳細・著者のIDはローカルに固定していないため、現時点のsitemapには含めていない。公開前に動的ページの初期OGP・sitemap・HTTP404の方式を確定する。
 - `npm run preview:pages` はローカルの静的ルートモデルで、Cloudflare上での動作確認の代わりにはしない。
 - GitHub上のCI実行、既存Pagesプロジェクトへの接続、ドメイン切替は未実施。
+
+作品欄は `VITE_WORKS_API_BASE_URL` のGo公開作品APIへ直接接続します。Pagesのビルド環境にも設定し、画像配信先とAPIのCORSを確認します。

@@ -1,7 +1,7 @@
 # C3 公式サイト
 
 Vite + React + TypeScriptで構築したComposite Computer Clubの公式サイトです。
-本文と素材はページ・記事ごとの `content/` で管理し、ブログと著者プロフィールは外部APIから取得します。
+本文と素材はページ・記事ごとの `content/` で管理し、ブログ・著者プロフィール・最新20件の掲載作品は外部APIから取得します。
 公開サイト: <https://compositecomputer.club/>
 
 ## 開発

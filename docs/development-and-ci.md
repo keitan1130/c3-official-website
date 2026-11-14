@@ -45,3 +45,5 @@ StorybookはVitestとPlaywright Chromiumを使います。表示例は `!test`�
 開発サーバー起動中に `npm run test:browser`、`node scripts/home-smoke.mjs`、`node scripts/blog-smoke.mjs` でページを検査できます。後者2件は実ブログAPIの接続が必要です。CORS保留時の `TEST_ALLOW_TOYBOX_CORS=1` は部分失敗を許容するため、両取得元の接続成功を証明しません。
 
 公開設定は [Cloudflare Pages](cloudflare-pages.md)、検証の選び方は [作業ガイド](WORKFLOW_GUIDE.md) を参照します。
+
+作品欄は開発サーバー起動中に `node scripts/works-smoke.mjs` で検証します。作品APIはfixtureに置き換え、ホーム／Aboutの20件表示・取得パラメータ・読込中・0件・失敗と再試行を検査します。実API・CORSの確認とは区別します。`TEST_BASE_URL` で開発サーバーのURLを指定できます。

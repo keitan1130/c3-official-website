@@ -15,9 +15,6 @@ content/
   news/YYYY-MM-DD-topic/index.json
   news/YYYY-MM-DD-topic/body.md
   news/YYYY-MM-DD-topic/assets/
-  featured-works/index.json       # 掲載順
-  featured-works/<slug>/index.json
-  featured-works/<slug>/assets/
   tags.json
 ```
 
@@ -64,7 +61,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 
 ## 掲載作品
 
-`featured-works/<slug>/` にタイトルとサムネイルを置き、`featured-works/index.json` の `items` に掲載順でslugを登録します。ホームとAboutで共用します。既存のJSONを参考にし、安定したIDを維持してください。
+ホームとAboutの作品欄は、作品APIから最新の公開作品を最大20件取得します。作品情報・サムネイルを `content/` に保存する必要はありません。接続先は `VITE_WORKS_API_BASE_URL` で設定します。
 
 ## 検査と素材
 

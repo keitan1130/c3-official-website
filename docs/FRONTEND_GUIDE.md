@@ -56,7 +56,7 @@
 ## データと状態管理
 
 - 静的コンテンツは `scripts/prepare-content.mjs` で参照を解決・生成し、`contentRepository.ts` を通じて表示します。表示のたびに Contentful を呼びません。
-- ブログは Contentfulと外部ブログ の API 境界を分け、失敗してもローカル本文の表示を止めません。作品欄はローカルの掲載作品データを使い、実行時に作品APIを呼びません。
+- ブログは Contentfulと外部ブログ の API 境界を分け、失敗してもローカル本文の表示を止めません。作品欄はGoの公開作品APIから最新20件を取得し、ホームとAboutで共有します。
 - SWRは外部取得のcacheに使います。局所状態はReactのstateで管理し、静的Markdownのために状態管理ライブラリを追加しません。
 - SWR の Suspense を採用する場合は loading / error boundary / 再試行を一式で設計します。ルートで有効化済みと仮定しません。
 - SWR key には response を変える path / query / source を含めます。同一 ID の Contentfulと外部ブログ データを混同しません。
