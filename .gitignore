@@ -32,7 +32,7 @@ storybook-static
 
 # Project environment files
 .env.*
-!.env.sample
+!.env.example
 
 # Python generated files
 __pycache__/

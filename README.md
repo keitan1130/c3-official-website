@@ -10,8 +10,8 @@ Node.js 26とnpmを使用します。このディレクトリで実行してく�
 
 ```bash
 npm ci
-cp .env.sample .env.local
-# .env.localにContentful配信設定とブログAPIの接続先を設定
+cp .env.example .env
+# .envにContentful配信設定と共通APIの接続先（VITE_API_BASE_URL）を設定
 npm run dev
 ```
 

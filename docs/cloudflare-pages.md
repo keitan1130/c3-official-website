@@ -36,7 +36,7 @@ Pages の1ファイル上限は25 MiB。素材のサイズはビルド前のコ�
 
 ## ブログ接続とCORS
 
-ブログは `VITE_TOYBOX_API_BASE_URL` の公開APIへブラウザから直接接続する。Vite / Pages Functionsの同一originプロキシは導入しない。CORSは後で整理する。現在はローカルoriginで外部ブログAPIがCORS拒否となることを確認しており、両APIのブラウザ接続完了とは扱わない。Contentful側の取得と部分失敗時の表示は確認済み。
+ブログは `VITE_API_BASE_URL` の `/api/v1/blogs` へ接続し、Goバックエンドが既存ブログサービスへ転送する。Vite / Pages Functionsの同一originプロキシは導入しない。CORSは後で整理する。現在はローカルoriginで外部ブログAPIがCORS拒否となることを確認しており、両APIのブラウザ接続完了とは扱わない。Contentful側の取得と部分失敗時の表示は確認済み。
 
 ## 現在の成果物と残事項
 
@@ -45,4 +45,4 @@ Pages の1ファイル上限は25 MiB。素材のサイズはビルド前のコ�
 - `npm run preview:pages` はローカルの静的ルートモデルで、Cloudflare上での動作確認の代わりにはしない。
 - GitHub上のCI実行、既存Pagesプロジェクトへの接続、ドメイン切替は未実施。
 
-作品欄は `VITE_WORKS_API_BASE_URL` のGo公開作品APIへ直接接続します。Pagesのビルド環境にも設定し、画像配信先とAPIのCORSを確認します。
+作品欄は `VITE_API_BASE_URL` のGo公開作品APIへ直接接続します。Pagesのビルド環境にも設定し、画像配信先とAPIのCORSを確認します。
