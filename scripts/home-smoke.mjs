@@ -18,9 +18,9 @@ try {
   assert.equal(await page.locator("video").count(),5);
   await page.waitForFunction(()=>[...document.querySelectorAll('video')].every(video=>video.readyState>=1));
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`overflow ${width}`);
-  const carousel=page.getByRole("region",{name:"重要なお知らせ",exact:true});
+  const carousel=page.getByRole("region",{name:"お知らせ",exact:true});
   const previous=await carousel.getByRole("link").getAttribute("href");
-  await page.getByRole("button",{name:"重要なお知らせの次のスライド",exact:true}).click();
+  await page.getByRole("button",{name:"お知らせの次のスライド",exact:true}).click();
   assert.notEqual(await carousel.getByRole("link").getAttribute("href"),previous);
   await page.screenshot({path:`test-results/home/home-${width}.png`,fullPage:true});
   if(width<1000)await page.getByRole("button",{name:"メニューを開く"}).click();

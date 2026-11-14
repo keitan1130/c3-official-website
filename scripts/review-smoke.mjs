@@ -124,7 +124,7 @@ try {
  }
  await page.clock.install();
  await page.goto(BASE+"/");
- const carousel=page.getByRole("region",{name:"重要なお知らせ",exact:true});
+ const carousel=page.getByRole("region",{name:"お知らせ",exact:true});
  await carousel.waitFor();
  await page.mouse.move(0,900);
  await carousel.getByRole("button",{name:"自動切替を停止",exact:true}).focus();

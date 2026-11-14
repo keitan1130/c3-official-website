@@ -74,7 +74,7 @@ CSSは各コンポーネントの `index.module.css` が所有し、全体の色
 
 1. `prepare-content.mjs` と `prepare-pages.mjs` が共通の `local-content.mjs` を使って `content/` のフォルダを探索し、JSONを読み込みます。
 2. `local-content.mjs` がID / slug・タグIDの形式と重複、お知らせの必須値・タイムゾーン付き日時・更新日時の前後関係・著者ID配列・タグ参照、分野の表示順、参照ファイルの範囲・存在・25 MiB上限を検査します。著者IDがContentfulに実在するかは確認しません。
-3. `content/news/` の全記事を公開データへ含め、作成日時の新しい順、同時刻はID順に並べます。公開・重要フラグと下書き機能はありません。ホームの「重要なお知らせ」も全ニュースを使います。
+3. `content/news/` の全記事を公開データへ含め、作成日時の新しい順、同時刻はID順に並べます。公開フラグと下書き機能はありません。ホームの「お知らせ」は最新5件を使います。
 4. `./assets/...` はViteの `?url` importへ、本文は `?raw` の動的importへ変換します。共通接頭辞のある素材名は長い参照から置換し、URLの一部だけが置換されるのを防ぎます。
 5. `src/generated/contentData.ts` を出力し、`contentRepository.ts` が検索関数と `CONTENT` を公開します。
 
