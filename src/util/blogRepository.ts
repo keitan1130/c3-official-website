@@ -139,7 +139,7 @@ const getContentful = async (
   return entries;
 };
 const toyboxRequest = async <T>(path: string): Promise<T> => {
-  const base = import.meta.env.VITE_TOYBOX_API_BASE_URL || "/api/toybox";
+  const base = import.meta.env.VITE_TOYBOX_API_BASE_URL;
   if (!base) throw new Error("Toybox blog delivery is not configured");
   const response = await fetch(`${base.replace(/\/$/, "")}${path}`);
   if (!response.ok) throw new BlogApiError(response.status);

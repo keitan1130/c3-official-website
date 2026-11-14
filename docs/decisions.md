@@ -14,6 +14,7 @@
 | 著者 | Contentfulの公開プロフィール36名すべてをAPIから取得し、旧 `/author/:id` と著者別Contentfulブログ一覧を維持。ローカルにプロフィール・画像を管理しない |
 | お問い合わせ | フォーム・完了画面・Header / Footer の導線を新版から削除。旧 `/contact` / `/contact/thanks` は404。sitemap に含めない |
 | 欠損画像 | `C3 Advent Calendar 2022開催中！` の404画像参照を運用本文から削除。回収原本は保持 |
+| CORS | 後で整理する。Toyboxブログは公開APIへ直接接続し、Vite / Pages Functionsの同一originプロキシは追加しない |
 | 公開先 | Cloudflare Pages |
 | 本番ドメイン | `compositecomputer.club` を継続 |
 

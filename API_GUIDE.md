@@ -41,6 +41,8 @@ Go の `/works` と旧 `/api/v1/works` のレスポンスを同一視しませ�
 - 認証や cookie が必要と判明した場合だけ、その契約・CORS・credentials・cache の分離を設計します。公開 GET に不要な token / cookie を転送しません。
 - 管理用API token や秘密情報をログ、Storybook、fixture、`VITE_*` に保存しません。ブログ取得用の公開可能なDelivery設定とは区別します。公開用環境変数は秘密を保持できません。
 
+Toyboxブログは公開APIへ直接接続します。CORSは後で整理するユーザー方針のため、Vite / Pages Functionsの同一originプロキシで回避しません。
+
 ## 著者と掲載作品
 
 Contentful の公開 `user` 全36名は回収済みで、プロフィールはContentfulから都度取得して旧 `/author/:id` を維持します。

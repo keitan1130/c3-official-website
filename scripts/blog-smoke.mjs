@@ -28,7 +28,7 @@ try {
  await page.unrouteAll();
  await page.getByRole("button",{name:"再試行",exact:true}).click();
  await page.getByRole("alert").waitFor({state:"hidden"});
- await page.route(/cdn\.contentful\.com|\/api\/toybox/,route=>route.abort());
+ await page.route(/cdn\.contentful\.com|kodomobeya/,route=>route.abort());
  await page.goto(BASE+"/blog");
  await page.getByText("ブログを読み込めませんでした。",{exact:false}).waitFor();
  await page.unrouteAll();

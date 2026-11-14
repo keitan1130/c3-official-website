@@ -36,6 +36,6 @@ Pages の1ファイル上限は25 MiB。今回の回収メディアの最大フ�
 - 独自cache設定がある場合はPagesの配信との整合を確認する。不要な全域cache削除は行わない。
 - 公開完了の基準は [実装ロードマップ](implementation-roadmap.md) の段階9〜10に従う。
 
-## ブログプロキシ
+## ブログ接続とCORS
 
-Toyboxの公開ブログはブラウザの直接CORS接続に依存させず、`/api/toybox/blogs` と詳細URLをPages Functions経由で読む。Pagesにはserver側の `TOYBOX_API_BASE_URL` を設定する。Viteも同じ公開パスを開発用proxyへ接続する。GET以外とブログ以外は許可せず、Cookie / Authorizationを上流へ転送しない。
+ブログは `VITE_TOYBOX_API_BASE_URL` の公開APIへブラウザから直接接続する。ユーザー指定によりVite / Pages Functionsの同一originプロキシは導入しない。CORSは後で整理する。現在はローカルoriginでToyboxがCORS拒否となることを確認しており、両APIのブラウザ接続完了とは扱わない。Contentful側の取得と部分失敗時の表示は確認済み。

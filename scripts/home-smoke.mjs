@@ -30,7 +30,7 @@ try {
  }
  // A failed external blog must not prevent static sections or featured works.
  const page=await browser.newPage();
- await page.route(/cdn\.contentful\.com|\/api\/toybox/,route=>route.abort());
+ await page.route(/cdn\.contentful\.com|kodomobeya/,route=>route.abort());
  await page.goto(BASE);
  await page.getByText("ブログを読み込めませんでした。",{exact:false}).waitFor();
  await page.getByRole("heading",{name:"C3について",exact:true}).waitFor();
