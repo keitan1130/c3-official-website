@@ -3,16 +3,13 @@ import useSWR from "swr";
 
 import styles from "./index.module.css";
 
+import { API_BASE_URL } from "@/util/apiConfig";
 import { CONTENT } from "@/util/contentRepository";
-import {
-  getPublicWorks,
-  WORKS_API_BASE_URL,
-  WORKS_LIMIT,
-} from "@/util/workRepository";
+import { getPublicWorks, WORKS_LIMIT } from "@/util/workRepository";
 
 const FeaturedWorks = () => {
   const { data, error, isLoading, mutate } = useSWR(
-    ["public-works", WORKS_API_BASE_URL, WORKS_LIMIT],
+    ["public-works", API_BASE_URL, WORKS_LIMIT],
     getPublicWorks,
     { shouldRetryOnError: false },
   );

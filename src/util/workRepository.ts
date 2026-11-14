@@ -1,6 +1,7 @@
+import { getApiUrl } from "@/util/apiConfig";
+
 import type { FeaturedWork } from "@/shared/types/content";
 
-export const WORKS_API_BASE_URL = import.meta.env.VITE_WORKS_API_BASE_URL;
 export const WORKS_LIMIT = 20;
 
 interface PublicWork {
@@ -25,9 +26,7 @@ const isPublicWork = (value: unknown): value is PublicWork => {
 };
 
 export const getPublicWorks = async (): Promise<FeaturedWork[]> => {
-  if (!WORKS_API_BASE_URL)
-    throw new Error("作品APIの接続先が設定されていません。");
-  const url = new URL(`${WORKS_API_BASE_URL.replace(/\/$/, "")}/works`);
+  const url = new URL(getApiUrl("/works"));
   url.search = new URLSearchParams({
     limit: String(WORKS_LIMIT),
     page: "1",

@@ -1,3 +1,5 @@
+import { getApiUrl } from "@/util/apiConfig";
+
 import type { BlogEntry, BlogListResult } from "@/shared/types/content";
 
 interface ContentfulLink {
@@ -139,9 +141,9 @@ const getContentful = async (
   return entries;
 };
 const toyboxRequest = async <T>(path: string): Promise<T> => {
-  const base = import.meta.env.VITE_TOYBOX_API_BASE_URL;
-  if (!base) throw new Error("Toybox blog delivery is not configured");
-  const response = await fetch(`${base.replace(/\/$/, "")}${path}`);
+  const response = await fetch(getApiUrl(`/api/v1${path}`), {
+    credentials: "omit",
+  });
   if (!response.ok) throw new BlogApiError(response.status);
   return response.json() as Promise<T>;
 };
