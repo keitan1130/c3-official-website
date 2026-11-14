@@ -1,0 +1,32 @@
+.page {
+  padding: 3vw 10% 7vw;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+.tab {
+  width: 70%;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  margin: 50px auto 20px;
+  border-radius: 50px;
+  background: var(--legacy-light-blue);
+  color: var(--on-primary-color);
+  font-size: 18px;
+  font-weight: normal;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(315px, 100%), 1fr));
+  gap: 38px 26px;
+  margin: 2vw 0;
+}
+.status {
+  padding: 80px 5vw;
+  text-align: center;
+}
+@media (max-width: 1000px) {
+  .page {
+    padding: 3vw 5% 10vw;
+  }
+}
