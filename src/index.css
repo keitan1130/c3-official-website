@@ -137,3 +137,7 @@ button {
     scroll-behavior: auto;
   }
 }
+
+:root {
+  --carousel-caption: #489fd4e0;
+}
