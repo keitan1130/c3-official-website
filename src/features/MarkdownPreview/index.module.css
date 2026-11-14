@@ -66,6 +66,11 @@
     overflow-wrap: anywhere;
   }
 
+  [data-footnote-backref] {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
   [data-footnotes] {
     margin-top: 2rem;
     border-top: 1px solid var(--border-color);

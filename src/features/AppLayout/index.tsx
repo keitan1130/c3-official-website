@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 import styles from "./index.module.css";
@@ -20,7 +20,9 @@ const AppLayout = () => {
       </a>
       <Header />
       <main id="main" className={styles["main"]}>
-        <Outlet />
+        <Suspense fallback={<p role="status">読み込み中…</p>}>
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
     </>
