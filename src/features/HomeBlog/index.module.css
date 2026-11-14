@@ -1,0 +1,44 @@
+.blog {
+  padding-bottom: 100px;
+  text-align: center;
+}
+.blog h2 {
+  font-size: 80px;
+  font-weight: normal;
+  margin: 52px 0 20px;
+}
+.carousel {
+  margin: 0 auto 65px;
+  width: min(50vw, 950px);
+  height: min(37.5vw, 720px);
+}
+.all {
+  display: block;
+  width: 240px;
+  height: 60px;
+  line-height: 60px;
+  border: 1px solid var(--font-color);
+  border-radius: 53px;
+  color: var(--font-color);
+  text-decoration: none;
+  font-size: 24px;
+  margin: 0 auto;
+}
+@media (max-width: 1000px) {
+  .carousel {
+    width: 90vw;
+    max-width: 100%;
+    height: 60vw;
+  }
+  .blog h2 {
+    font-size: 72px;
+  }
+}
+@media (max-width: 600px) {
+  .blog h2 {
+    font-size: 56px;
+  }
+  .all {
+    font-size: 17px;
+  }
+}

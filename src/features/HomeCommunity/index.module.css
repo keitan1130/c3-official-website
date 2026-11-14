@@ -1,0 +1,139 @@
+.community {
+  display: flex;
+  justify-content: center;
+  height: 32vw;
+  max-height: 370px;
+  gap: 0;
+}
+.media {
+  width: 60%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  box-shadow: 3px 3px 5px 5px var(--shadow-soft-color);
+}
+.media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.8);
+  transition: filter 0.3s;
+}
+.media:hover video {
+  filter: brightness(1.1);
+}
+.text {
+  color: var(--font-color);
+  width: 40%;
+  height: 100%;
+  padding: 0 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box;
+}
+.text h2 {
+  font-family: Inter, sans-serif;
+  font-size: 80px;
+  font-weight: normal;
+  width: 100%;
+  line-height: 1.2;
+  margin: 0;
+}
+.text p {
+  font-size: 28px;
+  margin: 15px 0 20px;
+  padding-left: 20px;
+  height: 55%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.text p::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to top, var(--background-color) 60%, transparent);
+}
+.text > a {
+  position: absolute;
+  bottom: 10px;
+  width: 65%;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  border: 1px solid var(--font-color);
+  border-radius: 53px;
+  color: var(--font-color);
+  text-decoration: none;
+  font-size: 24px;
+}
+.text > a:hover {
+  background: var(--font-color);
+  color: var(--paper-color);
+}
+.community[data-reversed] .media {
+  order: 2;
+}
+.community[data-reversed] .text {
+  order: 1;
+}
+@media (max-width: 1000px) {
+  .community {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    max-height: none;
+    position: relative;
+  }
+  .media {
+    position: absolute;
+    bottom: 15vw;
+    height: 55vw;
+    width: 100%;
+  }
+  .text {
+    width: 100%;
+    padding: 0;
+  }
+  .text h2 {
+    width: fit-content;
+    text-align: center;
+    font-size: 72px;
+  }
+  .text p {
+    height: auto;
+    padding: 0 0 69vw;
+    text-align: center;
+    font-size: 25px;
+  }
+  .text p::after {
+    display: none;
+  }
+  .text > a {
+    height: 8vw;
+    line-height: 8vw;
+    width: 50%;
+  }
+  .community[data-reversed] .media,
+  .community[data-reversed] .text {
+    order: initial;
+  }
+}
+@media (max-width: 600px) {
+  .text h2 {
+    font-size: 56px;
+  }
+  .text p {
+    font-size: 20px;
+  }
+  .text > a {
+    font-size: 17px;
+  }
+}
