@@ -108,6 +108,43 @@ try {
  await page.getByRole("button",{name:"メニューを開く"}).focus();
  await page.keyboard.press("Enter");await page.keyboard.press("Escape");
  assert.equal(await page.getByRole("button",{name:"メニューを開く"}).evaluate(element=>element===document.activeElement),true);
+ for(const width of [1440,390]) {
+  await page.setViewportSize({width,height:1000});
+  await page.goto(BASE+"/about");
+  await page.locator('[class*="markdown-preview"]').waitFor();
+  await page.evaluate(()=>window.scrollTo({top:600,behavior:"instant"}));
+  await page.waitForFunction(()=>document.querySelector("header").hasAttribute("data-hidden"));
+  await page.evaluate(()=>window.scrollTo({top:550,behavior:"instant"}));
+  await page.waitForFunction(()=>!document.querySelector("header").hasAttribute("data-hidden"));
+  await page.getByRole("button",{name:"メニューを開く"}).click();
+  await page.getByRole("link",{name:"お知らせ",exact:true}).click();
+  await page.getByRole("heading",{name:"お知らせ",exact:true,level:1}).waitFor();
+  await page.waitForFunction(()=>!document.documentElement.hasAttribute("data-scroll-locked"));
+  assert.equal(await page.evaluate(()=>scrollY),0);
+ }
+ await page.clock.install();
+ await page.goto(BASE+"/");
+ const carousel=page.getByRole("region",{name:"重要なお知らせ",exact:true});
+ await carousel.waitFor();
+ await page.mouse.move(0,900);
+ await carousel.getByRole("button",{name:"自動切替を停止",exact:true}).focus();
+ await page.keyboard.press("Enter");
+ await carousel.getByRole("button",{name:"自動切替を再開",exact:true}).waitFor();
+ await page.keyboard.press("Tab");
+ const pausedSlide=await carousel.getByRole("link").getAttribute("href");
+ await page.clock.runFor(5100);
+ assert.equal(await carousel.getByRole("link").getAttribute("href"),pausedSlide);
+ await carousel.hover();
+ await page.mouse.move(0,900);
+ await page.clock.runFor(5100);
+ assert.equal(await carousel.getByRole("link").getAttribute("href"),pausedSlide);
+ await carousel.getByRole("button",{name:"自動切替を再開",exact:true}).focus();
+ await page.keyboard.press("Enter");
+ await page.clock.runFor(5100);
+ assert.equal(await carousel.getByRole("link").getAttribute("href"),pausedSlide);
+ await page.keyboard.press("Tab");
+ await page.clock.runFor(5100);
+ assert.notEqual(await carousel.getByRole("link").getAttribute("href"),pausedSlide);
  assert.deepEqual(errors,[]);
- console.log("Verified ID-only blog URLs, UUID routing, lists without Contentful bodies, all blog/author entries, partial/full failures and retry, noindex recovery and menu behavior (API fixtures).");
+ console.log("Verified ID-only blog URLs, UUID routing, lists without Contentful bodies, all blog/author entries, partial/full failures and retry, noindex recovery, menu scroll restoration/navigation and persistent carousel pause (API fixtures).");
 } finally {await browser.close();}

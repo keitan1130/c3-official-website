@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ArticleIcon from "@mui/icons-material/Article";
 import CloseIcon from "@mui/icons-material/Close";
@@ -44,13 +44,14 @@ const LINK_ICONS = {
   YouTube: <YouTubeIcon />,
 } as const;
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [menuLocationKey, setMenuLocationKey] = useState<string | null>(null);
   const [isHidden, setIsHidden] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const location = useLocation();
+  const isOpen = menuLocationKey === location.key;
   useEffect(() => {
     void location.key;
-    setIsOpen(false);
+    setMenuLocationKey(null);
     setIsHidden(false);
   }, [location.key]);
   useEffect(() => {
@@ -63,12 +64,13 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isOpen]);
-  useEffect(() => {
+  // Release the previous page's lock before AppLayout scrolls the new page.
+  useLayoutEffect(() => {
     if (!isOpen) return;
     const unlock = lockPageScroll();
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsOpen(false);
+        setMenuLocationKey(null);
         toggleRef.current?.focus();
       }
     };
@@ -86,7 +88,7 @@ const Header = () => {
           className={styles["mask"]}
           aria-label="メニューを閉じる"
           tabIndex={-1}
-          onClick={() => setIsOpen(false)}
+          onClick={() => setMenuLocationKey(null)}
         />
       )}
       <header className={styles["header"]} data-hidden={isHidden || undefined}>
@@ -100,7 +102,7 @@ const Header = () => {
                 aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
                 aria-expanded={isOpen}
                 aria-controls="site-navigation"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => setMenuLocationKey(isOpen ? null : location.key)}
               >
                 {isOpen ? <CloseIcon /> : <MenuIcon />}
               </button>

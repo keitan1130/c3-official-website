@@ -18,15 +18,19 @@ interface CarouselProps {
 const Carousel = ({ entries, kind, label }: CarouselProps) => {
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isTouching, setIsTouching] = useState(false);
+  const isAutoPlayPaused = isPaused || isHovered || isFocused || isTouching;
   const touchRef = useRef(0);
   useEffect(() => {
-    if (isPaused || entries.length < 2) return;
+    if (isAutoPlayPaused || entries.length < 2) return;
     const timer = window.setInterval(
       () => setIndex((value) => (value + 1) % entries.length),
       5000,
     );
     return () => window.clearInterval(timer);
-  }, [entries.length, isPaused]);
+  }, [entries.length, isAutoPlayPaused]);
   const entry = entries[index % entries.length];
   if (!entry) return null;
   const blog = "source" in entry ? entry : undefined;
@@ -42,21 +46,23 @@ const Carousel = ({ entries, kind, label }: CarouselProps) => {
     <section
       className={styles["carousel"]}
       aria-label={label}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocusCapture={() => setIsPaused(true)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocusCapture={() => setIsFocused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget))
-          setIsPaused(false);
+          setIsFocused(false);
       }}
       onTouchStart={(event) => {
         touchRef.current = event.touches[0].clientX;
-        setIsPaused(true);
+        setIsTouching(true);
       }}
       onTouchEnd={(event) => {
+        setIsTouching(false);
         const delta = event.changedTouches[0].clientX - touchRef.current;
         if (Math.abs(delta) > 50) move(delta > 0 ? -1 : 1);
       }}
+      onTouchCancel={() => setIsTouching(false)}
     >
       <Link
         className={styles["slide"]}
