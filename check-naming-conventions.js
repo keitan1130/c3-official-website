@@ -107,6 +107,7 @@ const collectTypeScriptViolations = (file, sourceFile) => {
 
     if (
       ts.isVariableDeclaration(node) &&
+      node.initializer &&
       ts.isIdentifier(node.name) &&
       HANDLER_PATTERN.test(node.name.text) &&
       (ts.isArrowFunction(node.initializer) ||
@@ -120,6 +121,7 @@ const collectTypeScriptViolations = (file, sourceFile) => {
 
     if (
       ts.isVariableDeclaration(node) &&
+      node.initializer &&
       ts.isArrayBindingPattern(node.name) &&
       ts.isCallExpression(node.initializer) &&
       node.initializer.expression.getText(sourceFile) === "useState" &&
@@ -143,6 +145,7 @@ const collectTypeScriptViolations = (file, sourceFile) => {
 
     if (
       ts.isVariableDeclaration(node) &&
+      node.initializer &&
       ts.isIdentifier(node.name) &&
       PASCAL_CASE_PATTERN.test(node.name.text) &&
       (ts.isArrowFunction(node.initializer) ||
@@ -169,6 +172,7 @@ const collectTypeScriptViolations = (file, sourceFile) => {
 
     if (
       ts.isVariableDeclaration(node) &&
+      node.initializer &&
       ts.isIdentifier(node.name) &&
       ts.isVariableDeclarationList(node.parent) &&
       ts.isVariableStatement(node.parent.parent) &&
@@ -191,6 +195,7 @@ const collectTypeScriptViolations = (file, sourceFile) => {
 
     if (
       ts.isVariableDeclaration(node) &&
+      node.initializer &&
       ts.isIdentifier(node.name) &&
       /^use[A-Z]/.test(node.name.text) &&
       (ts.isArrowFunction(node.initializer) ||
