@@ -55,3 +55,12 @@ export interface ContentData {
     poster: string;
   };
 }
+export interface BlogEntry extends Entry {
+  source: "contentful" | "toybox";
+  authors: Author[];
+  tags: Tag[];
+}
+export interface BlogListResult {
+  entries: BlogEntry[];
+  unavailableSources: string[];
+}
