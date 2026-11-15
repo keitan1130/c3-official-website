@@ -15,6 +15,7 @@ import { EXTERNAL_LINKS, PAGE_TITLES, SITE } from "@/config/site";
 import CommunityIcon from "@/features/CommunityIcon";
 import ExternalLinkIcon from "@/features/ExternalLinkIcon";
 import ThemeToggle from "@/features/ThemeToggle";
+import Button from "@/shared/ui/Button";
 import { lockPageScroll } from "@/util/pageScroll";
 
 const HEADER_LINK_ORDER = ["toybox", "x", "github", "youtube"] as const;
@@ -93,17 +94,17 @@ const Header = () => {
         <div className={styles["wrapper"]}>
           <div className={styles["bar"]}>
             <div className={styles["brand"]}>
-              <button
+              <Button
                 ref={toggleRef}
-                type="button"
+                variant="ghost"
+                isIconOnly
                 className={styles["menu-button"]}
                 aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
                 aria-expanded={isOpen}
                 aria-controls="site-navigation"
                 onClick={() => setMenuLocationKey(isOpen ? null : location.key)}
-              >
-                {isOpen ? <CloseIcon /> : <MenuIcon />}
-              </button>
+                icon={isOpen ? <CloseIcon /> : <MenuIcon />}
+              />
               <Link to="/" aria-label="C3 ホーム">
                 <img className={styles["logo"]} src={SITE.logo} alt="C3" />
               </Link>
