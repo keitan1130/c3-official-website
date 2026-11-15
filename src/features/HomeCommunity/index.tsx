@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./index.module.css";
 
 import videoLoading from "@/assets/video-loading.png";
+import AutoplayVideo from "@/shared/ui/AutoplayVideo";
 import LinkButton from "@/shared/ui/LinkButton";
 
 import type { Community } from "@/shared/types/content";
@@ -21,16 +22,7 @@ const HomeCommunity = ({ community, isReversed }: HomeCommunityProps) => (
       to={`/community/${community.slug}`}
       aria-label={`${community.name}を詳しく見る`}
     >
-      <video
-        poster={videoLoading}
-        preload="metadata"
-        playsInline
-        muted
-        autoPlay
-        loop
-      >
-        <source src={community.mp4} type="video/mp4" />
-      </video>
+      <AutoplayVideo src={community.mp4} poster={videoLoading} />
     </Link>
     <div className={styles["text"]}>
       <h2>{community.name}</h2>
