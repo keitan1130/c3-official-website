@@ -1,26 +1,25 @@
 .page {
-  padding: 3vw 10% 7vw;
-  max-width: 1500px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
-.tab {
-  width: 70%;
-  height: 60px;
-  line-height: 60px;
-  text-align: center;
-  margin: 50px auto 20px;
-  border-radius: 50px;
-  background: var(--primary-pale-color);
-  color: var(--font-color);
-  font-size: 18px;
-  font-weight: normal;
+.blogs-section {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--page-margin) var(--space-64);
+}
+.blogs-content {
+  width: min(100%, var(--content-read-width));
+  min-width: 0;
 }
 .status {
   padding: 80px 5vw;
   text-align: center;
 }
-@media (max-width: 1000px) {
-  .page {
-    padding: 3vw 5% 10vw;
+@media (max-width: 599px) {
+  .blogs-section {
+    padding-bottom: var(--space-48);
   }
 }

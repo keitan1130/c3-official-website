@@ -32,6 +32,9 @@
   --space-8: 8px;
   --space-12: 12px;
   --space-16: 16px;
+  --space-24: 24px;
+  --space-48: 48px;
+  --space-64: 64px;
 
   --header-top: clamp(10px, 2vw, 20px);
   --header-height: 64px;
