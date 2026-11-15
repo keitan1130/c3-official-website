@@ -19,7 +19,7 @@ Vite + React + TypeScriptのSPAです。紹介・分野・ニュースをビル�
 | `public/` のPNG・ICO・manifest | 同じSVGから `icons:generate` で生成するブラウザ・端末用アイコン |
 | `src/assets/` | その他の共通アイコン・動画poster |
 
-公開originは `SITE.origin` の固定値です。環境変数による上書きは行いません。HeaderとFooterの外部URLは共通定義を参照し、表示ラベルも共通化し、順序はそれぞれに指定できます。ナビゲーション・固定ページ・配信用HTMLは `PAGE_TITLES` のページ名を参照します。トップページ名は `SITE.title` を使います。ルートとリンク先は利用箇所に直接記述し、Header・Footerの外部リンクの表示順も各コンポーネント内で管理します。
+公開originは `.env` またはビルド環境の `VITE_SITE_URL` を `SITE.origin` から参照します。HTML生成とReactで共通利用し、未設定・不正なURLはエラーにします。HeaderとFooterの外部URLは共通定義を参照し、表示ラベルも共通化し、順序はそれぞれに指定できます。ナビゲーション・固定ページ・配信用HTMLは `PAGE_TITLES` のページ名を参照します。トップページ名は `SITE.title` を使います。ルートとリンク先は利用箇所に直接記述し、Header・Footerの外部リンクの表示順も各コンポーネント内で管理します。
 
 ## 生成と表示
 
@@ -139,8 +139,9 @@ MarkdownはGFM・数式・raw HTMLを解析してsanitizeし、KaTeX・見出し
 
 - `VITE_CTF_SPACE_ID`：Contentful space。
 - `VITE_CTF_CDA_ACCESS_TOKEN`：公開可能なDeliveryトークン。
+- `VITE_SITE_URL`：公開サイトのorigin。OGP・canonical・sitemapで共通利用。
 - `VITE_API_BASE_URL`：Go backendのベースURL。`/works`・`/api/v1`を含めない。
 
-公開originは共通設定コードの固定値です。VITE変数はブラウザへ公開されるため、管理用・Previewトークンを設定しません。変更後は開発サーバーの再起動・公開用の再ビルドが必要です。
+公開originは `VITE_SITE_URL` に設定します。VITE変数はブラウザへ公開されるため、管理用・Previewトークンを設定しません。変更後は開発サーバーの再起動・公開用の再ビルドが必要です。
 
 検証は [開発環境とCI](development-and-ci.md)、記事編集は [コンテンツ構成](content-structure.md)、公開条件は [Cloudflare Pages](cloudflare-pages.md) を参照してください。
