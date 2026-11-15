@@ -30,7 +30,8 @@
     "test:browser": "node scripts/browser-smoke.mjs 5",
     "test:review": "node scripts/review-smoke.mjs",
     "preview:pages": "node scripts/preview-pages.mjs",
-    "test:pages": "node scripts/verify-pages.mjs"
+    "test:pages": "node scripts/verify-pages.mjs",
+    "icons:generate": "node scripts/generate-icons.mjs"
   },
   "lint-staged": {
     "./src/**/*.{js,jsx,ts,tsx,css,json,jsonc}": "npx biome check --write"

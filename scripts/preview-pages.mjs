@@ -3,7 +3,7 @@ import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
 const ROOT=path.resolve("dist");
-const TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript",".css":"text/css",".json":"application/json",".xml":"application/xml",".txt":"text/plain",".png":"image/png",".jpg":"image/jpeg",".webp":"image/webp",".gif":"image/gif",".ico":"image/x-icon",".webm":"video/webm",".mp4":"video/mp4",".woff2":"font/woff2"};
+const TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript",".css":"text/css",".json":"application/json",".xml":"application/xml",".txt":"text/plain",".svg":"image/svg+xml",".png":"image/png",".jpg":"image/jpeg",".webp":"image/webp",".gif":"image/gif",".ico":"image/x-icon",".webm":"video/webm",".mp4":"video/mp4",".woff2":"font/woff2"};
 const fileExists=async file=>{try{return (await fs.stat(file)).isFile();}catch{return false;}};
 http.createServer(async(request,response)=>{
  try {

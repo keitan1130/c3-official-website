@@ -6,7 +6,7 @@ import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite";
 
 import { prepareContent } from "./scripts/prepare-content.mjs";
-import { createPageMetadata, PAGES } from "./src/config/site.ts";
+import { createPageMetadata, PAGES, SITE } from "./src/config/site.ts";
 
 import path from "node:path";
 
@@ -23,6 +23,11 @@ export default defineConfig({
         });
         return [
           { tag: "title", children: meta.title, injectTo: "head" },
+          {
+            tag: "meta",
+            attrs: { name: "theme-color", content: SITE.themeColor },
+            injectTo: "head",
+          },
           {
             tag: "meta",
             attrs: { name: "description", content: meta.description },

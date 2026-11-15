@@ -14,7 +14,9 @@ Vite + React + TypeScriptのSPAです。紹介・分野・ニュースをビル�
 | `src/features/CommunityIcon/` | 分野slugに対応する共通アイコン |
 | `src/features/ExternalLinkIcon/` | 外部リンクの安定したキーに対応する共通アイコン |
 | `src/generated/` | Git管理外のコンテンツ生成物。手動編集しない |
-| `src/assets/` | 共通ロゴ・アイコン・動画poster |
+| `public/C3Logo.svg` | C3ロゴの元画像。画面では `SITE.logo` から参照 |
+| `public/` のPNG・ICO・manifest | 同じSVGから `icons:generate` で生成するブラウザ・端末用アイコン |
+| `src/assets/` | その他の共通アイコン・動画poster |
 
 公開originは `SITE.origin` の固定値です。環境変数による上書きは行いません。HeaderとFooterの外部URLは共通定義を参照し、表示ラベルも共通化し、順序はそれぞれに指定できます。ナビゲーション・固定ページ・配信用HTMLは `PAGES` のページ名を参照します。
 

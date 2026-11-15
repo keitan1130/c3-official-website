@@ -10,9 +10,8 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import styles from "./index.module.css";
 
-import c3Logo from "@/assets/c3-logo.webp";
 import { COMMUNITIES } from "@/config/communities";
-import { EXTERNAL_LINKS, HEADER_LINK_ORDER, PAGES } from "@/config/site";
+import { EXTERNAL_LINKS, HEADER_LINK_ORDER, PAGES, SITE } from "@/config/site";
 import CommunityIcon from "@/features/CommunityIcon";
 import ExternalLinkIcon from "@/features/ExternalLinkIcon";
 import ThemeToggle from "@/features/ThemeToggle";
@@ -104,7 +103,7 @@ const Header = () => {
                 {isOpen ? <CloseIcon /> : <MenuIcon />}
               </button>
               <Link to="/" aria-label="C3 ホーム">
-                <img className={styles["logo"]} src={c3Logo} alt="C3" />
+                <img className={styles["logo"]} src={SITE.logo} alt="C3" />
               </Link>
             </div>
             <ThemeToggle />

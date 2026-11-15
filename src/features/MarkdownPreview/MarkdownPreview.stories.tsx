@@ -2,7 +2,10 @@ import { expect, spyOn, userEvent, waitFor, within } from "storybook/test";
 
 import MarkdownPreview from "./index";
 
-import sampleImage from "@/assets/c3-logo.webp";
+import { SITE } from "@/config/site";
+
+const SAMPLE_IMAGE = SITE.logo;
+
 import ToastProvider from "@/shared/ui/Toast/ToastProvider";
 import markdownSyntaxSample from "@/stories/markdownSyntaxSample.md?raw";
 
@@ -39,7 +42,7 @@ export const Empty: Story = { args: { content: "" } };
 export const ImageFullscreen: Story = {
   tags: ["test"],
   args: {
-    content: `![拡大する画像](${sampleImage})\n\n[![リンク付き画像](${sampleImage})](https://example.com)`,
+    content: `![拡大する画像](${SAMPLE_IMAGE})\n\n[![リンク付き画像](${SAMPLE_IMAGE})](https://example.com)`,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -53,7 +56,7 @@ export const ImageFullscreen: Story = {
     await expect(dialog).toBeVisible();
     await expect(within(dialog).getByAltText("拡大する画像")).toHaveAttribute(
       "src",
-      sampleImage,
+      SAMPLE_IMAGE,
     );
     await expect(document.documentElement.scrollHeight).toBe(
       document.documentElement.clientHeight,

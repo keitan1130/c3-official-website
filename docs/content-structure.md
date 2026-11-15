@@ -14,7 +14,7 @@ content/
   news/YYYY-MM-DD-topic/assets/
 ```
 
-共通ロゴ・アイコン・動画読み込み用画像は `src/assets/` に配置し、UIからimportして使用します。記事・紹介本文に付属する素材は `content/` 内の各 `assets/` に配置します。サイト設定・固定ページ名・外部リンクは `src/config/site.ts`、分野名・表示順は `src/config/communities.ts` で管理します。
+C3ロゴの元画像は `public/C3Logo.svg` です。画面は `SITE.logo` を参照し、favicon・端末用アイコン・OGP用PNG・新規ニュースの仮画像は同じSVGから生成したPNGを使用します。その他の共通アイコン・動画読み込み用画像は `src/assets/` に配置します。記事・紹介本文に付属する素材は `content/` 内の各 `assets/` に配置します。サイト設定・固定ページ名・外部リンクは `src/config/site.ts`、分野名・表示順は `src/config/communities.ts` で管理します。
 
 本文は `body.md`、設定は `index.json`、素材は `assets/` に統一します。本文やJSONから `./assets/cover.jpg` のように相対参照します。写真を `public/` へ二重コピーする必要はありません。
 
@@ -27,7 +27,7 @@ npm run dev
 
 1. 生成されたフォルダの `index.json` でタイトル・概要・投稿日を編集します。
 2. `body.md` に本文を書き、写真等を `assets/` へ置きます。
-3. 仮のサムネイル `assets/cover.webp` を差し替えるか、別の画像を置いて `thumbnail` を変更します。PCとモバイルでプレビューします。
+3. 仮のサムネイル `assets/cover.png` を差し替えるか、別の画像を置いて `thumbnail` を変更します。PCとモバイルでプレビューします。
 4. `npm run ci` で検査してから変更を公開します。追加した全記事が配信対象です。
 
 ```json

@@ -12,7 +12,7 @@ const metadata=(title,description,url,image,isError=false)=>{
 };
 const routes=[];
 function emit(route,title,description,image){const file=route==="/"?"dist/index.html":path.join("dist",route.slice(1)+".html");fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,metadata(title,description,origin+route,image));routes.push(route);}
-fs.mkdirSync(path.dirname("dist"+SITE.defaultImage),{recursive:true});fs.copyFileSync("src/assets/c3-logo.webp","dist"+SITE.defaultImage);
+fs.mkdirSync(path.dirname("dist"+SITE.defaultImage),{recursive:true});fs.copyFileSync("public/favicon.png","dist"+SITE.defaultImage);
 emit(PAGES.home.path,PAGES.home.title,SITE.description);
 emit(PAGES.about.path,PAGES.about.title,about.value.summary);
 emit(PAGES.news.path,PAGES.news.title,SITE.description);emit(PAGES.blog.path,PAGES.blog.title,SITE.description);

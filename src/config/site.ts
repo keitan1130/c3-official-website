@@ -3,7 +3,10 @@ export const SITE = {
   shortName: "C3",
   description: "九州工業大学情報工学部のComposite Computer Club公式サイト",
   origin: "https://compositecomputer.club",
-  defaultImage: "/ogp/site.webp",
+  logo: "/C3Logo.svg",
+  defaultImage: "/ogp/site.png",
+  themeColor: "#7db4d6",
+  backgroundColor: "#f5f5f5",
 } as const;
 
 export const EXTERNAL_LINKS = {

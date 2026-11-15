@@ -60,3 +60,9 @@ TEST_BASE_URL=http://127.0.0.1:5191 npm run test:review
 `test:review` はブログのID形式による取得先判定、クエリなしURL、本文を除外したContentful一覧、ブログ・著者別一覧の全件表示、通信失敗と404の区別、noindex解除、メニューのスクロール固定・位置復元・focus復帰を検査します。API応答はPlaywrightで差し替えます。実API・CORSの確認にはなりません。
 
 `test:content` には全記事の自動検出、ID・投稿日・必須値・画像の検証、参照画像の破損、共通接頭辞のある素材名、投稿日順・同日のID順、分野定義とフォルダの不一致、記事件数の変化に追従するPages成果物検査を含めます。`test:pages` は現在の `content/` と生成済みルート集合を照合します。
+
+## ロゴ・アイコンの更新
+
+元画像は `public/C3Logo.svg`、公開サイト名・theme color等は `src/config/site.ts` です。ロゴを変更したら `npm run icons:generate` をローカルで実行し、生成したPNG・ICO・manifestも一緒にコミットします。生成には既存のPlaywright Chromiumを使います。通常のビルドでは生成処理を実行しないため、公開環境にブラウザは不要です。
+
+Toyboxと同じ16 / 32 / 64pxのfavicon、180pxのApple Touch Icon、192 / 512pxのAndroidアイコン、512pxのmaskable、16 / 32 / 48pxを含むICOを用意します。通常のPNG・ICOはSVGの透過を保持し、maskableだけは背景を塗ってロゴを中央80%へ収めます。`favicon.png` はOGPと新規ニュースの仮サムネイルにも使います。manifestの追加はオフライン動作の実装を含みません。

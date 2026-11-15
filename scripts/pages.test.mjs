@@ -21,7 +21,7 @@ test("static pages follow current content rather than a fixed page count", () =>
   write("content/news/published/body.md","Body");
   write("content/news/published/index.json",{id:"published",title:'A "quoted" title',digest:"News & details",thumbnail:"./assets/cover.png",body:"./body.md",publishedDate:"2026-11-15"});
   write("content/news/published/assets/cover.png","image");
-  write("src/assets/c3-logo.webp","logo");
+  write("public/favicon.png","logo");
   const build=()=>{
    write("dist/index.html",'<html><head><title>Fixture</title></head><body></body></html>');
    execFileSync(process.execPath,[contentScript],{cwd:root});
