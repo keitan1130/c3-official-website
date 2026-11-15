@@ -1,0 +1,38 @@
+.player {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.play-button {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.play-button img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.play-button:focus-visible {
+  outline-offset: -4px;
+}
+
+.error {
+  position: absolute;
+  bottom: 8px;
+  inset-inline: 8px;
+  padding: 8px;
+  color: var(--font-color);
+  background: var(--background-color);
+  pointer-events: none;
+}
