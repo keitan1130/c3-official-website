@@ -10,6 +10,8 @@ Node.jsは `.nvmrc` とpackageのenginesに合わせた26系、package manager�
 - CSS Modules: ページ・コンポーネントごとに配置し、色トークンは `src/index.css`。
 - Hygen: `_templates/generator/` を使ってUI・feature・componentを生成します。
 
+公開URLは `.env` の `VITE_SITE_URL` に設定します（例：`https://example.com`）。開発・ビルド開始前に設定し、変更後は再起動・再ビルドします。NodeのPages生成処理もViteの `loadEnv` で `.env`・`.env.local`・`.env.production`・`.env.production.local` を読み込み、シェルの環境変数を優先します。CIでは検証用URLを設定します。
+
 ## コマンド
 
 ```bash

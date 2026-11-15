@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { loadContent, localFile } from "./local-content.mjs";
-import { SITE, PAGE_TITLES } from "../src/config/site.ts";
+import { SITE, PAGE_TITLES } from "./site-config.mjs";
 import { createPageMetadata } from "../src/util/pageMetadata.ts";
 const { about, communities, news } = loadContent();
 const origin=SITE.origin;
