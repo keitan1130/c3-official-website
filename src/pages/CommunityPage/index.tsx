@@ -5,6 +5,7 @@ import styles from "./index.module.css";
 import videoLoading from "@/assets/video-loading.png";
 import BodyContent from "@/features/BodyContent";
 import NotFoundPage from "@/pages/NotFoundPage";
+import AutoplayVideo from "@/shared/ui/AutoplayVideo";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
 import Paper from "@/shared/ui/Paper";
@@ -20,18 +21,12 @@ const CommunityPage = () => {
       <Breadcrumbs isPageHeading items={[{ label: community.name }]} />
       <Paper>
         <div className={styles["video"]}>
-          <video
+          <AutoplayVideo
+            src={community.mp4}
             poster={videoLoading}
             key={community.slug}
-            preload="metadata"
-            playsInline
-            muted
-            autoPlay
-            loop
             aria-label={`${community.name}紹介動画`}
-          >
-            <source src={community.mp4} type="video/mp4" />
-          </video>
+          />
         </div>
         <BodyContent load={community.body} />
       </Paper>
