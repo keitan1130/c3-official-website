@@ -55,7 +55,7 @@ const EntryCard = ({ entry }: EntryCardProps) => {
           {entry.kind === "blog" && (
             <div className={styles["authors"]}>
               {entry.authors.map(({ id, profile }) => (
-                <AuthorBadge key={id} id={id} author={profile} />
+                <AuthorBadge key={id} id={id} author={profile} size="compact" />
               ))}
             </div>
           )}

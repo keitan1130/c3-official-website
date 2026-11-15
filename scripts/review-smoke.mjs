@@ -60,12 +60,12 @@ try {
   if(id.startsWith("cf")) {
    assert.ok(!requests.some(url=>url.pathname.endsWith(`/blogs/${id}`)));
    assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
-   assert.equal(await page.getByRole("link",{name:"Fixture author 0",exact:true}).count(),1);
+   assert.equal(await page.getByRole("link",{name:"Fixture author 0のユーザーページを開く",exact:true}).count(),1);
   }
   else {
    assert.ok(!requests.some(url=>url.searchParams.get("sys.id")===id));
    assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
-   const authorLink=page.getByRole("link",{name:"Fixture author",exact:true});
+   const authorLink=page.getByRole("link",{name:"Fixture authorのユーザーページを開く",exact:true});
    assert.equal(await authorLink.getAttribute("href"),`${EXTERNAL_LINKS.toybox.url}users/${uuid(1000)}`);
    assert.equal(await authorLink.getAttribute("target"),"_blank");
    assert.equal(await page.locator(`a[href="/author/${uuid(1000)}"]`).count(),0);
@@ -76,7 +76,7 @@ try {
  await page.waitForFunction(()=>document.querySelectorAll("article").length===150);
  assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
  assert.equal(await page.locator('article a[href^="/author/"]').count(),105);
- assert.equal(await page.getByRole("link",{name:"Fixture author",exact:true}).count(),45);
+ assert.equal(await page.getByRole("link",{name:"Fixture authorのユーザーページを開く",exact:true}).count(),45);
  assert.equal(await page.getByRole("button",{name:"もっと見る",exact:true}).count(),0);
  assert.ok(requests.filter(url=>url.searchParams.get("content_type")==="blog"&&!url.searchParams.has("sys.id")).every(url=>url.searchParams.get("select")&&!url.searchParams.get("select").includes("fields.body")));
  await page.getByRole("link",{name:"Fixture tag",exact:true}).click();
@@ -86,7 +86,7 @@ try {
  omitIncludedAuthors=true;
  requests.length=0;
  await page.goto(BASE+"/blog");
- await page.getByRole("link",{name:"Fixture author 104",exact:true}).waitFor();
+ await page.getByRole("link",{name:"Fixture author 104のユーザーページを開く",exact:true}).waitFor();
  const authorRequests=()=>requests.filter(url=>url.searchParams.get("content_type")==="user");
  assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
  assert.ok(authorRequests().every(url=>!url.searchParams.has("sys.id")));
@@ -94,7 +94,7 @@ try {
  await page.getByRole("link",{name:"お知らせ",exact:true}).click();
  await page.getByRole("heading",{name:"お知らせ",exact:true,level:1}).waitFor();
  assert.equal(await page.locator('article a[href^="/author/"]').count(),0);
- assert.equal(await page.getByRole("link",{name:"著者",exact:true}).count(),0);
+ assert.equal(await page.getByRole("link",{name:"著者のユーザーページを開く",exact:true}).count(),0);
  assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
  assert.equal(await page.locator('a[href*="/news?tag="]').count(),0);
  const newsCount=loadContent().news.length;
@@ -108,7 +108,7 @@ try {
  await page.goto(BASE+"/blog");
  {
   const link=page.locator('article a[href="/author/author1"]').first();
-  await page.getByRole("link",{name:"Fixture profile",exact:true}).waitFor();
+  await page.getByRole("link",{name:"Fixture profileのユーザーページを開く",exact:true}).waitFor();
   const before=authorRequests().length;
   await link.click();
   await page.getByRole("heading",{name:"Fixture profile",exact:true,level:1}).waitFor();
@@ -148,7 +148,7 @@ try {
  await page.goto(BASE+`/blog/${uuid(0)}`);
  await page.getByRole("heading",{name:"Toybox 0",exact:true}).waitFor();
  await page.getByRole("heading",{name:"Fixture body",exact:true}).waitFor();
- assert.equal(await page.getByRole("link",{name:"Fixture author",exact:true}).getAttribute("href"),`${EXTERNAL_LINKS.toybox.url}users/${uuid(1000)}`);
+ assert.equal(await page.getByRole("link",{name:"Fixture authorのユーザーページを開く",exact:true}).getAttribute("href"),`${EXTERNAL_LINKS.toybox.url}users/${uuid(1000)}`);
  assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
  assert.ok(!requests.some(url=>url.searchParams.get("sys.id")===uuid(0)||url.searchParams.get("sys.id")===uuid(1000)));
  // A Toybox outage does not affect a Contentful detail or its included author.
@@ -158,7 +158,7 @@ try {
  await page.goto(BASE+"/blog/cf0");
  await page.getByRole("heading",{name:"Contentful 0",exact:true}).waitFor();
  await page.getByRole("heading",{name:"Fixture body",exact:true}).waitFor();
- assert.equal(await page.getByRole("link",{name:"Fixture author 0",exact:true}).getAttribute("href"),"/author/author0");
+ assert.equal(await page.getByRole("link",{name:"Fixture author 0のユーザーページを開く",exact:true}).getAttribute("href"),"/author/author0");
  assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
  assert.ok(!requests.some(url=>url.pathname.endsWith("/blogs/cf0")));
  const reversePartial=await page.evaluate(async()=>{
