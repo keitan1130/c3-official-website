@@ -22,8 +22,7 @@ const BlogPage = () => {
   return (
     <section className={styles["page"]}>
       <PageMeta title={PAGES.blog.title} />
-      <Breadcrumbs items={[{ label: "ブログ一覧" }]} />
-      <h1>{PAGES.blog.title}</h1>
+      <Breadcrumbs isPageHeading items={[{ label: PAGES.blog.title }]} />
       {tag && <p>タグ：{tag}</p>}
       <BlogStatus
         isLoading={isLoading}

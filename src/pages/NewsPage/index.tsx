@@ -11,8 +11,7 @@ const NewsPage = () => {
   return (
     <section className={styles["page"]}>
       <PageMeta title={PAGES.news.title} />
-      <Breadcrumbs items={[{ label: "お知らせ一覧" }]} />
-      <h1>{PAGES.news.title}</h1>
+      <Breadcrumbs isPageHeading items={[{ label: PAGES.news.title }]} />
       <div className={styles["grid"]}>
         {entries.map((entry) => (
           <EntryCard key={entry.id} entry={entry} />

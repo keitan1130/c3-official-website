@@ -13,9 +13,8 @@ import { CONTENT } from "@/util/contentRepository";
 const AboutPage = () => (
   <div className={styles["page"]}>
     <PageMeta title={PAGES.about.title} description={CONTENT.about.summary} />
-    <Breadcrumbs items={[{ label: PAGES.about.title }]} />
+    <Breadcrumbs isPageHeading items={[{ label: PAGES.about.title }]} />
     <Paper>
-      <h1 className={styles["title"]}>{PAGES.about.title}</h1>
       <img className={styles["logo"]} src={c3Logo} alt="C3" />
       <BodyContent load={CONTENT.about.body} />
       <h2 className={styles["section-title"]}>各分野について</h2>

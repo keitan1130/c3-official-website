@@ -27,15 +27,10 @@ const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
         description={entry.digest}
         image={entry.thumbnail}
       />
-      <div className={styles["heading"]}>
-        <Breadcrumbs
-          items={[{ label, url: `/${kind}` }, { label: entry.title }]}
-        />
-        <div className={styles["label"]}>C3 {label}</div>
-      </div>
-      <div
-        className={`${styles["columns"]}${kind === "blog" ? ` ${styles["blog-columns"]}` : ""}`}
-      >
+      <Breadcrumbs
+        items={[{ label, url: PAGES[kind].path }, { label: entry.title }]}
+      />
+      <div className={styles["layout"]}>
         <Paper className={styles["article"]}>
           <article>
             {entry.thumbnail && (
@@ -74,22 +69,26 @@ const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
             </div>
           </article>
         </Paper>
-        <aside className={styles["sidebar"]} aria-label={`最近の${label}`}>
+        <aside className={styles["recent"]} aria-label={`最近の${label}`}>
           <h2>最近の{label}</h2>
-          {recent
-            .filter((item) => item.id !== entry.id)
-            .slice(0, 3)
-            .map((item) => (
-              <Link
-                key={item.id}
-                to={`/${kind}/${encodeURIComponent(item.id)}`}
-              >
-                {item.thumbnail && (
-                  <img src={item.thumbnail} alt="" loading="lazy" />
-                )}
-                <span>{item.title}</span>
-              </Link>
-            ))}
+          <div className={styles["recent-grid"]}>
+            {recent
+              .filter((item) => item.id !== entry.id)
+              .slice(0, 4)
+              .map((item) => (
+                <Link
+                  key={item.id}
+                  to={`/${kind}/${encodeURIComponent(item.id)}`}
+                >
+                  <span className={styles["recent-thumbnail"]}>
+                    {item.thumbnail && (
+                      <img src={item.thumbnail} alt="" loading="lazy" />
+                    )}
+                  </span>
+                  <span className={styles["recent-title"]}>{item.title}</span>
+                </Link>
+              ))}
+          </div>
         </aside>
       </div>
     </section>

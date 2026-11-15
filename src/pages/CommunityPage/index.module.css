@@ -4,16 +4,6 @@
   margin: 0 auto 100px;
   padding: 16px 0;
 }
-.page > nav {
-  margin-bottom: 16px;
-}
-.title {
-  font-size: 70px;
-  overflow-wrap: anywhere;
-  color: var(--font-color);
-  font-weight: normal;
-  margin: 0;
-}
 .video {
   position: relative;
   width: 100%;
@@ -30,17 +20,11 @@
   object-fit: cover;
 }
 @media (max-width: 1000px) {
-  .title {
-    font-size: 63px;
-  }
   .video {
     aspect-ratio: 16 / 9;
   }
 }
 @media (max-width: 600px) {
-  .title {
-    font-size: 49px;
-  }
   .video {
     margin: 20px auto 50px;
   }

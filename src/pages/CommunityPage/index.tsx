@@ -17,9 +17,8 @@ const CommunityPage = () => {
   return (
     <div className={styles["page"]}>
       <PageMeta title={community.name} description={community.domain} />
-      <Breadcrumbs items={[{ label: community.name }]} />
+      <Breadcrumbs isPageHeading items={[{ label: community.name }]} />
       <Paper>
-        <h1 className={styles["title"]}>{community.name}</h1>
         <div className={styles["video"]}>
           <video
             poster={videoLoading}
