@@ -16,15 +16,15 @@ export const EXTERNAL_LINKS = {
   },
   x: {
     url: "https://x.com/c3_kyutech",
-    label: "C3 X",
+    label: "X",
   },
   github: {
     url: "https://github.com/Kyutech-C3",
-    label: "C3 GitHub",
+    label: "GitHub",
   },
   youtube: {
     url: "https://www.youtube.com/channel/UCeRY2jujVBYRqmilrCZytFw",
-    label: "C3 Youtubeチャンネル",
+    label: "Youtube",
   },
 } as const;
 export type ExternalLinkId = keyof typeof EXTERNAL_LINKS;
