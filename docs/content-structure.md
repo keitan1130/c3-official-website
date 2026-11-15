@@ -16,9 +16,17 @@ content/
 
 C3ロゴの元画像は `public/C3Logo.svg` です。画面は `SITE.logo` を参照し、favicon・端末用アイコン・OGP用PNG・新規ニュースの仮画像は同じSVGから生成したPNGを使用します。その他の共通アイコン・動画読み込み用画像は `src/assets/` に配置します。記事・紹介本文に付属する素材は `content/` 内の各 `assets/` に配置します。サイト設定・固定ページ名・外部リンクは `src/config/site.ts`、分野名・表示順は `src/config/communities.ts` で管理します。
 
-本文は `body.md`、設定は `index.json`、素材の標準配置は `assets/` です。`assets` は整理のための名前で、表示処理の必須条件ではありません。`./hero.mp4`、`photos/photo-07.png` など、同じ記事・ページのフォルダ内なら別の配置も使えます。写真を `public/` へ二重コピーする必要はありません。
+本文は `body.md`、設定は `index.json`、記事・ページ専用のローカル素材は必ず同居する `assets/` 配下に統一します。新規作成・通常編集とも例外は設けません。動画は `./assets/hero.mp4`、画像は `./assets/photo-07.png` のように参照します。素材が多い場合も `assets/photos/` など、`assets/` の中で整理します。写真を `public/` へ二重コピーする必要はありません。
 
-JSONの相対パスは `index.json` のあるフォルダを基準に、本文の相対URLはMarkdownファイルのあるフォルダを基準に解決します。`./` は省略できます。記事・ページのフォルダ外への参照は、シンボリックリンク経由も含めてエラーにします。サイト内のページへのリンクは `/news/...` のように `/` から書きます。
+JSONの相対パスは `index.json` のあるフォルダを基準に、本文の相対URLはMarkdownファイルのあるフォルダを基準に解決します。`./` は省略できます。画像・動画等の相対参照と、`./assets/...`（`assets/...` も可）を指すリンクは素材として検証・変換し、同じ記事・ページの `assets/` 配下から外れる場合はシンボリックリンク経由も含めて生成時にエラーにします。それ以外のリンクはページURLとして保持します。参照形式とHTMLのリンクにも同じ規則を適用します。本文を別フォルダに置く場合は `../assets/...` も素材として解決します。
+
+`/news/article-id` の本文では、次のようにページ遷移を記述できます。相対ページURLはブラウザが表示中のURLを基準に解決するため、末尾スラッシュの有無で移動先が変わります。
+
+```md
+[別の記事](./other-article-id)
+[Aboutへ](../about)
+[お知らせ一覧](/news)
+```
 
 ## ニュースの追加
 
@@ -70,7 +78,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 
 ## 検査と素材
 
-`scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事フォルダ内のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
+`scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事の `assets/` 配下のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
 本文は遅延読込し、構文解析した相対参照をビルド時に配信用URLへ変換します。素材はサイズにかかわらずファイルとして出力し、Markdownのsanitize処理は維持します。新しい素材は用途の分かる名前で保存し、表示・再生を確認してください。`npm run build && npm run test:content:browser` でビルド成果物の全本文と画像・動画をPC・モバイル幅で検証できます。
 
 命名は [命名規則](naming-conventions.md)、配信条件は [Cloudflare Pages](cloudflare-pages.md) を参照します。

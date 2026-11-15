@@ -50,7 +50,7 @@ flowchart TD
 1. `local-content.mjs` が記事・分野・紹介ページを読み込みます。ニュースのID重複・必須値・実在する投稿日（YYYY-MM-DD）、素材の範囲・存在・25 MiB上限を検査します。分野フォルダはコード側の定義と過不足なく対応させます。ニュースはContentfulの著者に依存しません。
 2. ニュースは全件を公開対象とし、投稿日 `publishedDate` の降順、同日はID順で並べます。タグ・公開フラグ・重要フラグ・下書き機能はありません。ホームは最新5件を表示します。
 3. `prepare-content.mjs` が紹介・分野・ニュースごとに出力項目を明示して変換します。本文は `bodyLoader`、ニュース画像・分野動画は `assetReference` で処理します。その他の文字列をプロパティ名や接頭辞から素材と推測することはありません。
-4. Markdownとraw HTMLを構文解析し、記事・ページ内の相対参照をViteの素材URLへ置き換えます。`assets/` という名前には依存せず、本文ファイルを基準に解決します。コード例や通常の文章は保持します。本文は `?raw` の遅延import、素材は `?url&no-inline` のimportとし、小さい画像もファイルとして配信します。
+4. Markdownとraw HTMLを構文解析し、記事・ページの `assets/` 配下への相対参照をViteの素材URLへ置き換えます。素材は本文ファイルを基準に解決し、`assets/` 外への参照は拒否します。リンク先は素材用の `assets/` 参照だけを変換し、それ以外の相対・絶対ページURLは保持します。コード例や通常の文章は保持します。本文は `?raw` の遅延import、素材は `?url&no-inline` のimportとし、小さい画像もファイルとして配信します。
 5. `contentRepository.ts` が `CONTENT` と記事・分野の検索関数を公開します。
 
 `predev` / `prebuild` / `prestorybook` / `prebuild-storybook` が生成を実行します。Viteは開発中の `content/` 変更を監視します。`ci`と`prebuild`の両方で生成するため、CIコマンドでは2回走ります。

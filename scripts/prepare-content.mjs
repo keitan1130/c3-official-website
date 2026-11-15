@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { loadContent, localFile, localAsset } from "./local-content.mjs";
+import { loadContent, localFile, localAsset, assetFile } from "./local-content.mjs";
 import { markdownAssetEdits } from "./markdown-assets.mjs";
 
 const ROOT = path.resolve("content");
@@ -13,7 +13,7 @@ export function prepareContent(root = ROOT, output = OUTPUT) {
     if (!imports.has(file)) imports.set(file, `ASSET_${imports.size}`);
     return imports.get(file);
   };
-  const assetReference = (directory, relative) => importAsset(localFile(directory, relative));
+  const assetReference = (directory, relative) => importAsset(assetFile(directory, relative));
   const bodyLoader = (directory, relative) => {
     const file = localFile(directory, relative);
     const text = fs.readFileSync(file, "utf8");
@@ -22,8 +22,8 @@ export function prepareContent(root = ROOT, output = OUTPUT) {
     let prefix = "C3_LOCAL_ASSET_";
     while (text.includes(prefix)) prefix += "_";
     const tokens = [];
-    const edits = markdownAssetEdits(text, (url, context) => {
-      const asset = localAsset(path.dirname(file), url, directory);
+    const edits = markdownAssetEdits(text, (url, context, kind) => {
+      const asset = localAsset(path.dirname(file), url, directory, kind);
       if (!asset) return url;
       const token = `${prefix}${tokens.length}_END`;
       const value = `assetUrl(${importAsset(asset.file)} + ${JSON.stringify(asset.suffix)})`;

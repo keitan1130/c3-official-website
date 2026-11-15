@@ -40,7 +40,7 @@ API 契約型の boolean 命名例外は、命名検査スクリプトの `@apiC
 - `content/` のページ・記事フォルダとメディア名は、小文字英数字の kebab-case。例: `news/2026-11-14-event-guide/assets/venue.jpg`。
 - 旧 Contentful ID は JSON の `id` にそのまま保持します。運用フォルダは内容が分かるslugにします。
 - ニュースの公開日は `publishedDate`（YYYY-MM-DD）とし、時刻を含むAPI由来の日時と区別します。
-- 本文は `body.md`、メタデータは `index.json`、素材の標準配置は同居する `assets/` とします。表示処理は `assets/` に固定せず、同じ記事・ページ内の相対参照を解決します。
+- 本文は `body.md`、メタデータは `index.json`、記事・ページ専用のローカル素材は例外なく同居する `assets/` 配下に統一します。素材の分類用フォルダも `assets/` の中に作成します。
 - Git branch / commit の規則は [作業ガイド](WORKFLOW_GUIDE.md) に従います。
 
 ## 検査コマンド

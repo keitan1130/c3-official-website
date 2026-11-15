@@ -19,17 +19,25 @@ export function localFile(directory, relative, boundary = directory) {
   if (fs.statSync(file).size > 25 * 1024 * 1024) throw new Error(`Pages asset exceeds 25 MiB: ${file}`);
   return file;
 }
-export function localAsset(directory, url, boundary = directory) {
+export function assetFile(entryDirectory, relative, directory = entryDirectory) {
+  localFile(directory, relative, entryDirectory);
+  return localFile(directory, relative, path.join(entryDirectory, "assets"));
+}
+export function localAsset(directory, url, entryDirectory = directory, kind = "media") {
   if (!url || /^(?:[a-z][a-z\d+.-]*:|[\\/#?])/i.test(url)) return;
   const index = url.search(/[?#]/);
   const pathname = index < 0 ? url : url.slice(0, index);
   const suffix = index < 0 ? "" : url.slice(index);
-  return { file: localFile(directory, decodeURIComponent(pathname), boundary), suffix };
+  let decoded;
+  try { decoded = decodeURIComponent(pathname); }
+  catch (error) { if (kind === "link" && !/^(?:\.{1,2}\/)*assets\//.test(pathname)) return; throw error; }
+  if (kind === "link" && !/^(?:\.{1,2}\/)*assets\//.test(decoded)) return;
+  return { file: assetFile(entryDirectory, decoded, directory), suffix };
 }
 const validateBody = (directory, relative) => {
   const file = localFile(directory, relative);
   const text = fs.readFileSync(file, "utf8");
-  markdownAssetEdits(text, (url) => { localAsset(path.dirname(file), url, directory); return url; });
+  markdownAssetEdits(text, (url, _context, kind) => { localAsset(path.dirname(file), url, directory, kind); return url; });
 };
 const requireText = (value, label) => {
   if (typeof value !== "string" || !value.trim()) throw new Error(`Missing ${label}`);
@@ -52,7 +60,7 @@ export function loadContent(root = path.resolve("content")) {
     for (const key of ["title", "digest", "body", "thumbnail"]) requireText(item[key], `${key}: ${item.id}`);
     requireDate(item.publishedDate, `publishedDate: ${item.id}`);
     if (!/\.(?:png|jpe?g|webp|gif|avif)$/i.test(item.thumbnail)) throw new Error(`Invalid thumbnail: ${item.id}`);
-    localFile(directory, item.thumbnail);
+    assetFile(directory, item.thumbnail);
     validateBody(directory, item.body);
   }
   assertUnique(news.map(({ value }) => value.id), "news id");
@@ -62,7 +70,7 @@ export function loadContent(root = path.resolve("content")) {
   const communities = COMMUNITIES.map((definition) => {
     const item = communityFiles.find(({directory}) => path.basename(directory) === definition.slug);
     for (const key of ["domain", "body", "mp4"]) requireText(item.value[key], `${key}: ${definition.slug}`);
-    validateBody(item.directory, item.value.body); localFile(item.directory, item.value.mp4);
+    validateBody(item.directory, item.value.body); assetFile(item.directory, item.value.mp4);
     return { directory: item.directory, value: { ...item.value, ...definition } };
   });
   const about = { value: read(path.join(root, "about/index.json")), directory: path.join(root, "about") };
