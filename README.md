@@ -11,6 +11,9 @@ Node.js 26とnpmを使用します。このディレクトリで実行してく�
 ```bash
 npm ci
 cp .env.example .env
+```
+
+```bash
 # .envに公開URL（VITE_SITE_URL）、Contentful配信設定、共通APIの接続先（VITE_API_BASE_URL）を設定
 npm run dev
 ```
