@@ -2,6 +2,7 @@
 
 Vite + React + TypeScriptで構築したComposite Computer Clubの公式サイトです。
 本文と素材はページ・記事ごとの `content/` で管理し、ブログ・著者プロフィール・最新20件の掲載作品は外部APIから取得します。
+
 公開サイト: <https://compositecomputer.club/>
 
 ## 開発
@@ -11,6 +12,9 @@ Node.js 26とnpmを使用します。このディレクトリで実行してく�
 ```bash
 npm ci
 cp .env.example .env
+```
+
+```bash
 # .envに公開URL（VITE_SITE_URL）、Contentful配信設定、共通APIの接続先（VITE_API_BASE_URL）を設定
 npm run dev
 ```
