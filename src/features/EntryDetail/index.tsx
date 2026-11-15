@@ -8,6 +8,7 @@ import BodyContent from "@/features/BodyContent";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
 import Paper from "@/shared/ui/Paper";
+import { formatDate } from "@/util/formatDate";
 import { formatDateTime } from "@/util/formatDateTime";
 
 import type { Entry, EntrySummary } from "@/shared/types/content";
@@ -19,7 +20,7 @@ interface EntryDetailProps {
 const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
   const kind = entry.kind;
   const label = PAGES[kind].title;
-  const tags = entry.tags;
+  const tags = entry.kind === "blog" ? entry.tags : [];
   return (
     <section className={styles["entry"]}>
       <PageMeta
@@ -52,18 +53,25 @@ const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
                 ))}
               </div>
             )}
-            <div className={styles["authors"]}>
-              ユーザー：
-              {entry.authors.map(({ id, profile }) => (
-                <AuthorBadge key={id} id={id} author={profile} />
-              ))}
-            </div>
+            {entry.kind === "blog" && (
+              <div className={styles["authors"]}>
+                ユーザー：
+                {entry.authors.map(({ id, profile }) => (
+                  <AuthorBadge key={id} id={id} author={profile} />
+                ))}
+              </div>
+            )}
             <p className={styles["date"]}>
-              投稿日：{formatDateTime(entry.createdAt)}
+              投稿日：
+              {entry.kind === "news"
+                ? formatDate(entry.publishedDate)
+                : formatDateTime(entry.createdAt)}
             </p>
-            <p className={styles["date"]}>
-              更新日：{formatDateTime(entry.updatedAt)}
-            </p>
+            {entry.kind === "blog" && (
+              <p className={styles["date"]}>
+                更新日：{formatDateTime(entry.updatedAt)}
+              </p>
+            )}
             <div className={styles["body"]}>
               <BodyContent load={entry.body} />
             </div>

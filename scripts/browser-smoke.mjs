@@ -43,13 +43,7 @@ try {
       assert.equal(await page.getByRole("alert").count(),0);
     }
     await page.unrouteAll();
-    const id=entries[0]?.authorIds[0];
-    if(id) {
-      await page.goto(BASE+"/author/"+id);
-      await page.getByRole("heading",{level:1}).waitFor();
-      await page.getByText("ブログを読み込み中…",{exact:true}).waitFor({state:"hidden"});
-      assert.equal(await page.getByRole("alert").count(),0);
-    }
+
   }
   await page.goto(BASE+"/about");
   await page.getByText("読み込み中…",{exact:true}).waitFor({state:"hidden"});

@@ -27,7 +27,7 @@ const requireId = (value, label) => {
   if (typeof value !== "string" || !/^[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*$/.test(value)) throw new Error(`Invalid ${label}: ${value}`);
 };
 const requireDate = (value, label) => {
-  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value) || !Number.isFinite(Date.parse(value))) throw new Error(`Invalid ${label}: ${value}`);
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(Date.parse(value))) throw new Error(`Invalid ${label}: ${value}`);
   const [year, month, day] = value.slice(0, 10).split("-").map(Number);
   if (month < 1 || month > 12 || day < 1 || day > new Date(Date.UTC(year, month, 0)).getUTCDate()) throw new Error(`Invalid ${label}: ${value}`);
 };
@@ -36,10 +36,7 @@ export function loadContent(root = path.resolve("content")) {
   for (const { value: item, directory } of news) {
     requireId(item.id, "news id");
     for (const key of ["title", "digest", "body", "thumbnail"]) requireText(item[key], `${key}: ${item.id}`);
-    for (const key of ["createdAt", "updatedAt"]) requireDate(item[key], `${key}: ${item.id}`);
-    if (Date.parse(item.updatedAt) < Date.parse(item.createdAt)) throw new Error(`updatedAt precedes createdAt: ${item.id}`);
-    if (!Array.isArray(item.authorIds) || item.authorIds.some((id) => typeof id !== "string" || !id.trim())) throw new Error(`Invalid authorIds: ${item.id}`);
-    assertUnique(item.authorIds, `authorIds: ${item.id}`);
+    requireDate(item.publishedDate, `publishedDate: ${item.id}`);
     if (!item.thumbnail.startsWith("./assets/") || !/\.(?:png|jpe?g|webp|gif|avif)$/i.test(item.thumbnail)) throw new Error(`Invalid thumbnail: ${item.id}`);
     const thumbnail = localFile(directory, item.thumbnail);
     if (!thumbnail.startsWith(path.resolve(directory, "assets") + path.sep)) throw new Error(`Invalid thumbnail: ${item.id}`);
@@ -47,7 +44,7 @@ export function loadContent(root = path.resolve("content")) {
     for (const relative of new Set(body.match(/\.\/assets\/[^\s<>"'()\]]+/g) ?? [])) localFile(directory, relative);
   }
   assertUnique(news.map(({ value }) => value.id), "news id");
-  news.sort((a, b) => Date.parse(b.value.createdAt) - Date.parse(a.value.createdAt) || a.value.id.localeCompare(b.value.id));
+  news.sort((a, b) => b.value.publishedDate.localeCompare(a.value.publishedDate) || a.value.id.localeCompare(b.value.id));
   const communityFiles = readEntries(root, "communities");
   if (communityFiles.length !== COMMUNITIES.length || communityFiles.some(({directory}) => !COMMUNITIES.some(({slug}) => slug === path.basename(directory)))) throw new Error("Invalid community definitions");
   const communities = COMMUNITIES.map((definition) => {

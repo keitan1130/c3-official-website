@@ -2,11 +2,7 @@
   "id": "2ksEJYBJDR4tR1KJTJMURR",
   "title": "超感覚C3講座2日目！",
   "digest": "超感覚C3講座2日目実施しました！",
-  "createdAt": "2025-04-27T02:30:20.033Z",
-  "updatedAt": "2025-05-03T15:33:49.445Z",
   "thumbnail": "./assets/cover.png",
-  "authorIds": [
-    "7keoGLfOtBGjh9YtIPuilk"
-  ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "publishedDate": "2025-04-27"
 }

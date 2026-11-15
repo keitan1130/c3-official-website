@@ -9,8 +9,7 @@ const browser = await chromium.launch({ headless: true });
 const thumbnail = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="400" height="200" fill="gray"/></svg>');
 const uuid = index => `fac206ed-32a0-4fdb-b3e8-${String(index).padStart(12,"0")}`;
 const toyboxBlogs = Array.from({length:45},(_,index)=>({id:uuid(index),title:`Toybox ${index}`,body_text:"## Fixture body\n\nAvailable",created_at:new Date(Date.UTC(2026,0,1)-index*86400000).toISOString(),updated_at:"2026-01-01T00:00:00Z",thumbnail:{url:thumbnail},tags:[],user:{id:uuid(1000+index),name:"Fixture author"}}));
-const newsAuthorIds=[...new Set(loadContent().news.flatMap(({value})=>value.authorIds))];
-const authorIds=[...new Set([...Array.from({length:105},(_,index)=>`author${index}`),...newsAuthorIds])];
+const authorIds=Array.from({length:105},(_,index)=>`author${index}`);
 const contentfulAuthors=authorIds.map((id,index)=>({sys:{id},fields:{name:id==="author1"?"Fixture profile":`Fixture author ${index}`,icon:{sys:{id:"avatar"}},introduction:"Fixture introduction"}}));
 const authorAssets=[{sys:{id:"avatar"},fields:{file:{url:thumbnail}}}];
 let omitIncludedAuthors=false;
@@ -82,7 +81,7 @@ try {
  await page.getByRole("link",{name:"Fixture tag",exact:true}).click();
  await page.waitForFunction(()=>document.querySelectorAll("article").length===1);
  await page.getByRole("heading",{name:"Contentful 0",exact:true}).waitFor();
- // Missing included authors share one paginated collection, also reused by news.
+ // Missing included authors and author pages share one paginated collection.
  omitIncludedAuthors=true;
  requests.length=0;
  await page.goto(BASE+"/blog");
@@ -93,17 +92,27 @@ try {
  await page.getByRole("button",{name:"メニューを開く",exact:true}).click();
  await page.getByRole("link",{name:"お知らせ",exact:true}).click();
  await page.getByRole("heading",{name:"お知らせ",exact:true,level:1}).waitFor();
- const expectedNewsAuthors=loadContent().news.reduce((count,{value})=>count+value.authorIds.length,0);
- assert.equal(await page.locator('article a[href^="/author/"]').count(),expectedNewsAuthors);
+ assert.equal(await page.locator('article a[href^="/author/"]').count(),0);
  assert.equal(await page.getByRole("link",{name:"著者",exact:true}).count(),0);
  assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
  assert.equal(await page.locator('a[href*="/news?tag="]').count(),0);
  const newsCount=loadContent().news.length;
  assert.equal(await page.getByRole("article").count(),newsCount);
- const firstAuthor=page.locator('article a[href^="/author/"]').first();
- await firstAuthor.click();
- await page.getByRole("heading",{level:1}).waitFor();
+ const news=loadContent().news[0].value;
+ await page.getByRole("link",{name:news.title,exact:true}).click();
+ await page.getByRole("article").getByRole("heading",{name:news.title,exact:true,level:1}).waitFor();
+ assert.equal(await page.getByText(`投稿日：${news.publishedDate.replaceAll("-","/")}`,{exact:true}).count(),1);
+ assert.equal(await page.getByText(/ユーザー：|更新日：|作成日：/).count(),0);
  assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
+ await page.goto(BASE+"/blog");
+ {
+  const link=page.locator('article a[href="/author/author1"]').first();
+  await page.getByRole("link",{name:"Fixture profile",exact:true}).waitFor();
+  const before=authorRequests().length;
+  await link.click();
+  await page.getByRole("heading",{name:"Fixture profile",exact:true,level:1}).waitFor();
+  assert.equal(authorRequests().length,before);
+ }
  omitIncludedAuthors=false;
  await page.goto(BASE+"/author/author1");
  await page.waitForFunction(()=>document.querySelectorAll("article").length===105);
@@ -229,5 +238,5 @@ try {
  await page.clock.runFor(5100);
  assert.notEqual(await carousel.getByRole("link").getAttribute("href"),pausedSlide);
  assert.deepEqual(errors,[]);
- console.log("Verified ID-only blog URLs, UUID routing, lists without Contentful bodies, all blog/author entries, included authors without extra requests and shared batched author fallback, UUID Toybox authors, independent source outages, partial/full failures and retry, noindex recovery, menu scroll restoration/navigation and persistent carousel pause (API fixtures).");
+ console.log("Verified ID-only blog URLs, UUID routing, lists without Contentful bodies, all blog/author entries, included authors without extra requests and shared batched author fallback and news date-only metadata, UUID Toybox authors, independent source outages, partial/full failures and retry, noindex recovery, menu scroll restoration/navigation and persistent carousel pause (API fixtures).");
 } finally {await browser.close();}

@@ -15,12 +15,12 @@ test("all news folders are published and invalid metadata or missing assets fail
  try {
   for(const name of ["communities","news"])fs.mkdirSync(path.join(root,name),{recursive:true});
   write("about/index.json",{summary:"About summary",body:"./body.md"});write("about/body.md","About");
-  const article={id:"new-news",title:"Added article",digest:"Summary",body:"./body.md",thumbnail:"./assets/cover.png",createdAt:"2026-11-14T00:00:00Z",updatedAt:"2026-11-14T00:00:00Z",authorIds:[]};
+  const article={id:"new-news",title:"Added article",digest:"Summary",body:"./body.md",thumbnail:"./assets/cover.png",publishedDate:"2026-11-14"};
   write("news/readable-folder/index.json",article);write("news/readable-folder/body.md","![photo](./assets/cover.png)");write("news/readable-folder/assets/cover.png","image");
   const output=path.join(temporary,"src/generated/contentData.ts");
   assert.equal(prepareContent(root,output).news,1);
   assert.match(fs.readFileSync(output,"utf8"),/Added article/);
-  assert.doesNotMatch(fs.readFileSync(output,"utf8"), /tagIds|authorIds|canonicalOrigin/);
+  assert.doesNotMatch(fs.readFileSync(output,"utf8"), /tagIds|authorIds|createdAt|updatedAt|canonicalOrigin/);
   write("news/readable-folder/index.json", {...article,digest:"./assets/not-an-asset.png"});
   prepareContent(root,output);
   assert.match(fs.readFileSync(output,"utf8"), /not-an-asset/);
@@ -28,8 +28,9 @@ test("all news folders are published and invalid metadata or missing assets fail
     [{id:"../escape"}, /Invalid news id/],
     [{digest:""}, /Missing digest/],
     [{thumbnail:"https://example.com/image.png"}, /Invalid thumbnail/],
-    [{createdAt:"2026-02-30T00:00:00Z"}, /Invalid createdAt/],
-    [{updatedAt:"2025-01-01T00:00:00Z"}, /precedes/],
+    [{publishedDate:"2026-02-30"}, /Invalid publishedDate/],
+    [{publishedDate:"2026-11-14T00:00:00Z"}, /Invalid publishedDate/],
+    [{publishedDate:""}, /Invalid publishedDate/],
   ]) {
     write("news/readable-folder/index.json", {...article,...changes});
     assert.throws(()=>prepareContent(root,output),error);
@@ -65,14 +66,14 @@ test("asset URLs with a shared filename prefix are resolved independently", asyn
  } finally {fs.rmSync(temporary,{recursive:true,force:true});}
 });
 
-test("news is sorted by the instant even with different timezone offsets", async () => {
+test("news is sorted by publication date, then by stable id", async () => {
  const temporary=fs.mkdtempSync(path.join(os.tmpdir(),"c3-order-"));
  const root=path.join(temporary,"content");
  const write=contentFixture(root);
  try {
   fs.mkdirSync(path.join(root,"communities"),{recursive:true});
-  for(const [id,createdAt] of [["earlier","2026-11-14T01:00:00+09:00"],["later","2026-11-14T00:00:00Z"]]){
-   write(`news/${id}/index.json`,{id,title:id,digest:"Summary",createdAt,updatedAt:createdAt,body:"./body.md",thumbnail:"./assets/cover.png",authorIds:[]});
+  for(const [id,publishedDate] of [["earlier","2026-11-13"],["later","2026-11-14"],["same-day","2026-11-14"]]){
+   write(`news/${id}/index.json`,{id,title:id,digest:"Summary",publishedDate,body:"./body.md",thumbnail:"./assets/cover.png"});
    write(`news/${id}/body.md`,id);write(`news/${id}/assets/cover.png`,"image");
   }
   const output=path.join(temporary,"generated/contentData.ts");
@@ -83,7 +84,7 @@ test("news is sorted by the instant even with different timezone offsets", async
   }});
   try {
    const {default:content}=await import(pathToFileURL(output).href);
-   assert.deepEqual(content.news.map(entry=>entry.id),["later","earlier"]);
+   assert.deepEqual(content.news.map(entry=>entry.id),["later","same-day","earlier"]);
   } finally {hooks.deregister();}
   write("communities/new/index.json",{slug:"new"});
   assert.throws(()=>prepareContent(root,output),/Invalid community definitions/);

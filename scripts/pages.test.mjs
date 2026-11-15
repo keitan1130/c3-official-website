@@ -19,7 +19,7 @@ test("static pages follow current content rather than a fixed page count", () =>
  try {
   contentFixture(path.join(root,"content"));
   write("content/news/published/body.md","Body");
-  write("content/news/published/index.json",{id:"published",title:'A "quoted" title',digest:"News & details",thumbnail:"./assets/cover.png",body:"./body.md",createdAt:"2026-11-15T00:00:00Z",updatedAt:"2026-11-15T00:00:00Z",authorIds:[]});
+  write("content/news/published/index.json",{id:"published",title:'A "quoted" title',digest:"News & details",thumbnail:"./assets/cover.png",body:"./body.md",publishedDate:"2026-11-15"});
   write("content/news/published/assets/cover.png","image");
   write("src/assets/c3-logo.webp","logo");
   const build=()=>{

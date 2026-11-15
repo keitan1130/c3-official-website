@@ -2,11 +2,7 @@
   "id": "1X1oOFZEenbnqdMYD076jM",
   "title": "【歓迎】2023年度新歓企画を開催します!",
   "digest": "今年も新歓企画やります！楽しい企画を準備しているので、とりあえず見て！",
-  "createdAt": "2023-04-13T03:33:07.473Z",
-  "updatedAt": "2026-04-03T15:12:29.887Z",
   "thumbnail": "./assets/cover.png",
-  "authorIds": [
-    "Nf4ERyJLOVKfgD81CG2NR"
-  ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "publishedDate": "2023-04-13"
 }

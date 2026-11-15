@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./index.module.css";
 
 import AuthorBadge from "@/features/AuthorBadge";
+import { formatDate } from "@/util/formatDate";
 import { formatDateTime } from "@/util/formatDateTime";
 
 import type { EntrySummary } from "@/shared/types/content";
@@ -11,7 +12,7 @@ interface EntryCardProps {
   entry: EntrySummary;
 }
 const EntryCard = ({ entry }: EntryCardProps) => {
-  const tags = entry.tags;
+  const tags = entry.kind === "blog" ? entry.tags : [];
   const kind = entry.kind;
   const url = `/${kind}/${encodeURIComponent(entry.id)}`;
   return (
@@ -37,15 +38,23 @@ const EntryCard = ({ entry }: EntryCardProps) => {
             ))}
           </div>
         )}
-        <div className={styles["authors"]}>
-          {entry.authors.map(({ id, profile }) => (
-            <AuthorBadge key={id} id={id} author={profile} />
-          ))}
-        </div>
+        {entry.kind === "blog" && (
+          <div className={styles["authors"]}>
+            {entry.authors.map(({ id, profile }) => (
+              <AuthorBadge key={id} id={id} author={profile} />
+            ))}
+          </div>
+        )}
         <p className={styles["digest"]}>{entry.digest}</p>
         <div className={styles["dates"]}>
-          <div>作成日：{formatDateTime(entry.createdAt)}</div>
-          <div>更新日：{formatDateTime(entry.updatedAt)}</div>
+          {entry.kind === "news" ? (
+            <div>投稿日：{formatDate(entry.publishedDate)}</div>
+          ) : (
+            <>
+              <div>作成日：{formatDateTime(entry.createdAt)}</div>
+              <div>更新日：{formatDateTime(entry.updatedAt)}</div>
+            </>
+          )}
         </div>
       </div>
     </article>

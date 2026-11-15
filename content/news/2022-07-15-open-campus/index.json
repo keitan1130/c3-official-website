@@ -2,11 +2,7 @@
   "id": "1y1xT8pvbWb9GoNn7KwDh8",
   "title": "C3オープンキャンパス開催‼",
   "digest": "今年度のC3オープンキャンパスサイトが開設しました。特設サイトに部員の作品がたくさん展示されているので楽しんでいってください‼",
-  "createdAt": "2022-07-15T08:29:23.346Z",
-  "updatedAt": "2023-03-01T13:19:36.162Z",
   "thumbnail": "./assets/cover.webp",
-  "authorIds": [
-    "4qxMXWdrh7v64CpHGlBJIF"
-  ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "publishedDate": "2022-07-15"
 }

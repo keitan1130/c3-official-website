@@ -23,7 +23,7 @@ export function prepareContent(root = ROOT, output = OUTPUT) {
   };
   const { news, communities, about } = loadContent(root);
   const newsData = news.map(({value:item,directory}) => {
-    const metadata = { id:item.id, kind:"news", title:item.title, digest:item.digest, createdAt:item.createdAt, updatedAt:item.updatedAt, authors:item.authorIds.map(id=>({id})), tags:[] };
+    const metadata = { id:item.id, kind:"news", title:item.title, digest:item.digest, publishedDate:item.publishedDate };
     return `{...${JSON.stringify(metadata)},thumbnail:${assetReference(directory,item.thumbnail)},body:${bodyLoader(directory,item.body)}}`;
   });
   const communityData = communities.map(({value:item,directory}) => `{...${JSON.stringify({slug:item.slug,name:item.name,domain:item.domain})},mp4:${assetReference(directory,item.mp4)},body:${bodyLoader(directory,item.body)}}`);

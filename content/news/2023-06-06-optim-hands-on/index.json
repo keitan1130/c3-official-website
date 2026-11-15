@@ -2,11 +2,7 @@
   "id": "1KB6nHLVmYxB84FdikDFRq",
   "title": "C3×OPTiM合同ハンズオンイベント　〜スキャンした点群データをUnityやWebで扱おう！！〜",
   "digest": "点群データを3Dモデルに変換し、UnityやWebで扱うハンズオン",
-  "createdAt": "2023-06-06T09:18:29.074Z",
-  "updatedAt": "2023-07-15T00:45:05.428Z",
   "thumbnail": "./assets/cover.png",
-  "authorIds": [
-    "5sMs2rpHj96OJS2CHDiqyc"
-  ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "publishedDate": "2023-06-06"
 }

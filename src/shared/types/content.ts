@@ -16,27 +16,32 @@ export interface Tag {
   id: string;
   name: string;
 }
-export interface EntrySummary {
+interface EntrySummaryBase {
   id: string;
-  kind: "news" | "blog";
   title: string;
   digest: string;
-  createdAt: string;
-  updatedAt: string;
   thumbnail: string;
-  authors: AuthorReference[];
-  tags: Tag[];
 }
-export interface Entry extends EntrySummary {
+export interface NewsSummary extends EntrySummaryBase {
+  kind: "news";
+  publishedDate: string;
+}
+export interface NewsEntry extends NewsSummary {
   body: BodyLoader;
 }
-export interface BlogSummary extends EntrySummary {
+export interface BlogSummary extends EntrySummaryBase {
   kind: "blog";
+  createdAt: string;
+  updatedAt: string;
+  authors: AuthorReference[];
+  tags: Tag[];
   source: "contentful" | "toybox";
 }
 export interface BlogEntry extends BlogSummary {
   body: BodyLoader;
 }
+export type EntrySummary = NewsSummary | BlogSummary;
+export type Entry = NewsEntry | BlogEntry;
 export interface Community {
   slug: CommunitySlug;
   name: string;
@@ -52,7 +57,7 @@ export interface FeaturedWork {
 export interface ContentData {
   about: { summary: string; body: BodyLoader };
   communities: Community[];
-  news: Entry[];
+  news: NewsEntry[];
 }
 export interface BlogListResult {
   entries: BlogSummary[];

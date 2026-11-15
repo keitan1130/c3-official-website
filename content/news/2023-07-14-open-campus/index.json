@@ -2,12 +2,7 @@
   "id": "sz0VzeWi6THmMHPpERxZW",
   "title": "オープンキャンパス2023！！",
   "digest": "今年も特設サイトを公開！！現地ではサークル展示中！",
-  "createdAt": "2023-07-14T23:46:15.678Z",
-  "updatedAt": "2026-04-03T15:11:36.023Z",
   "thumbnail": "./assets/cover.png",
-  "authorIds": [
-    "5sMs2rpHj96OJS2CHDiqyc",
-    "Nf4ERyJLOVKfgD81CG2NR"
-  ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "publishedDate": "2023-07-15"
 }

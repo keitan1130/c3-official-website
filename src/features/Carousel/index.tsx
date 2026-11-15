@@ -5,6 +5,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import styles from "./index.module.css";
 
+import { formatDate } from "@/util/formatDate";
 import { formatDateTime } from "@/util/formatDateTime";
 
 import type { EntrySummary } from "@/shared/types/content";
@@ -31,7 +32,7 @@ const Carousel = ({ entries, label }: CarouselProps) => {
   }, [entries.length, isAutoPlayPaused]);
   const entry = entries[index % entries.length];
   if (!entry) return null;
-  const tags = entry.tags;
+  const tags = entry.kind === "blog" ? entry.tags : [];
   const kind = entry.kind;
   const move = (delta: number) =>
     setIndex((value) => (value + delta + entries.length) % entries.length);
@@ -70,7 +71,9 @@ const Carousel = ({ entries, label }: CarouselProps) => {
             ))}
           </div>
           <span className={styles["date"]}>
-            {formatDateTime(entry.updatedAt)}
+            {entry.kind === "news"
+              ? `投稿日：${formatDate(entry.publishedDate)}`
+              : formatDateTime(entry.updatedAt)}
           </span>
         </div>
       </Link>

@@ -2,12 +2,7 @@
   "id": "5aklq4XrU4dPcN0ab1sWuf",
   "title": "2022年度工大祭のサークル展示と模擬店のお知らせ",
   "digest": "C3はサークル展示と模擬店を出展します！ サークル展示は部員の作品やスコアアタックゲーム（スペースファイター）を展示します！ 模擬店はグッズ販売を行なっています！グッズはC3のサークル作品の本とDVDのセットと個人制作のオリジナルグッズがあります！！",
-  "createdAt": "2022-10-06T11:08:20.848Z",
-  "updatedAt": "2023-03-01T13:19:03.603Z",
   "thumbnail": "./assets/cover.jpg",
-  "authorIds": [
-    "5sMs2rpHj96OJS2CHDiqyc",
-    "4qxMXWdrh7v64CpHGlBJIF"
-  ],
-  "body": "./body.md"
+  "body": "./body.md",
+  "publishedDate": "2022-10-06"
 }
