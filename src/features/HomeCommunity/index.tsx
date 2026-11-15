@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 import styles from "./index.module.css";
 
 import videoLoading from "@/assets/video-loading.png";
@@ -17,13 +15,13 @@ const HomeCommunity = ({ community, isReversed }: HomeCommunityProps) => (
     className={styles["community"]}
     data-reversed={isReversed || undefined}
   >
-    <Link
-      className={styles["media"]}
-      to={`/community/${community.slug}`}
-      aria-label={`${community.name}を詳しく見る`}
-    >
-      <AutoplayVideo src={community.mp4} poster={videoLoading} />
-    </Link>
+    <div className={styles["media"]}>
+      <AutoplayVideo
+        src={community.mp4}
+        poster={videoLoading}
+        aria-label={`${community.name}紹介動画`}
+      />
+    </div>
     <div className={styles["text"]}>
       <h2>{community.name}</h2>
       <p>{community.domain}</p>

@@ -82,6 +82,7 @@
   }
   .media {
     position: absolute;
+    z-index: 1;
     bottom: 15vw;
     height: 55vw;
     width: 100%;
