@@ -7,6 +7,7 @@ import { registerHooks } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { contentFixture } from "./fixtures/local-content.mjs";
 import { prepareContent } from "./prepare-content.mjs";
+import { localFile } from "./local-content.mjs";
 
 test("all news folders are published and invalid metadata or missing assets fail",()=>{
  const temporary=fs.mkdtempSync(path.join(os.tmpdir(),"c3-content-"));
@@ -27,7 +28,7 @@ test("all news folders are published and invalid metadata or missing assets fail
   for (const [changes, error] of [
     [{id:"../escape"}, /Invalid news id/],
     [{digest:""}, /Missing digest/],
-    [{thumbnail:"https://example.com/image.png"}, /Invalid thumbnail/],
+    [{thumbnail:"https://example.com/image.png"}, /Expected local reference/],
     [{publishedDate:"2026-02-30"}, /Invalid publishedDate/],
     [{publishedDate:"2026-11-14T00:00:00Z"}, /Invalid publishedDate/],
     [{publishedDate:""}, /Invalid publishedDate/],
@@ -39,6 +40,76 @@ test("all news folders are published and invalid metadata or missing assets fail
   fs.unlinkSync(path.join(root,"news/readable-folder/assets/cover.png"));
   assert.throws(()=>prepareContent(root,output),/ENOENT/);
  } finally {fs.rmSync(temporary,{recursive:true,force:true});}
+});
+
+test("parsed references resolve arbitrary local folders without touching code or prose", async () => {
+ const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-markdown-"));
+ const root = path.join(temporary, "content");
+ const write = contentFixture(root);
+ const code = '```md\n![example](./assets/missing.png)\n<img src="./missing.png">\n```\n\n`![inline](./missing.png)`\n\nPlain ./missing.png C3_LOCAL_ASSET_0_END\n\n$$\n[formula](./missing.png)\n$$';
+ try {
+  write("about/index.json", {summary:"About", body:"text/body.md"});
+  const markdown = [
+   '![paren](<../photos/photo(1).png> "photo title")',
+   '![encoded](../photos/photo%20two.png?v=1#preview)',
+   '[![nested](../photos/photo.png.webp)](../photos/photo.png)',
+   '| name |\n| --- |\n| [a\\|b](../photos/photo.png) |',
+   '- [multi\n  line](../photos/photo.png)',
+   '![reference][photo]\n\n[photo]: ../photos/photo.png',
+   '<img src="../photos/photo.png?x=1&amp;y=2" alt="raw" />',
+   '<video src="../hero.mp4" poster="../photos/photo.png"><source src="../hero.mp4"><track src="../captions.vtt"></video>',
+   '<audio src="../audio.ogg"></audio>',
+   '<a href="../photos/photo.png">download</a>',
+   '<img src="../photos/photo.png?label=&quot;quoted&quot;&amp;x=1" alt="quoted" />',
+   '![remote](https://example.com/image.png)\n\n[route](/news)\n\n[anchor](#heading)',
+   code,
+  ].join("\n\n");
+  write("about/text/body.md", markdown);
+  for (const file of ["photos/photo(1).png", "photos/photo two.png", "photos/photo.png", "photos/photo.png.webp", "hero.mp4", "captions.vtt", "audio.ogg"]) write("about/" + file, "fixture");
+  write("news/example/index.json", {id:"example",title:"Example",digest:"Summary",publishedDate:"2026-11-16",body:"body.md",thumbnail:"photos/cover.png"});
+  write("news/example/body.md", "News");write("news/example/photos/cover.png", "cover");
+  write("communities/game/index.json", {domain:"Game",body:"body.md",mp4:"hero.mp4"});write("communities/game/hero.mp4", "video");
+  const output = path.join(temporary, "generated/contentData.ts");
+  prepareContent(root, output);
+  const urls = new Map();
+  const hooks = registerHooks({load(url, context, nextLoad) {
+   if (url.endsWith("?url&no-inline")) {
+    if (!urls.has(fileURLToPath(url))) urls.set(fileURLToPath(url), `/assets/file-${urls.size}${path.extname(fileURLToPath(url))}`);
+    return {format:"module",shortCircuit:true,source:`export default ${JSON.stringify(urls.get(fileURLToPath(url)))};`};
+   }
+   if (url.endsWith("?raw")) return {format:"module",shortCircuit:true,source:`export default ${JSON.stringify(fs.readFileSync(fileURLToPath(url), "utf8"))};`};
+   return nextLoad(url, context);
+  }});
+  try {
+   const {default:content} = await import(pathToFileURL(output).href);
+   const body = await content.about.body();
+   assert.ok(body.includes(code), "code and prose remain byte-for-byte unchanged");
+   const url = file => urls.get(path.join(root, "about", file));
+   for (const file of ["photos/photo(1).png", "photos/photo two.png", "photos/photo.png", "photos/photo.png.webp", "hero.mp4", "captions.vtt", "audio.ogg"]) assert.ok(body.includes(url(file)), file);
+   assert.ok(body.includes(url("photos/photo two.png") + "?v=1#preview"));
+   assert.ok(body.includes(url("photos/photo.png") + "?x=1&amp;y=2"));
+   assert.ok(body.includes(`src="${url("hero.mp4")}"`));
+   assert.ok(body.includes(`poster="${url("photos/photo.png")}"`));
+   assert.ok(body.includes("https://example.com/image.png"));
+   assert.ok(body.includes("[route](/news)"));
+   assert.ok(body.includes("[anchor](#heading)"));
+   assert.ok(body.includes(`[photo]: ${url("photos/photo.png")}`));
+   assert.ok(body.includes(`[![nested](${url("photos/photo.png.webp")})](${url("photos/photo.png")})`));
+   assert.ok(body.includes(`| [a\\|b](${url("photos/photo.png")}) |`));
+   assert.ok(body.includes(`- [multi\n  line](${url("photos/photo.png")})`));
+   assert.ok(body.includes(`${url("photos/photo.png")}?label=%22quoted%22&amp;x=1`));
+   assert.ok(body.includes('"photo title"'));
+  } finally { hooks.deregister(); }
+  for (const body of ['![bad](../../outside.png)', '<img src="../../outside.png">']) {
+   write("about/text/body.md", body);
+   assert.throws(() => prepareContent(root, output), /Invalid local reference/);
+  }
+  write("about/text/body.md", '![missing](../photos/missing.png)');
+  assert.throws(() => prepareContent(root, output), /ENOENT/);
+  write("outside.png", "outside");
+  fs.symlinkSync(path.join(root, "outside.png"), path.join(root, "about", "link.png"));
+  assert.throws(() => localFile(path.join(root, "about"), "link.png"), /Invalid local reference/);
+ } finally {fs.rmSync(temporary, {recursive:true, force:true});}
 });
 
 test("asset URLs with a shared filename prefix are resolved independently", async () => {
@@ -55,7 +126,7 @@ test("asset URLs with a shared filename prefix are resolved independently", asyn
   // Model Vite's raw-text and asset-URL imports while executing the generated loader.
   const assetUrls={"photo.png":"/assets/photo-first.png","photo.png.webp":"/assets/photo-second.webp"};
   const hooks=registerHooks({load(url,context,nextLoad){
-   if(url.endsWith("?url"))return {format:"module",shortCircuit:true,source:`export default ${JSON.stringify(assetUrls[path.basename(fileURLToPath(url))] ?? "/assets/fixture")};`};
+   if(url.endsWith("?url&no-inline"))return {format:"module",shortCircuit:true,source:`export default ${JSON.stringify(assetUrls[path.basename(fileURLToPath(url))] ?? "/assets/fixture")};`};
    if(url.endsWith("?raw"))return {format:"module",shortCircuit:true,source:`export default ${JSON.stringify(fs.readFileSync(fileURLToPath(url),"utf8"))};`};
    return nextLoad(url,context);
   }});
@@ -79,7 +150,7 @@ test("news is sorted by publication date, then by stable id", async () => {
   const output=path.join(temporary,"generated/contentData.ts");
   prepareContent(root,output);
   const hooks=registerHooks({load(url,context,nextLoad){
-   if(url.endsWith("?url"))return {format:"module",shortCircuit:true,source:'export default "/assets/cover.png";'};
+   if(url.endsWith("?url&no-inline"))return {format:"module",shortCircuit:true,source:'export default "/assets/cover.png";'};
    return nextLoad(url,context);
   }});
   try {

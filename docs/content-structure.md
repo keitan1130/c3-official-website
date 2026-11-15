@@ -16,7 +16,9 @@ content/
 
 C3ロゴの元画像は `public/C3Logo.svg` です。画面は `SITE.logo` を参照し、favicon・端末用アイコン・OGP用PNG・新規ニュースの仮画像は同じSVGから生成したPNGを使用します。その他の共通アイコン・動画読み込み用画像は `src/assets/` に配置します。記事・紹介本文に付属する素材は `content/` 内の各 `assets/` に配置します。サイト設定・固定ページ名・外部リンクは `src/config/site.ts`、分野名・表示順は `src/config/communities.ts` で管理します。
 
-本文は `body.md`、設定は `index.json`、素材は `assets/` に統一します。本文やJSONから `./assets/cover.jpg` のように相対参照します。写真を `public/` へ二重コピーする必要はありません。
+本文は `body.md`、設定は `index.json`、素材の標準配置は `assets/` です。`assets` は整理のための名前で、表示処理の必須条件ではありません。`./hero.mp4`、`photos/photo-07.png` など、同じ記事・ページのフォルダ内なら別の配置も使えます。写真を `public/` へ二重コピーする必要はありません。
+
+JSONの相対パスは `index.json` のあるフォルダを基準に、本文の相対URLはMarkdownファイルのあるフォルダを基準に解決します。`./` は省略できます。記事・ページのフォルダ外への参照は、シンボリックリンク経由も含めてエラーにします。サイト内のページへのリンクは `/news/...` のように `/` から書きます。
 
 ## ニュースの追加
 
@@ -47,6 +49,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 
 - 見出し・箇条書き・リンク・画像・GFMの表など、`MarkdownPreview` が対応する記法を使います。日本語の文中の強調は `グッズの**割引券**が貰えます` のように `**` で囲みます。`__` は前後の文字によって強調にならない場合があります。
 - 画像は原則 `![画像の説明](./assets/photo.jpg)` で記述します。幅の指定が必要なら `<img src="./assets/photo.jpg" alt="画像の説明" width="200" />` を使えます。画像の高さやパーセント幅は指定できません。
+- 空白を含むファイル名は `![画像](<./photos/photo (1).png>)` またはURLエンコードで記述できます。参照形式の画像・リンク、HTMLの画像・動画・音声・poster・source・trackも相対URLを解決します。クエリ・フラグメントは保持し、コードブロック・インラインコード内の例や通常の文章は変換しません。
 - `div` による中央寄せ・flex配置、`b` タグ、spanのmarginやfont-styleは表示側で除去されます。段落・空行・`**強調**`・画像を使って構成します。
 - 表内の `<br>` と、spanの許可された文字色・文字サイズは利用できます。raw HTMLの全要素・全スタイルに対応しているわけではありません。許可内容は [markdownSchema.ts](../src/features/MarkdownPreview/markdownSchema.ts) と [rehypeMarkdownStyles.ts](../src/features/MarkdownPreview/rehypeMarkdownStyles.ts) を参照してください。
 
@@ -67,7 +70,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 
 ## 検査と素材
 
-`scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事の `./assets/` 内のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
-本文は遅延読込し、相対参照をビルド時に配信用URLへ変換します。Markdownのsanitize処理は維持します。新しい素材は用途の分かる名前で保存し、表示・再生を確認してください。
+`scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事フォルダ内のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
+本文は遅延読込し、構文解析した相対参照をビルド時に配信用URLへ変換します。素材はサイズにかかわらずファイルとして出力し、Markdownのsanitize処理は維持します。新しい素材は用途の分かる名前で保存し、表示・再生を確認してください。`npm run build && npm run test:content:browser` でビルド成果物の全本文と画像・動画をPC・モバイル幅で検証できます。
 
 命名は [命名規則](naming-conventions.md)、配信条件は [Cloudflare Pages](cloudflare-pages.md) を参照します。
