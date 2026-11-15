@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { loadContent, localFile } from "./local-content.mjs";
-import { SITE, PAGES, createPageMetadata } from "../src/config/site.ts";
+import { SITE, PAGE_TITLES } from "../src/config/site.ts";
+import { createPageMetadata } from "../src/util/pageMetadata.ts";
 const { about, communities, news } = loadContent();
 const origin=SITE.origin;
 const template=fs.readFileSync("dist/index.html","utf8");
@@ -13,9 +14,9 @@ const metadata=(title,description,url,image,isError=false)=>{
 const routes=[];
 function emit(route,title,description,image){const file=route==="/"?"dist/index.html":path.join("dist",route.slice(1)+".html");fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,metadata(title,description,origin+route,image));routes.push(route);}
 fs.mkdirSync(path.dirname("dist"+SITE.defaultImage),{recursive:true});fs.copyFileSync("public/favicon.png","dist"+SITE.defaultImage);
-emit(PAGES.home.path,PAGES.home.title,SITE.description);
-emit(PAGES.about.path,PAGES.about.title,about.value.summary);
-emit(PAGES.news.path,PAGES.news.title,SITE.description);emit(PAGES.blog.path,PAGES.blog.title,SITE.description);
+emit("/",SITE.title,SITE.description);
+emit("/about",PAGE_TITLES.about,about.value.summary);
+emit("/news",PAGE_TITLES.news,SITE.description);emit("/blog",PAGE_TITLES.blog,SITE.description);
 for(const {value:item} of communities)emit(`/community/${item.slug}`,item.name,item.domain);
 for(const {value:item,directory} of news){const source=localFile(directory,item.thumbnail);const image=`/ogp/news/${item.id}${path.extname(source)}`;fs.mkdirSync("dist/ogp/news",{recursive:true});fs.copyFileSync(source,"dist"+image);emit(`/news/${item.id}`,item.title,item.digest,image);}
 fs.writeFileSync("dist/404.html",metadata("404","ページが見つかりません。",origin+"/404",undefined,true));

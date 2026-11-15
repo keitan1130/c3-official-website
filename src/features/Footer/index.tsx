@@ -1,7 +1,9 @@
 import styles from "./index.module.css";
 
-import { EXTERNAL_LINKS, FOOTER_LINK_ORDER, SITE } from "@/config/site";
+import { EXTERNAL_LINKS, SITE } from "@/config/site";
 import ExternalLinkIcon from "@/features/ExternalLinkIcon";
+
+const FOOTER_LINK_ORDER = ["toybox", "x", "youtube", "github"] as const;
 
 const Footer = () => (
   <footer className={styles["footer"]}>

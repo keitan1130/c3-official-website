@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-import { createPageMetadata, SITE } from "@/config/site";
+import { SITE } from "@/config/site";
+import { createPageMetadata } from "@/util/pageMetadata";
 
 interface PageMetaProps {
   title: string;

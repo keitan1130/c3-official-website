@@ -60,7 +60,7 @@
 - ブログは Contentfulと外部ブログ の API 境界を分け、失敗してもローカル本文の表示を止めません。作品欄はGoの公開作品APIから最新20件を取得し、ホームとAboutで共有します。
 - SWRは外部取得のcacheに使います。局所状態はReactのstateで管理し、静的Markdownのために状態管理ライブラリを追加しません。
 - SWR の Suspense を採用する場合は loading / error boundary / 再試行を一式で設計します。ルートで有効化済みと仮定しません。
-- サイト・ページ名・外部URLは `src/config/site.ts`、分野定義は `src/config/communities.ts` を参照します。記事本文や素材だけを `content/` に配置し、ニュースにタグ設定を追加しません。
+- サイト・ページ名・外部URLは `src/config/site.ts`、分野定義は `src/config/communities.ts` を参照します。ルートとリンク先は利用箇所に直接記述します。メタ情報の値は `src/util/pageMetadata.ts` で生成します。記事本文や素材だけを `content/` に配置し、ニュースにタグ設定を追加しません。
 - SWR key にはresponseを変える記事ID・著者IDなどを含めます。ブログはIDが重複しない前提で、詳細URLを `/blog/:id`、詳細キーを `["blog", id]` に統一します。UUIDはToybox、それ以外はContentfulから取得し、別サービスへのフォールバックは行いません。
 - ブログ・著者別ブログは全件取得を維持し、画面のページングは追加しません。Contentful一覧は本文を除外し、Toybox一覧は本文を含む既存レスポンスを使用します。
 - 再試行時に無関係な cache を全消去しません。正常な空配列と通信失敗、404 と通信エラーを区別します。

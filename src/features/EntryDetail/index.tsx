@@ -3,7 +3,7 @@ import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 
 import styles from "./index.module.css";
 
-import { PAGES } from "@/config/site";
+import { PAGE_TITLES } from "@/config/site";
 import AuthorBadge from "@/features/AuthorBadge";
 import BodyContent from "@/features/BodyContent";
 import EntryDates from "@/features/EntryDates";
@@ -20,7 +20,7 @@ interface EntryDetailProps {
 }
 const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
   const kind = entry.kind;
-  const label = PAGES[kind].title;
+  const label = PAGE_TITLES[kind];
   const tags = entry.kind === "blog" ? entry.tags : [];
   return (
     <section className={styles["entry"]}>
@@ -30,7 +30,7 @@ const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
         image={entry.thumbnail}
       />
       <Breadcrumbs
-        items={[{ label, url: PAGES[kind].path }, { label: entry.title }]}
+        items={[{ label, url: `/${kind}` }, { label: entry.title }]}
       />
       <div className={styles["layout"]}>
         <Paper className={styles["article"]}>

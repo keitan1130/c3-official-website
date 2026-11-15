@@ -27,33 +27,10 @@ export const EXTERNAL_LINKS = {
     label: "C3 Youtubeチャンネル",
   },
 } as const;
-export const HEADER_LINK_ORDER = ["toybox", "x", "github", "youtube"] as const;
-export const FOOTER_LINK_ORDER = ["toybox", "x", "youtube", "github"] as const;
 export type ExternalLinkId = keyof typeof EXTERNAL_LINKS;
 
-export const PAGES = {
-  home: { path: "/", title: SITE.title, navigationLabel: "HOME" },
-  about: { path: "/about", title: "C3について" },
-  news: { path: "/news", title: "お知らせ" },
-  blog: { path: "/blog", title: "ブログ" },
-  notFound: { path: "/404", title: "404" },
+export const PAGE_TITLES = {
+  about: "C3について",
+  news: "お知らせ",
+  blog: "ブログ",
 } as const;
-
-interface PageMetadataInput {
-  title: string;
-  pathname: string;
-  description?: string;
-  image?: string;
-}
-export const createPageMetadata = ({
-  title,
-  pathname,
-  description = SITE.description,
-  image,
-}: PageMetadataInput) => ({
-  title: `${title} | ${SITE.shortName}`,
-  ogTitle: title,
-  description,
-  url: new URL(pathname, SITE.origin).href,
-  image: new URL(image || SITE.defaultImage, SITE.origin).href,
-});

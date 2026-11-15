@@ -2,7 +2,8 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import { loadContent } from "./local-content.mjs";
-import { SITE, PAGES, EXTERNAL_LINKS, HEADER_LINK_ORDER, FOOTER_LINK_ORDER, createPageMetadata } from "../src/config/site.ts";
+import { SITE, EXTERNAL_LINKS } from "../src/config/site.ts";
+import { createPageMetadata } from "../src/util/pageMetadata.ts";
 
 const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
 const browser = await chromium.launch({ headless: true });
@@ -121,10 +122,10 @@ try {
  await page.getByRole("region",{name:"最新のブログ"}).waitFor();
  assert.equal(await page.getByRole("region",{name:"最新のブログ"}).getByRole("button",{name:/のスライド[0-9]+を表示/}).count(),5);
  assert.ok(requests.some(url=>url.searchParams.get("skip")==="100"));
- assert.equal(await page.title(),createPageMetadata({title:PAGES.home.title,pathname:"/"}).title);
- assert.deepEqual(await page.locator("footer nav a").evaluateAll(links=>links.map(link=>link.href)),FOOTER_LINK_ORDER.map(id=>EXTERNAL_LINKS[id].url));
+ assert.equal(await page.title(),createPageMetadata({title:SITE.title,pathname:"/"}).title);
+ assert.deepEqual(await page.locator("footer nav a").evaluateAll(links=>links.map(link=>link.href)),["toybox", "x", "youtube", "github"].map(id=>EXTERNAL_LINKS[id].url));
  await page.getByRole("button",{name:"メニューを開く",exact:true}).click();
- for(const id of HEADER_LINK_ORDER)assert.equal(await page.getByRole("navigation",{name:"メインメニュー"}).getByRole("link",{name:EXTERNAL_LINKS[id].label,exact:true}).getAttribute("href"),EXTERNAL_LINKS[id].url);
+ for(const id of ["toybox", "x", "github", "youtube"])assert.equal(await page.getByRole("navigation",{name:"メインメニュー"}).getByRole("link",{name:EXTERNAL_LINKS[id].label,exact:true}).getAttribute("href"),EXTERNAL_LINKS[id].url);
  await page.keyboard.press("Escape");
  const checks=await page.evaluate(async({existing,missing})=>{
   const {getBlog,getBlogs}=await import("/src/util/blogRepository.ts");

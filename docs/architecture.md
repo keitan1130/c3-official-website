@@ -6,7 +6,8 @@ Vite + React + TypeScriptのSPAです。紹介・分野・ニュースをビル�
 
 | 場所 | 責務 |
 | --- | --- |
-| `src/config/site.ts` | サイト名・説明・公開origin・既定OGP画像・固定ページ名・外部リンク・メタ情報の値の生成 |
+| `src/config/site.ts` | サイト名・説明・公開origin・既定OGP画像・固定ページ名・外部リンク |
+| `src/util/pageMetadata.ts` | HTML生成とReactで共有するタイトル・canonical・OGPの値の生成 |
 | `src/config/communities.ts` | 分野のslug・名称・表示順。Aboutのリンク順は用途を分けて明示 |
 | `content/about/` | 概要・Markdown本文・素材 |
 | `content/communities/<slug>/` | 紹介文・動画・Markdown本文・素材。slugはフォルダ名で設定コードと対応 |
@@ -18,7 +19,7 @@ Vite + React + TypeScriptのSPAです。紹介・分野・ニュースをビル�
 | `public/` のPNG・ICO・manifest | 同じSVGから `icons:generate` で生成するブラウザ・端末用アイコン |
 | `src/assets/` | その他の共通アイコン・動画poster |
 
-公開originは `SITE.origin` の固定値です。環境変数による上書きは行いません。HeaderとFooterの外部URLは共通定義を参照し、表示ラベルも共通化し、順序はそれぞれに指定できます。ナビゲーション・固定ページ・配信用HTMLは `PAGES` のページ名を参照します。
+公開originは `SITE.origin` の固定値です。環境変数による上書きは行いません。HeaderとFooterの外部URLは共通定義を参照し、表示ラベルも共通化し、順序はそれぞれに指定できます。ナビゲーション・固定ページ・配信用HTMLは `PAGE_TITLES` のページ名を参照します。トップページ名は `SITE.title` を使います。ルートとリンク先は利用箇所に直接記述し、Header・Footerの外部リンクの表示順も各コンポーネント内で管理します。
 
 ## 生成と表示
 

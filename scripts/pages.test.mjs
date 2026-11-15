@@ -6,7 +6,8 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { contentFixture } from "./fixtures/local-content.mjs";
-import { SITE, PAGES, createPageMetadata } from "../src/config/site.ts";
+import { SITE } from "../src/config/site.ts";
+import { createPageMetadata } from "../src/util/pageMetadata.ts";
 
 const prepareScript = fileURLToPath(new URL("./prepare-pages.mjs", import.meta.url));
 const contentScript = fileURLToPath(new URL("./prepare-content.mjs", import.meta.url));
@@ -32,7 +33,7 @@ test("static pages follow current content rather than a fixed page count", () =>
   build();
   assert.match(fs.readFileSync(path.join(root,"dist/news/published.html"),"utf8"),/A &quot;quoted&quot; title/);
   const home = fs.readFileSync(path.join(root,"dist/index.html"),"utf8");
-  assert.ok(home.includes(createPageMetadata({title:PAGES.home.title,pathname:"/"}).title));
+  assert.ok(home.includes(createPageMetadata({title:SITE.title,pathname:"/"}).title));
   assert.ok(home.includes(SITE.origin));
   execFileSync(process.execPath,[newScript,"2026-11-15-new-event"],{cwd:root});
   build();

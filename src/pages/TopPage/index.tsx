@@ -1,6 +1,6 @@
 import styles from "./index.module.css";
 
-import { PAGES } from "@/config/site";
+import { SITE } from "@/config/site";
 import FeaturedWorks from "@/features/FeaturedWorks";
 import HomeBlog from "@/features/HomeBlog";
 import HomeCommunity from "@/features/HomeCommunity";
@@ -11,7 +11,7 @@ import { CONTENT } from "@/util/contentRepository";
 
 const TopPage = () => (
   <>
-    <PageMeta title={PAGES.home.title} />
+    <PageMeta title={SITE.title} />
     <HomeHero />
     <div className={styles["section"]}>
       <HomeIntroduction />

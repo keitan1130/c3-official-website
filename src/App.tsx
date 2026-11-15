@@ -1,7 +1,6 @@
 import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { PAGES } from "@/config/site";
 import AppLayout from "@/features/AppLayout";
 
 const TopPage = lazy(() => import("@/pages/TopPage"));
@@ -16,13 +15,13 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const App = () => (
   <Routes>
     <Route element={<AppLayout />}>
-      <Route path={PAGES.home.path} element={<TopPage />} />
-      <Route path={PAGES.about.path} element={<AboutPage />} />
+      <Route path="/" element={<TopPage />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route path="/community/:slug" element={<CommunityPage />} />
-      <Route path={PAGES.news.path} element={<NewsPage />} />
+      <Route path="/news" element={<NewsPage />} />
       <Route path="/news/:id" element={<NewsDetailPage />} />
       <Route path="/author/:id" element={<AuthorPage />} />
-      <Route path={PAGES.blog.path} element={<BlogPage />} />
+      <Route path="/blog" element={<BlogPage />} />
       <Route path="/blog/:id" element={<BlogDetailPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Route>

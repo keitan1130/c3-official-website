@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 
 import styles from "./index.module.css";
 
-import { PAGES } from "@/config/site";
-
 interface BreadcrumbsProps {
   items: { label: string; url?: string }[];
   isPageHeading?: boolean;
@@ -12,7 +10,7 @@ const Breadcrumbs = ({ items, isPageHeading = false }: BreadcrumbsProps) => (
   <nav className={styles["breadcrumbs"]} aria-label="パンくずリスト">
     <ol>
       <li>
-        <Link to={PAGES.home.path}>ホーム</Link>
+        <Link to="/">ホーム</Link>
       </li>
       {items.map((item, index) => {
         const isCurrent = index === items.length - 1;

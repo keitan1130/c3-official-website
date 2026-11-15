@@ -1,6 +1,6 @@
 import styles from "./index.module.css";
 
-import { PAGES, SITE } from "@/config/site";
+import { PAGE_TITLES, SITE } from "@/config/site";
 import BodyContent from "@/features/BodyContent";
 import CommunityLinks from "@/features/CommunityLinks";
 import FeaturedWorks from "@/features/FeaturedWorks";
@@ -11,8 +11,8 @@ import { CONTENT } from "@/util/contentRepository";
 
 const AboutPage = () => (
   <div className={styles["page"]}>
-    <PageMeta title={PAGES.about.title} description={CONTENT.about.summary} />
-    <Breadcrumbs isPageHeading items={[{ label: PAGES.about.title }]} />
+    <PageMeta title={PAGE_TITLES.about} description={CONTENT.about.summary} />
+    <Breadcrumbs isPageHeading items={[{ label: PAGE_TITLES.about }]} />
     <Paper>
       <img className={styles["logo"]} src={SITE.logo} alt="C3" />
       <BodyContent load={CONTENT.about.body} />

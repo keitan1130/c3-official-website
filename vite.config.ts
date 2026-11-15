@@ -6,7 +6,8 @@ import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite";
 
 import { prepareContent } from "./scripts/prepare-content.mjs";
-import { createPageMetadata, PAGES, SITE } from "./src/config/site.ts";
+import { SITE } from "./src/config/site.ts";
+import { createPageMetadata } from "./src/util/pageMetadata.ts";
 
 import path from "node:path";
 
@@ -18,8 +19,8 @@ export default defineConfig({
       name: "site-metadata",
       transformIndexHtml() {
         const meta = createPageMetadata({
-          title: PAGES.home.title,
-          pathname: PAGES.home.path,
+          title: SITE.title,
+          pathname: "/",
         });
         return [
           { tag: "title", children: meta.title, injectTo: "head" },

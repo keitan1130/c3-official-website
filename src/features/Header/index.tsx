@@ -11,31 +11,33 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import styles from "./index.module.css";
 
 import { COMMUNITIES } from "@/config/communities";
-import { EXTERNAL_LINKS, HEADER_LINK_ORDER, PAGES, SITE } from "@/config/site";
+import { EXTERNAL_LINKS, PAGE_TITLES, SITE } from "@/config/site";
 import CommunityIcon from "@/features/CommunityIcon";
 import ExternalLinkIcon from "@/features/ExternalLinkIcon";
 import ThemeToggle from "@/features/ThemeToggle";
 import { lockPageScroll } from "@/util/pageScroll";
 
+const HEADER_LINK_ORDER = ["toybox", "x", "github", "youtube"] as const;
+
 const NAVIGATION = [
   {
-    title: PAGES.home.navigationLabel,
-    url: PAGES.home.path,
+    title: "HOME",
+    url: "/",
     icon: <HomeIcon />,
   },
   {
-    title: PAGES.about.title,
-    url: PAGES.about.path,
+    title: PAGE_TITLES.about,
+    url: "/about",
     icon: <GroupsIcon />,
   },
   {
-    title: PAGES.news.title,
-    url: PAGES.news.path,
+    title: PAGE_TITLES.news,
+    url: "/news",
     icon: <InfoIcon />,
   },
   {
-    title: PAGES.blog.title,
-    url: PAGES.blog.path,
+    title: PAGE_TITLES.blog,
+    url: "/blog",
     icon: <ArticleIcon />,
   },
 ] as const;

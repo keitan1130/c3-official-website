@@ -38,7 +38,7 @@ npm run test:storybook
 
 `preview:pages` は生成ファイルのルート・初期HTML・404を確認するローカル配信モデルです。Cloudflareでの検証とは別です。
 
-サイト名・公開origin・外部リンク・固定ページ名は `src/config/site.ts`、分野の名称・表示順は `src/config/communities.ts` で管理します。公開originは固定値で、HTML生成と画面遷移後のメタ情報が同じ設定を直接参照します。
+サイト名・公開origin・外部リンク・固定ページ名は `src/config/site.ts`、分野の名称・表示順は `src/config/communities.ts` で管理します。公開originは固定値で、HTML生成と画面遷移後のメタ情報は `src/util/pageMetadata.ts` で生成します。ルートとリンク先は利用箇所に直接記述し、Header・Footerの外部リンクの表示順は各コンポーネントで管理します。
 
 ## ガイド
 

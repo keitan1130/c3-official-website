@@ -3,7 +3,7 @@ import useSWR from "swr";
 
 import styles from "./index.module.css";
 
-import { PAGES } from "@/config/site";
+import { PAGE_TITLES } from "@/config/site";
 import BlogStatus from "@/features/BlogStatus";
 import EntryGrid from "@/features/EntryGrid";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
@@ -21,8 +21,8 @@ const BlogPage = () => {
   );
   return (
     <section className={styles["page"]}>
-      <PageMeta title={PAGES.blog.title} />
-      <Breadcrumbs isPageHeading items={[{ label: PAGES.blog.title }]} />
+      <PageMeta title={PAGE_TITLES.blog} />
+      <Breadcrumbs isPageHeading items={[{ label: PAGE_TITLES.blog }]} />
       {tag && <p>タグ：{tag}</p>}
       <BlogStatus
         isLoading={isLoading}
