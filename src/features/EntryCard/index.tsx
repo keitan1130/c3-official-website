@@ -6,7 +6,9 @@ import styles from "./index.module.css";
 
 import AuthorBadge from "@/features/AuthorBadge";
 import EntryDates from "@/features/EntryDates";
+import Batch from "@/shared/ui/Batch";
 import LoadingImage from "@/shared/ui/LoadingImage";
+import { normalizeTagNameInput } from "@/util/tagName";
 
 import type { EntrySummary } from "@/shared/types/content";
 
@@ -36,19 +38,19 @@ const EntryCard = ({ entry }: EntryCardProps) => {
         )}
       </div>
       <div className={styles["content"]}>
+        <div className={styles["tags"]}>
+          {tags.map((tag) => (
+            <Link key={tag.id} to={`/blog?tag=${encodeURIComponent(tag.name)}`}>
+              <Batch color="selected">{normalizeTagNameInput(tag.name)}</Batch>
+            </Link>
+          ))}
+        </div>
         <h2 className={styles["title"]} title={entry.title}>
           <Link className={styles["primary"]} to={url}>
             {entry.title}
           </Link>
         </h2>
         <p className={styles["summary"]}>{entry.digest.trim() || null}</p>
-        <div className={styles["tags"]}>
-          {tags.map((tag) => (
-            <Link key={tag.id} to={`/blog?tag=${encodeURIComponent(tag.name)}`}>
-              {tag.name}
-            </Link>
-          ))}
-        </div>
         <div className={styles["meta"]}>
           {entry.kind === "blog" && (
             <div className={styles["authors"]}>

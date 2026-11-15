@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 
 import styles from "./index.module.css";
 
@@ -11,6 +10,7 @@ import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import LoadingImage from "@/shared/ui/LoadingImage";
 import PageMeta from "@/shared/ui/PageMeta";
 import Paper from "@/shared/ui/Paper";
+import TagLinkList from "@/shared/ui/TagLinkList";
 
 import type { Entry, EntrySummary } from "@/shared/types/content";
 
@@ -45,22 +45,7 @@ const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
             )}
             <header className={styles["article-header"]}>
               <h1>{entry.title}</h1>
-              {tags.length > 0 && (
-                <div className={styles["tags"]}>
-                  <LocalOfferOutlinedIcon
-                    className={styles["meta-icon"]}
-                    aria-hidden="true"
-                  />
-                  {tags.map((tag) => (
-                    <Link
-                      key={tag.id}
-                      to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
-                    >
-                      {tag.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
+              <TagLinkList tags={tags} />
               <EntryDates entry={entry} />
               {entry.kind === "blog" && entry.authors.length > 0 && (
                 <div className={styles["authors"]}>

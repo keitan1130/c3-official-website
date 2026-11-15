@@ -5,8 +5,10 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import styles from "./index.module.css";
 
+import Batch from "@/shared/ui/Batch";
 import { formatDate } from "@/util/formatDate";
 import { formatDateTime } from "@/util/formatDateTime";
+import { normalizeTagNameInput } from "@/util/tagName";
 
 import type { EntrySummary } from "@/shared/types/content";
 
@@ -64,12 +66,14 @@ const Carousel = ({ entries, label }: CarouselProps) => {
       >
         <img src={entry.thumbnail} alt="" draggable={false} />
         <div className={styles["caption"]}>
-          <span className={styles["title"]}>{entry.title}</span>
           <div className={styles["tags"]}>
             {tags.map((tag) => (
-              <span key={tag.id}>{tag.name}</span>
+              <Batch key={tag.id} color="selected">
+                {normalizeTagNameInput(tag.name)}
+              </Batch>
             ))}
           </div>
+          <span className={styles["title"]}>{entry.title}</span>
           <span className={styles["date"]}>
             {entry.kind === "news"
               ? `投稿日：${formatDate(entry.publishedDate)}`

@@ -37,7 +37,6 @@
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
-.tags,
 .authors {
   display: flex;
   gap: 6px;
@@ -46,21 +45,6 @@
   width: 100%;
   min-width: 0;
   font-size: 14px;
-}
-.tags a {
-  background: var(--paper-color);
-  border: 1px solid var(--border-color);
-  padding: 1px 8px;
-  border-radius: 20px;
-  color: var(--font-color);
-  text-decoration: none;
-  font-size: 14px;
-}
-.meta-icon {
-  color: var(--font-muted-color);
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
 }
 .summary {
   width: 100%;
