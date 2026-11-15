@@ -60,6 +60,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 - 空白を含むファイル名は `![画像](<./photos/photo (1).png>)` またはURLエンコードで記述できます。参照形式の画像・リンク、HTMLの画像・動画・音声・poster・source・trackも相対URLを解決します。クエリ・フラグメントは保持し、コードブロック・インラインコード内の例や通常の文章は変換しません。
 - `div` による中央寄せ・flex配置、`b` タグ、spanのmarginやfont-styleは表示側で除去されます。段落・空行・`**強調**`・画像を使って構成します。
 - 表内の `<br>` と、spanの許可された文字色・文字サイズは利用できます。raw HTMLの全要素・全スタイルに対応しているわけではありません。許可内容は [markdownSchema.ts](../src/features/MarkdownPreview/markdownSchema.ts) と [rehypeMarkdownStyles.ts](../src/features/MarkdownPreview/rehypeMarkdownStyles.ts) を参照してください。
+- 参照形式のリンク・画像は、本文で使われる識別子の最初の定義だけを検査・変換します。識別子の大文字小文字と連続する空白は同一視します。未使用の定義と重複した2件目以降の定義は、そのまま保持します。採用される素材が存在しない場合はエラーになります。
 - 見出し・手動指定ID・脚注へのリンクは `#名前` を使います。例: `<p id="custom-anchor">本文</p>` に `[本文へ](#custom-anchor)` または `記事URL#custom-anchor` で移動できます。`[^note]` の脚注は `#fn-note`、本文への戻り先は `#fnref-note`（再参照は `#fnref-note-2`）です。内部IDの保護用接頭辞は記述しません。直接アクセス・再読込・本文内クリックで、対象を含む折りたたみも開きます。
 
 ## 自動検出とURL

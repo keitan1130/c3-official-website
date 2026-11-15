@@ -8,6 +8,50 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { contentFixture } from "./fixtures/local-content.mjs";
 import { prepareContent } from "./prepare-content.mjs";
 import { localFile, assetFile } from "./local-content.mjs";
+import { markdownAssetEdits } from "./markdown-assets.mjs";
+
+test("only referenced first definitions are validated and rewritten", () => {
+ const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-definitions-"));
+ const root = path.join(temporary, "content");
+ const write = contentFixture(root);
+ const output = path.join(temporary, "generated/contentData.ts");
+ try {
+  write("about/assets/valid.png", "image");
+  const ignored = '[unused]: ./assets/missing.png\n\n[unused-image]: ./outside.png\n\n[photo]: ./assets/ignored.png';
+  const markdown = '[ Photo ]: ./assets/valid.png\n\n![full][photo]\n\n![PHOTO][]\n\n![Photo]\n\n[download][Photo]\n\n' + ignored;
+  write("about/body.md", markdown);
+  prepareContent(root, output);
+  const resolved = [];
+  const edits = markdownAssetEdits(markdown, (url, _context, kind) => {
+   resolved.push({url, kind});return "/assets/resolved.png";
+  });
+  assert.deepEqual(resolved, [{url:"./assets/valid.png",kind:"media"}]);
+  let body = markdown;
+  for (const edit of edits.toReversed()) body = body.slice(0,edit.start)+edit.value+body.slice(edit.end);
+  assert.ok(body.startsWith('[ Photo ]: /assets/resolved.png'));
+  assert.ok(body.endsWith(ignored), "unused and duplicate definitions remain unchanged");
+  for (const markdown of [
+   'Text.\n\n[unused]: ./assets/missing.png',
+   '[page][ref]\n\n[ref]: ../about\n\n[REF]: ./assets/missing.png',
+   '![photo][ref]\n\n[ref]: https://example.com/image.png\n\n[REF]: ./assets/missing.png',
+   '`![sample][unused]`\n\n```md\n[unused]\n```\n\n[unused]: ./assets/missing.png',
+  ]) {
+   write("about/body.md", markdown);
+   assert.doesNotThrow(() => prepareContent(root, output), markdown);
+  }
+  for (const markdown of [
+   '![used][ref]\n\n[ref]: ./assets/missing.png',
+   '[download][ref]\n\n[ref]: ./assets/missing.png',
+   '![used][ref]\n\n[ref]: ./assets/missing.png\n\n[REF]: ./assets/valid.png',
+  ]) {
+   write("about/body.md", markdown);
+   assert.throws(() => prepareContent(root, output), /ENOENT/, markdown);
+  }
+  const normalized = [];
+  markdownAssetEdits('[link][Spaced label]\n\n[spaced\t LABEL]: ./assets/valid.png\n\n[SPACED label]: ./assets/missing.png', (url, _context, kind) => {normalized.push({url,kind});return url;});
+  assert.deepEqual(normalized, [{url:'./assets/valid.png',kind:'link'}]);
+ } finally {fs.rmSync(temporary, {recursive:true,force:true});}
+});
 
 test("all news folders are published and invalid metadata or missing assets fail",()=>{
  const temporary=fs.mkdtempSync(path.join(os.tmpdir(),"c3-content-"));

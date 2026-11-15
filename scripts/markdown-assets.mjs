@@ -12,6 +12,7 @@ export function markdownAssetEdits(text, resolve) {
   const edits = [];
   const events = postprocess(parse({ extensions: [gfm(), math()] }).document().write(preprocess()(text, undefined, true)));
   const imageReferences = new Set();
+  const usedReferences = new Set();
   const references = [];
   // Definitions can be shared by links and images, and can appear before use.
   for (const [kind, token] of events) {
@@ -24,11 +25,17 @@ export function markdownAssetEdits(text, resolve) {
       if (token.type === "resource") reference.hasResource = true;
     } else if (token.type === "image" || token.type === "link") {
       references.pop();
-      if (reference.type === "image" && !reference.hasResource) imageReferences.add(normalizeIdentifier(reference.identifier ?? reference.label ?? ""));
+      if (!reference.hasResource) {
+        const identifier = normalizeIdentifier(reference.identifier ?? reference.label ?? "");
+        usedReferences.add(identifier);
+        if (reference.type === "image") imageReferences.add(identifier);
+      }
     }
   }
   const containers = [];
   let definition;
+  let isActiveDefinition = false;
+  const seenDefinitions = new Set();
   for (const [kind, token] of events) {
     if (kind === "exit") {
       if (token.type === "image" || token.type === "link") containers.pop();
@@ -38,8 +45,15 @@ export function markdownAssetEdits(text, resolve) {
     const start = token.start.offset;
     const end = token.end.offset;
     const source = text.slice(start, end);
-    if (token.type === "definitionLabelString") definition = normalizeIdentifier(source);
+    if (token.type === "definitionLabelString") {
+      definition = normalizeIdentifier(source);
+      isActiveDefinition = usedReferences.has(definition) && !seenDefinitions.has(definition);
+      seenDefinitions.add(definition);
+    }
     if (token.type === "resourceDestinationString" || token.type === "definitionDestinationString") {
+      // CommonMark uses the first definition only, and unused definitions do
+      // not contribute any rendered link or image.
+      if (token.type === "definitionDestinationString" && !isActiveDefinition) continue;
       const url = decodeString(source);
       const isImage = token.type === "definitionDestinationString" ? imageReferences.has(definition) : containers.at(-1) === "image";
       const value = resolve(url, "markdown", isImage ? "media" : "link");
