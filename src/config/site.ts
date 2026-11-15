@@ -1,8 +1,29 @@
+/// <reference types="vite/client" />
+
 export const SITE = {
   title: "Composite Computer Club",
   shortName: "C3",
   description: "九州工業大学情報工学部のComposite Computer Club公式サイト",
-  origin: "https://compositecomputer.club",
+  get origin() {
+    const value =
+      import.meta.env?.VITE_SITE_URL ??
+      (typeof process !== "undefined" ? process.env.VITE_SITE_URL : undefined);
+    if (!value) throw new Error("VITE_SITE_URL を設定してください。");
+    const url = new URL(value);
+    if (
+      !["https:", "http:"].includes(url.protocol) ||
+      url.username ||
+      url.password ||
+      url.pathname !== "/" ||
+      url.search ||
+      url.hash
+    ) {
+      throw new Error(
+        "VITE_SITE_URL はパスを含まない http(s) の公開URLにしてください。",
+      );
+    }
+    return url.origin;
+  },
   logo: "/C3Logo.svg",
   defaultImage: "/ogp/site.png",
   themeColor: "#7db4d6",

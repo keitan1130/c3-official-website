@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import { loadContent } from "./local-content.mjs";
-import { SITE, EXTERNAL_LINKS } from "../src/config/site.ts";
+import { SITE, EXTERNAL_LINKS } from "./site-config.mjs";
 import { createPageMetadata } from "../src/util/pageMetadata.ts";
 
 const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
