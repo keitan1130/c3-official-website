@@ -1,3 +1,4 @@
+import type { CommunitySlug } from "@/config/communities";
 export type BodyLoader = () => Promise<string>;
 export interface Author {
   id: string;
@@ -7,25 +8,37 @@ export interface Author {
   links: Record<string, string>;
   source?: "contentful" | "toybox";
 }
+export interface AuthorReference {
+  id: string;
+  profile?: Author;
+}
 export interface Tag {
   id: string;
   name: string;
-  color?: string;
 }
-export interface Entry {
+export interface EntrySummary {
   id: string;
+  kind: "news" | "blog";
   title: string;
   digest: string;
   createdAt: string;
   updatedAt: string;
   thumbnail: string;
-  authorIds: string[];
-  tagIds: string[];
+  authors: AuthorReference[];
+  tags: Tag[];
+}
+export interface Entry extends EntrySummary {
+  body: BodyLoader;
+}
+export interface BlogSummary extends EntrySummary {
+  kind: "blog";
+  source: "contentful" | "toybox";
+}
+export interface BlogEntry extends BlogSummary {
   body: BodyLoader;
 }
 export interface Community {
-  id: string;
-  slug: string;
+  slug: CommunitySlug;
   name: string;
   domain: string;
   mp4: string;
@@ -37,25 +50,11 @@ export interface FeaturedWork {
   thumbnail: string;
 }
 export interface ContentData {
-  about: { id: string; title: string; summary: string; body: BodyLoader };
+  about: { summary: string; body: BodyLoader };
   communities: Community[];
   news: Entry[];
-  tags: Tag[];
-  site: {
-    title: string;
-    description: string;
-    canonicalOrigin: string;
-    worksUrl: string;
-    communities: string[];
-    links: { title: string; url: string }[];
-  };
-}
-export interface BlogEntry extends Entry {
-  source: "contentful" | "toybox";
-  authors: Author[];
-  tags: Tag[];
 }
 export interface BlogListResult {
-  entries: BlogEntry[];
+  entries: BlogSummary[];
   unavailableSources: string[];
 }

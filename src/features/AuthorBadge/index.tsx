@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
-import useSWRImmutable from "swr/immutable";
 
 import styles from "./index.module.css";
 
-import { getAuthors } from "@/util/authorRepository";
-import { CONTENT } from "@/util/contentRepository";
+import { EXTERNAL_LINKS } from "@/config/site";
+import { useAuthors } from "@/features/AuthorProfile/hook/useAuthors";
 
 import type { Author } from "@/shared/types/content";
 
@@ -13,11 +12,7 @@ interface AuthorBadgeProps {
   author?: Author;
 }
 const AuthorBadge = ({ id, author }: AuthorBadgeProps) => {
-  const { data, error } = useSWRImmutable(
-    author ? null : "authors",
-    () => getAuthors(),
-    { shouldRetryOnError: false },
-  );
+  const { data, error } = useAuthors({ isEnabled: !author });
   const value = author ?? data?.find((item) => item.id === id);
   const label = value?.name || (error ? "著者情報を取得できません" : "著者");
   const children = (
@@ -29,7 +24,7 @@ const AuthorBadge = ({ id, author }: AuthorBadgeProps) => {
   return value?.source === "toybox" ? (
     <a
       className={styles["badge"]}
-      href={`${CONTENT.site.worksUrl}users/${encodeURIComponent(id)}`}
+      href={`${EXTERNAL_LINKS.toybox.url}users/${encodeURIComponent(id)}`}
       target="_blank"
       rel="noreferrer"
     >

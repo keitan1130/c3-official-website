@@ -8,7 +8,7 @@ const NewsDetailPage = () => {
   const { id } = useParams();
   const entry = getNews(id ?? "");
   return entry ? (
-    <EntryDetail entry={entry} kind="news" recent={CONTENT.news} />
+    <EntryDetail entry={entry} recent={CONTENT.news} />
   ) : (
     <NotFoundPage />
   );

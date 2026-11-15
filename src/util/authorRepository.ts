@@ -1,3 +1,9 @@
+import {
+  type ContentfulCollection,
+  getContentfulPages,
+  secureContentUrl,
+} from "@/util/contentfulClient";
+
 import type { Author } from "@/shared/types/content";
 
 export interface ContentfulUser {
@@ -13,43 +19,8 @@ export interface ContentfulUser {
     homePage?: string;
   };
 }
-interface ContentfulUserCollection {
-  items: ContentfulUser[];
-  total: number;
-  includes?: {
-    Asset?: { sys: { id: string }; fields: { file?: { url?: string } } }[];
-  };
-}
+type ContentfulUserCollection = ContentfulCollection<ContentfulUser>;
 
-const getPage = async (
-  params: Record<string, string>,
-  signal?: AbortSignal,
-): Promise<ContentfulUserCollection> => {
-  const space = import.meta.env.VITE_CTF_SPACE_ID;
-  const token = import.meta.env.VITE_CTF_CDA_ACCESS_TOKEN;
-  if (!space || !token)
-    throw new Error("Contentful author delivery is not configured");
-  const url = new URL(
-    `https://cdn.contentful.com/spaces/${encodeURIComponent(space)}/environments/master/entries`,
-  );
-  for (const [key, value] of Object.entries({
-    content_type: "user",
-    include: "1",
-    limit: "100",
-    ...params,
-  }))
-    url.searchParams.set(key, value);
-  const response = await fetch(url, {
-    signal,
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!response.ok)
-    throw new Error(`Author delivery failed (${response.status})`);
-  const data = (await response.json()) as ContentfulUserCollection;
-  if (!Array.isArray(data.items) || typeof data.total !== "number")
-    throw new Error("Invalid author delivery response");
-  return data;
-};
 export const normalizeContentfulAuthors = (
   page: Pick<ContentfulUserCollection, "items" | "includes">,
 ): Author[] =>
@@ -73,29 +44,15 @@ export const normalizeContentfulAuthors = (
       id: sys.id,
       name: fields.name ?? "",
       introduction: fields.introduction ?? "",
-      avatar: avatar
-        ? avatar.startsWith("//")
-          ? `https:${avatar}`
-          : avatar
-        : null,
+      avatar: avatar ? secureContentUrl(avatar) : null,
       links,
       source: "contentful",
     };
   });
-export const getAuthor = async (
-  id: string,
-  signal?: AbortSignal,
-): Promise<Author | undefined> =>
-  normalizeContentfulAuthors(await getPage({ "sys.id": id }, signal))[0];
 export const getAuthors = async (signal?: AbortSignal): Promise<Author[]> => {
-  const authors: Author[] = [];
-  let total = 0;
-  do {
-    const page = await getPage({ skip: String(authors.length) }, signal);
-    total = page.total;
-    if (!page.items.length && authors.length < total)
-      throw new Error("Author pagination ended early");
-    authors.push(...normalizeContentfulAuthors(page));
-  } while (authors.length < total);
-  return authors;
+  const pages = await getContentfulPages<ContentfulUser>(
+    { content_type: "user", include: "1" },
+    signal,
+  );
+  return pages.flatMap(normalizeContentfulAuthors);
 };

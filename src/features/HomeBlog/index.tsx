@@ -22,11 +22,7 @@ const HomeBlog = () => {
       />
       {data?.entries.length ? (
         <div className={styles["carousel"]}>
-          <Carousel
-            entries={data.entries.slice(0, 5)}
-            kind="blog"
-            label="最新のブログ"
-          />
+          <Carousel entries={data.entries.slice(0, 5)} label="最新のブログ" />
         </div>
       ) : null}
       <LinkButton className={styles["all"]} to="/blog">

@@ -3,8 +3,8 @@ import useSWR from "swr";
 
 import styles from "./index.module.css";
 
+import { EXTERNAL_LINKS } from "@/config/site";
 import { API_BASE_URL } from "@/util/apiConfig";
-import { CONTENT } from "@/util/contentRepository";
 import { getPublicWorks, WORKS_LIMIT } from "@/util/workRepository";
 
 const FeaturedWorks = () => {
@@ -45,7 +45,7 @@ const FeaturedWorks = () => {
         {!isLoading && !error && data?.length === 0 && (
           <p role="status">公開作品はまだありません。</p>
         )}
-        <a href={CONTENT.site.worksUrl} target="_blank" rel="noreferrer">
+        <a href={EXTERNAL_LINKS.toybox.url} target="_blank" rel="noreferrer">
           <OpenInNewIcon />
           作品を見る
         </a>

@@ -1,6 +1,7 @@
 import styles from "./index.module.css";
 
 import c3Logo from "@/assets/c3-logo.webp";
+import { PAGES } from "@/config/site";
 import BodyContent from "@/features/BodyContent";
 import CommunityLinks from "@/features/CommunityLinks";
 import FeaturedWorks from "@/features/FeaturedWorks";
@@ -11,10 +12,10 @@ import { CONTENT } from "@/util/contentRepository";
 
 const AboutPage = () => (
   <div className={styles["page"]}>
-    <PageMeta title="C3について" description={CONTENT.about.summary} />
-    <Breadcrumbs items={[{ label: "C3について" }]} />
+    <PageMeta title={PAGES.about.title} description={CONTENT.about.summary} />
+    <Breadcrumbs items={[{ label: PAGES.about.title }]} />
     <Paper>
-      <h1 className={styles["title"]}>C3について</h1>
+      <h1 className={styles["title"]}>{PAGES.about.title}</h1>
       <img className={styles["logo"]} src={c3Logo} alt="C3" />
       <BodyContent load={CONTENT.about.body} />
       <h2 className={styles["section-title"]}>各分野について</h2>

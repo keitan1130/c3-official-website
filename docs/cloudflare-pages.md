@@ -7,7 +7,7 @@
 
 - このプロジェクトの Git root を build root とし、Vite の成果物 `dist/` を公開する。
 - build command は `npm run build`。命名・Biome・型・content の検査は公開前の品質確認として別途実行する。
-- canonicalのoriginは `content/site/index.json` の `canonicalOrigin` を使う。上書きする場合はPagesのビルド環境変数に `SITE_URL` を設定し、コンテンツ生成とpostbuildの両方へ同じ値を渡す。`.env` への追記だけを前提にせず、ビルドプロセスの環境変数として設定する。
+- canonicalのoriginは `src/config/site.ts` の `SITE.origin` を使う。HTML生成とReactが同じ設定・メタ情報生成関数を参照する。環境変数による上書きは行わない。
 - ローカル・GitHub Actions・Pages の Node を26系に揃え、Pages build 環境で利用可能か導入時に確認する。
 
 React / Vite の build command と出力先は [Cloudflare Reactガイド](https://developers.cloudflare.com/pages/framework-guides/deploy-a-react-site/) に沿う。

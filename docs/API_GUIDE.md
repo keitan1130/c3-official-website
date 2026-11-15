@@ -7,9 +7,9 @@ API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) �
 ## データ境界
 
 - 紹介・分野・お知らせはローカル `content/` を正とします。`scripts/local-content.mjs` の共通読込・検証を使い、`prepare-content.mjs` が `src/generated/contentData.ts` を生成します。配信用HTMLも同じ検証結果を使います。表示側は `src/util/contentRepository.ts` を利用します。
-- 著者プロフィールは `src/util/authorRepository.ts` からContentfulの公開 `user` を取得します。プロフィールをローカルへ固定せず、`/author/:id` と著者別ブログ一覧を維持します。
-- ブログは `src/util/blogRepository.ts` でContentfulと外部ブログAPIを取得し、IDのみで識別します。UUIDはToybox、それ以外はContentfulへ取得します。本文は `MarkdownPreview` で表示します。
-- Contentfulブログの著者バッジは、ブログ取得結果の `includes.Entry`・`includes.Asset` を再利用します。ローカルお知らせや著者情報が含まれないブログだけ、共通の著者一覧を100件ずつ取得し、ページ間で共有します。バッジごとの `sys.id` 付き取得や、フォーカス復帰時などの自動再取得は行いません。著者プロフィールの直接表示では1人分を取得します。
+- 著者プロフィールは `src/util/authorRepository.ts` からContentfulの公開 `user` を取得します。プロフィールをローカルへ固定せず、`/author/:id` と著者別ブログ一覧を維持します。著者バッジ・著者ページは `useAuthors` の同じ著者一覧キャッシュを使い、Contentfulブログに含まれる著者プロフィールは通信せずに表示します。
+- Contentful通信は `src/util/contentfulClient.ts` に集約し、ブログは `src/util/blogRepository.ts` でContentfulと外部ブログAPIを取得し、IDのみで識別します。UUIDはToybox、それ以外はContentfulへ取得します。本文は `MarkdownPreview` で表示します。
+- Contentfulブログの著者バッジは、ブログ取得結果の `includes.Entry`・`includes.Asset` を再利用します。ローカルお知らせや著者情報が含まれないブログだけ、共通の著者一覧を100件ずつ取得し、ページ間で共有します。バッジごとの `sys.id` 付き取得や、フォーカス復帰時などの自動再取得は行いません。著者プロフィールも同じ著者一覧キャッシュからIDで選び、失敗時の再試行で一覧を更新します。
 - 外部ブログの `user.id` をContentfulの著者IDとして検索しません。外部サービス側の著者ページへリンクします。
 - ホームとAboutの掲載作品は `src/util/workRepository.ts` から `GET /works?limit=20&page=1&sort=newest&visibility=public` で最新の公開作品を最大20件取得します。認証情報は送らず、ブログと接続先を共有し、レスポンスの契約はAPIごとに扱います。
 
@@ -37,4 +37,6 @@ API一覧・型変換・SWR keyの詳細は [現在の構成](architecture.md) �
 
 ブログの転送にはGoバックエンド側の `LEGACY_TOYBOX_BASE_URL` 設定が必要です。未設定ならブログAPIは503を返します。この設定はfrontendの環境変数には含めません。
 
-ブログ詳細は `/blog/:id` に統一します。ID形式に対応したサービスのみ取得し、404と通信エラーを区別します。最近の記事・カルーセルもIDだけで識別します。ブログ一覧は全件を取得し、タグは取得済みの全記事を絞り込みます。
+ブログ詳細は `/blog/:id` に統一します。ID形式に対応したサービスのみ取得し、404と通信エラーを区別します。最近の記事・カルーセルもIDだけで識別します。ブログ一覧は全件を取得し、ブログのタグは取得済みの全記事を絞り込みます。ニュースにはタグ参照・絞り込みを設けません。
+
+一覧型の `EntrySummary` / `BlogSummary` は本文を持たず、詳細型の `Entry` / `BlogEntry` だけが本文を持ちます。著者参照・タグは取得境界で表示用形式へ揃えます。

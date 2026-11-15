@@ -38,7 +38,7 @@ npm run test:storybook
 
 `preview:pages` は生成ファイルのルート・初期HTML・404を確認するローカル配信モデルです。Cloudflareでの検証とは別です。
 
-canonicalのoriginは `content/site/index.json` の `canonicalOrigin` を使用します。上書きする場合は `SITE_URL=https://example.com npm run build` のように、ビルド全体の環境変数として指定します。生成HTMLと画面遷移後のメタ情報で同じoriginを使います。
+サイト名・公開origin・外部リンク・固定ページ名は `src/config/site.ts`、分野の名称・表示順は `src/config/communities.ts` で管理します。公開originは固定値で、HTML生成と画面遷移後のメタ情報が同じ設定を直接参照します。
 
 ## ガイド
 

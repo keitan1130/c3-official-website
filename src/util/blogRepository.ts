@@ -3,8 +3,17 @@ import {
   type ContentfulUser,
   normalizeContentfulAuthors,
 } from "@/util/authorRepository";
+import {
+  type ContentfulCollection,
+  getContentfulPages,
+  secureContentUrl,
+} from "@/util/contentfulClient";
 
-import type { BlogEntry, BlogListResult } from "@/shared/types/content";
+import type {
+  BlogEntry,
+  BlogListResult,
+  BlogSummary,
+} from "@/shared/types/content";
 
 interface ContentfulLink {
   sys: { id: string };
@@ -20,14 +29,7 @@ interface ContentfulBlog {
     tags?: ContentfulLink[];
   };
 }
-interface ContentfulBlogs {
-  items: ContentfulBlog[];
-  total: number;
-  includes?: {
-    Asset?: { sys: { id: string }; fields: { file?: { url?: string } } }[];
-    Entry?: ContentfulUser[];
-  };
-}
+type ContentfulBlogs = ContentfulCollection<ContentfulBlog, ContentfulUser>;
 /** @apiContract */
 interface ToyboxBlog {
   id: string;
@@ -47,12 +49,7 @@ class BlogApiError extends Error {
     this.status = status;
   }
 }
-const secureUrl = (url: string) =>
-  url.startsWith("//") ? `https:${url}` : url;
-const normalizeContentful = (
-  data: ContentfulBlogs,
-  isDetail = false,
-): BlogEntry[] => {
+const normalizeContentful = (data: ContentfulBlogs): BlogSummary[] => {
   const authorIds = new Set(
     data.items.flatMap((item) =>
       (item.fields.user ?? []).map((user) => user.sys.id),
@@ -78,50 +75,47 @@ const normalizeContentful = (
     }));
     return {
       id: item.sys.id,
+      kind: "blog",
       title: item.fields.title,
       digest: item.fields.digest ?? "",
       createdAt: item.sys.createdAt,
       updatedAt: item.sys.updatedAt,
-      thumbnail: secureUrl(file),
-      authorIds: (item.fields.user ?? []).map((user) => user.sys.id),
-      tagIds: tags.map((tag) => tag.id),
-      body: isDetail
-        ? () => Promise.resolve(item.fields.body ?? "")
-        : () => loadBlogBody(item.sys.id),
+      thumbnail: secureContentUrl(file),
       source: "contentful",
-      authors: (item.fields.user ?? []).flatMap((user) => {
-        const author = authorsById.get(user.sys.id);
-        return author ? [author] : [];
-      }),
+      authors: (item.fields.user ?? []).map((user) => ({
+        id: user.sys.id,
+        profile: authorsById.get(user.sys.id),
+      })),
       tags,
     };
   });
 };
-const normalizeToybox = (item: ToyboxBlog, isDetail = false): BlogEntry => {
+const normalizeToybox = (item: ToyboxBlog): BlogSummary => {
   const published = item.published_at;
   const later = (date: string) =>
     published && Date.parse(published) > Date.parse(date) ? published : date;
   return {
     id: item.id,
+    kind: "blog",
     title: item.title,
     digest: item.body_text.replace(/\s+/g, " ").slice(0, 200),
     createdAt: later(item.created_at),
     updatedAt: later(item.updated_at),
-    thumbnail: secureUrl(item.thumbnail.url),
-    authorIds: [item.user.id],
-    tagIds: item.tags.map((tag) => tag.id),
-    body: isDetail
-      ? () => Promise.resolve(item.body_text)
-      : () => loadBlogBody(item.id),
+    thumbnail: secureContentUrl(item.thumbnail.url),
     source: "toybox",
     authors: [
       {
         id: item.user.id,
-        name: item.user.name,
-        introduction: "",
-        avatar: item.user.avatar_url ? secureUrl(item.user.avatar_url) : null,
-        links: {},
-        source: "toybox",
+        profile: {
+          id: item.user.id,
+          name: item.user.name,
+          introduction: "",
+          avatar: item.user.avatar_url
+            ? secureContentUrl(item.user.avatar_url)
+            : null,
+          links: {},
+          source: "toybox",
+        },
       },
     ],
     tags: item.tags,
@@ -131,45 +125,15 @@ const CONTENTFUL_LIST_FIELDS =
   "sys,fields.title,fields.digest,fields.thumbnail,fields.user,fields.tags";
 const getContentful = async (
   params: Record<string, string>,
-  isDetail = false,
-): Promise<BlogEntry[]> => {
-  const space = import.meta.env.VITE_CTF_SPACE_ID;
-  const token = import.meta.env.VITE_CTF_CDA_ACCESS_TOKEN;
-  if (!space || !token)
-    throw new Error("Contentful blog delivery is not configured");
-  const entries: BlogEntry[] = [];
-  let total = 0;
-  do {
-    const url = new URL(
-      `https://cdn.contentful.com/spaces/${encodeURIComponent(space)}/environments/master/entries`,
-    );
-    for (const [key, value] of Object.entries({
-      content_type: "blog",
-      include: "2",
-      limit: isDetail ? "1" : "100",
-      skip: String(entries.length),
-      order: "-sys.createdAt",
-      ...(isDetail ? {} : { select: CONTENTFUL_LIST_FIELDS }),
-      ...params,
-    }))
-      url.searchParams.set(key, value);
-    const response = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!response.ok) throw new BlogApiError(response.status);
-    const data = (await response.json()) as ContentfulBlogs;
-    if (
-      !Array.isArray(data.items) ||
-      !Number.isInteger(data.total) ||
-      data.total < 0
-    )
-      throw new Error("Invalid Contentful blogs response");
-    total = data.total;
-    if (!data.items.length && entries.length < total)
-      throw new Error("Contentful blog pagination ended early");
-    entries.push(...normalizeContentful(data, isDetail));
-  } while (entries.length < total);
-  return entries;
+): Promise<BlogSummary[]> => {
+  const pages = await getContentfulPages<ContentfulBlog, ContentfulUser>({
+    content_type: "blog",
+    include: "2",
+    order: "-sys.createdAt",
+    select: CONTENTFUL_LIST_FIELDS,
+    ...params,
+  });
+  return pages.flatMap(normalizeContentful);
 };
 const toyboxRequest = async <T>(path: string): Promise<T> => {
   const response = await fetch(getApiUrl(`/api/v1${path}`), {
@@ -191,7 +155,7 @@ export const getBlogs = async (): Promise<BlogListResult> => {
       return data.blogs.map((item) => normalizeToybox(item));
     }),
   ]);
-  const entries: BlogEntry[] = [];
+  const entries: BlogSummary[] = [];
   const unavailableSources: string[] = [];
   for (const [index, result] of results.entries()) {
     if (result.status === "fulfilled") entries.push(...result.value);
@@ -212,20 +176,31 @@ const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const getBlog = async (id: string): Promise<BlogEntry | undefined> => {
   if (!/^[A-Za-z0-9_-]+$/.test(id)) return undefined;
-  if (!UUID_PATTERN.test(id))
-    return (await getContentful({ "sys.id": id }, true))[0];
+  if (!UUID_PATTERN.test(id)) {
+    const pages = await getContentfulPages<ContentfulBlog, ContentfulUser>({
+      content_type: "blog",
+      include: "2",
+      "sys.id": id,
+      limit: "1",
+    });
+    const page = pages[0];
+    const item = page?.items[0];
+    if (!item) return undefined;
+    return {
+      ...normalizeContentful(page)[0],
+      body: () => Promise.resolve(item.fields.body ?? ""),
+    };
+  }
   try {
-    return normalizeToybox(
-      await toyboxRequest<ToyboxBlog>(`/blogs/${encodeURIComponent(id)}`),
-      true,
+    const item = await toyboxRequest<ToyboxBlog>(
+      `/blogs/${encodeURIComponent(id)}`,
     );
+    return {
+      ...normalizeToybox(item),
+      body: () => Promise.resolve(item.body_text),
+    };
   } catch (error) {
     if (error instanceof BlogApiError && error.status === 404) return undefined;
     throw error;
   }
-};
-const loadBlogBody = async (id: string): Promise<string> => {
-  const entry = await getBlog(id);
-  if (!entry) throw new Error("ブログが見つかりません。");
-  return entry.body();
 };

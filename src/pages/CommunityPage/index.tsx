@@ -23,7 +23,7 @@ const CommunityPage = () => {
         <div className={styles["video"]}>
           <video
             poster={videoLoading}
-            key={community.id}
+            key={community.slug}
             preload="metadata"
             playsInline
             muted

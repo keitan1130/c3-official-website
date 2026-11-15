@@ -1,5 +1,6 @@
 import styles from "./index.module.css";
 
+import { PAGES } from "@/config/site";
 import FeaturedWorks from "@/features/FeaturedWorks";
 import HomeBlog from "@/features/HomeBlog";
 import HomeCommunity from "@/features/HomeCommunity";
@@ -10,13 +11,13 @@ import { CONTENT } from "@/util/contentRepository";
 
 const TopPage = () => (
   <>
-    <PageMeta title={CONTENT.site.title} />
+    <PageMeta title={PAGES.home.title} />
     <HomeHero />
     <div className={styles["section"]}>
       <HomeIntroduction />
     </div>
     {CONTENT.communities.map((community, index) => (
-      <div className={styles["section"]} key={community.id}>
+      <div className={styles["section"]} key={community.slug}>
         <HomeCommunity community={community} isReversed={index % 2 === 1} />
       </div>
     ))}

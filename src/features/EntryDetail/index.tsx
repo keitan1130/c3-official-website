@@ -2,30 +2,24 @@ import { Link } from "react-router-dom";
 
 import styles from "./index.module.css";
 
+import { PAGES } from "@/config/site";
 import AuthorBadge from "@/features/AuthorBadge";
 import BodyContent from "@/features/BodyContent";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
 import Paper from "@/shared/ui/Paper";
-import { getTag } from "@/util/contentRepository";
 import { formatDateTime } from "@/util/formatDateTime";
 
-import type { BlogEntry, Entry } from "@/shared/types/content";
+import type { Entry, EntrySummary } from "@/shared/types/content";
 
 interface EntryDetailProps {
-  entry: Entry | BlogEntry;
-  kind: "news" | "blog";
-  recent: (Entry | BlogEntry)[];
+  entry: Entry;
+  recent: EntrySummary[];
 }
-const EntryDetail = ({ entry, kind, recent }: EntryDetailProps) => {
-  const label = kind === "news" ? "お知らせ" : "ブログ";
-  const blog = "source" in entry ? entry : undefined;
-  const tags =
-    blog?.tags ??
-    entry.tagIds.flatMap((id) => {
-      const tag = getTag(id);
-      return tag ? [tag] : [];
-    });
+const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
+  const kind = entry.kind;
+  const label = PAGES[kind].title;
+  const tags = entry.tags;
   return (
     <section className={styles["entry"]}>
       <PageMeta
@@ -50,25 +44,23 @@ const EntryDetail = ({ entry, kind, recent }: EntryDetailProps) => {
               </div>
             )}
             <h1>{entry.title}</h1>
-            <div className={styles["tags"]}>
-              タグ：
-              {tags.map((tag) => (
-                <Link
-                  key={tag.id}
-                  to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
-                >
-                  {tag.name}
-                </Link>
-              ))}
-            </div>
+            {tags.length > 0 && (
+              <div className={styles["tags"]}>
+                タグ：
+                {tags.map((tag) => (
+                  <Link
+                    key={tag.id}
+                    to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
+                  >
+                    {tag.name}
+                  </Link>
+                ))}
+              </div>
+            )}
             <div className={styles["authors"]}>
               ユーザー：
-              {entry.authorIds.map((id) => (
-                <AuthorBadge
-                  key={id}
-                  id={id}
-                  author={blog?.authors.find((author) => author.id === id)}
-                />
+              {entry.authors.map(({ id, profile }) => (
+                <AuthorBadge key={id} id={id} author={profile} />
               ))}
             </div>
             <p className={styles["date"]}>

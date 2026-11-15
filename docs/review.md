@@ -20,15 +20,16 @@ P2は通常の不具合修正として扱う項目です。対応箇所の改善
 ## 現在の仕様
 
 - ニュースは全記事を公開し、ホームのお知らせには最新5件を表示する。下書きプレビューは設けない。
-- ニュースの読込・検証とcanonical originの確定は `local-content.mjs` に集約し、画面用データと配信HTMLで共用する。
+- ニュースの読込・検証は `local-content.mjs` に集約。サイト設定・固定ページ名・外部リンクは `src/config/site.ts`、分野定義は `src/config/communities.ts` に集約し、ニュースのタグ参照は廃止。本文・画像・動画は明示した変換関数で生成する。
 - ブログ一覧は全件取得と既存のSWR共有を維持する。Contentful一覧は本文を取得しない。Toyboxは既存の本文を含む全件取得を維持し、表示用概要だけを200文字に制限する。追加読込UIは設けない。
+- 一覧型と詳細型を分離し、表示部品で取得元ごとのタグ・著者変換を行わない。Contentful通信は共通client、著者ページと著者バッジは同じ著者一覧キャッシュを使う。
 
 ## 検証
 
 | 確認 | 結果と範囲 |
 | --- | --- |
 | `npm run ci` | 成功。コンテンツ生成、回帰テスト、命名、Biome、TypeScript、Vite、Pages用成果物生成 |
-| `npm run test:content` | 成功。全ニュースの自動検出、必須値・ID・画像・日時の検証、画像参照切れ、共通接頭辞の素材名、タイムゾーン混在の並び、分野表示順の追記漏れ、公開コンテンツ数の変化をfixtureで確認 |
+| `npm run test:content` | 成功。全ニュースの自動検出、必須値・ID・画像・日時の検証、画像参照切れ、共通接頭辞の素材名、タイムゾーン混在の並び、分野定義とフォルダの不一致、記事数の変化をfixtureで確認 |
 | `npm run test:pages` | 成功。現在の公開ルート集合、初期OGP・canonical、ローカルOGP画像、404 noindexを生成物で確認 |
 | `TEST_BASE_URL=... npm run test:review` | 成功。APIはfixture。IDのみのURL・UUIDによる取得先判定・ブログと著者別一覧の全件表示・Contentful本文の除外・取得障害と404の区別、robots解除、カルーセルkey、メニューのスクロール固定・位置復元・Escape後focus復帰 |
 | `TEST_BASE_URL=... node scripts/browser-smoke.mjs 4` | 成功。390px / 1440pxでAboutと全5分野、横はみ出し、動画metadata読込、旧分野IDの404、静的ページのContentful非依存を確認 |

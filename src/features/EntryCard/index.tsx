@@ -3,24 +3,17 @@ import { Link } from "react-router-dom";
 import styles from "./index.module.css";
 
 import AuthorBadge from "@/features/AuthorBadge";
-import { getTag } from "@/util/contentRepository";
 import { formatDateTime } from "@/util/formatDateTime";
 
-import type { BlogEntry, Entry } from "@/shared/types/content";
+import type { EntrySummary } from "@/shared/types/content";
 
 interface EntryCardProps {
-  entry: Entry | BlogEntry;
-  kind: "news" | "blog";
+  entry: EntrySummary;
 }
-const EntryCard = ({ entry, kind }: EntryCardProps) => {
-  const blog = "source" in entry ? entry : undefined;
+const EntryCard = ({ entry }: EntryCardProps) => {
+  const tags = entry.tags;
+  const kind = entry.kind;
   const url = `/${kind}/${encodeURIComponent(entry.id)}`;
-  const tags =
-    blog?.tags ??
-    entry.tagIds.flatMap((id) => {
-      const tag = getTag(id);
-      return tag ? [tag] : [];
-    });
   return (
     <article className={styles["card"]}>
       <Link className={styles["primary"]} to={url}>
@@ -32,23 +25,21 @@ const EntryCard = ({ entry, kind }: EntryCardProps) => {
         <h2>{entry.title}</h2>
       </Link>
       <div className={styles["content"]}>
-        <div className={styles["tags"]}>
-          {tags.map((tag) => (
-            <Link
-              key={tag.id}
-              to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
-            >
-              {tag.name}
-            </Link>
-          ))}
-        </div>
+        {tags.length > 0 && (
+          <div className={styles["tags"]}>
+            {tags.map((tag) => (
+              <Link
+                key={tag.id}
+                to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
+              >
+                {tag.name}
+              </Link>
+            ))}
+          </div>
+        )}
         <div className={styles["authors"]}>
-          {entry.authorIds.map((id) => (
-            <AuthorBadge
-              key={id}
-              id={id}
-              author={blog?.authors.find((author) => author.id === id)}
-            />
+          {entry.authors.map(({ id, profile }) => (
+            <AuthorBadge key={id} id={id} author={profile} />
           ))}
         </div>
         <p className={styles["digest"]}>{entry.digest}</p>

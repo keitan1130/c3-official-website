@@ -27,11 +27,7 @@ const BlogDetailPage = () => {
       </div>
     );
   return entry.data ? (
-    <EntryDetail
-      entry={entry.data}
-      kind="blog"
-      recent={recent.data?.entries ?? []}
-    />
+    <EntryDetail entry={entry.data} recent={recent.data?.entries ?? []} />
   ) : (
     <NotFoundPage />
   );

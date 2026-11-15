@@ -5,17 +5,15 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import styles from "./index.module.css";
 
-import { getTag } from "@/util/contentRepository";
 import { formatDateTime } from "@/util/formatDateTime";
 
-import type { BlogEntry, Entry } from "@/shared/types/content";
+import type { EntrySummary } from "@/shared/types/content";
 
 interface CarouselProps {
-  entries: (Entry | BlogEntry)[];
-  kind: "news" | "blog";
+  entries: EntrySummary[];
   label: string;
 }
-const Carousel = ({ entries, kind, label }: CarouselProps) => {
+const Carousel = ({ entries, label }: CarouselProps) => {
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -33,13 +31,8 @@ const Carousel = ({ entries, kind, label }: CarouselProps) => {
   }, [entries.length, isAutoPlayPaused]);
   const entry = entries[index % entries.length];
   if (!entry) return null;
-  const blog = "source" in entry ? entry : undefined;
-  const tags =
-    blog?.tags ??
-    entry.tagIds.flatMap((id) => {
-      const tag = getTag(id);
-      return tag ? [tag] : [];
-    });
+  const tags = entry.tags;
+  const kind = entry.kind;
   const move = (delta: number) =>
     setIndex((value) => (value + delta + entries.length) % entries.length);
   return (

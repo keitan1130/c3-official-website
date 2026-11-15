@@ -1,3 +1,5 @@
+import styles from "./index.module.css";
+
 import Button from "@/shared/ui/Button";
 
 interface BlogStatusProps {
@@ -15,7 +17,7 @@ const BlogStatus = ({
   if (isLoading) return <p role="status">ブログを読み込み中…</p>;
   if (hasError || unavailableSources.length)
     return (
-      <div role="alert">
+      <div className={styles["alert"]} role="alert">
         {hasError
           ? "ブログを読み込めませんでした。"
           : "一部のブログを取得できませんでした。"}

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-import { CONTENT } from "@/util/contentRepository";
+import { createPageMetadata, SITE } from "@/config/site";
 
 interface PageMetaProps {
   title: string;
@@ -11,14 +11,19 @@ interface PageMetaProps {
 }
 const PageMeta = ({
   title,
-  description = CONTENT.site.description,
+  description = SITE.description,
   image,
   isNoIndex = false,
 }: PageMetaProps) => {
   const location = useLocation();
   useEffect(() => {
-    document.title = `${title} | C3`;
-    const canonical = new URL(location.pathname, CONTENT.site.canonicalOrigin);
+    const meta = createPageMetadata({
+      title,
+      description,
+      image,
+      pathname: location.pathname,
+    });
+    document.title = meta.title;
     const setMeta = (key: string, content: string, property = false) => {
       const attribute = property ? "property" : "name";
       let element = document.head.querySelector<HTMLMetaElement>(
@@ -33,15 +38,11 @@ const PageMeta = ({
     };
     if (isNoIndex) setMeta("robots", "noindex");
     else document.head.querySelector('meta[name="robots"]')?.remove();
-    setMeta("description", description);
-    setMeta("og:title", title, true);
-    setMeta("og:description", description, true);
-    setMeta("og:url", canonical.href, true);
-    setMeta(
-      "og:image",
-      new URL(image || "/ogp/site.webp", canonical).href,
-      true,
-    );
+    setMeta("description", meta.description);
+    setMeta("og:title", meta.ogTitle, true);
+    setMeta("og:description", meta.description, true);
+    setMeta("og:url", meta.url, true);
+    setMeta("og:image", meta.image, true);
     let link = document.head.querySelector<HTMLLinkElement>(
       'link[rel="canonical"]',
     );
@@ -50,7 +51,7 @@ const PageMeta = ({
       link.rel = "canonical";
       document.head.append(link);
     }
-    link.href = canonical.href;
+    link.href = meta.url;
   }, [title, description, image, isNoIndex, location.pathname]);
   return null;
 };

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { COMMUNITIES } from "../src/config/communities.ts";
 
 const read = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 export const readEntries = (root, name) => fs.readdirSync(path.join(root, name), { withFileTypes: true })
@@ -31,15 +32,6 @@ const requireDate = (value, label) => {
   if (month < 1 || month > 12 || day < 1 || day > new Date(Date.UTC(year, month, 0)).getUTCDate()) throw new Error(`Invalid ${label}: ${value}`);
 };
 export function loadContent(root = path.resolve("content")) {
-  const site = read(path.join(root, "site/index.json"));
-  const origin = new URL(process.env.SITE_URL || site.canonicalOrigin);
-  if (!["http:", "https:"].includes(origin.protocol) || origin.username || origin.password) throw new Error("Invalid canonical origin");
-  site.canonicalOrigin = origin.origin;
-  const tags = read(path.join(root, "tags.json"));
-  if (!Array.isArray(tags)) throw new Error("Invalid tags");
-  for (const tag of tags) { requireId(tag.id, "tag id"); requireText(tag.name, "tag name"); }
-  assertUnique(tags.map((tag) => tag.id), "tag id");
-  const tagIds = new Set(tags.map((tag) => tag.id));
   const news = readEntries(root, "news");
   for (const { value: item, directory } of news) {
     requireId(item.id, "news id");
@@ -47,8 +39,7 @@ export function loadContent(root = path.resolve("content")) {
     for (const key of ["createdAt", "updatedAt"]) requireDate(item[key], `${key}: ${item.id}`);
     if (Date.parse(item.updatedAt) < Date.parse(item.createdAt)) throw new Error(`updatedAt precedes createdAt: ${item.id}`);
     if (!Array.isArray(item.authorIds) || item.authorIds.some((id) => typeof id !== "string" || !id.trim())) throw new Error(`Invalid authorIds: ${item.id}`);
-    if (!Array.isArray(item.tagIds) || item.tagIds.some((id) => !tagIds.has(id))) throw new Error(`Unknown tag: ${item.id}`);
-    assertUnique(item.authorIds, `authorIds: ${item.id}`); assertUnique(item.tagIds, `tagIds: ${item.id}`);
+    assertUnique(item.authorIds, `authorIds: ${item.id}`);
     if (!item.thumbnail.startsWith("./assets/") || !/\.(?:png|jpe?g|webp|gif|avif)$/i.test(item.thumbnail)) throw new Error(`Invalid thumbnail: ${item.id}`);
     const thumbnail = localFile(directory, item.thumbnail);
     if (!thumbnail.startsWith(path.resolve(directory, "assets") + path.sep)) throw new Error(`Invalid thumbnail: ${item.id}`);
@@ -57,10 +48,16 @@ export function loadContent(root = path.resolve("content")) {
   }
   assertUnique(news.map(({ value }) => value.id), "news id");
   news.sort((a, b) => Date.parse(b.value.createdAt) - Date.parse(a.value.createdAt) || a.value.id.localeCompare(b.value.id));
-  const communities = readEntries(root, "communities");
-  for (const { value } of communities) requireId(value.slug, "community slug");
-  assertUnique(communities.map(({ value }) => value.slug), "community slug");
-  if (!Array.isArray(site.communities) || site.communities.length !== communities.length || new Set(site.communities).size !== site.communities.length || site.communities.some((slug) => !communities.some(({ value }) => value.slug === slug))) throw new Error("Invalid community order");
-  communities.sort((a, b) => site.communities.indexOf(a.value.slug) - site.communities.indexOf(b.value.slug));
-  return { site, tags, news, communities, about: { value: read(path.join(root, "about/index.json")), directory: path.join(root, "about") } };
+  const communityFiles = readEntries(root, "communities");
+  if (communityFiles.length !== COMMUNITIES.length || communityFiles.some(({directory}) => !COMMUNITIES.some(({slug}) => slug === path.basename(directory)))) throw new Error("Invalid community definitions");
+  const communities = COMMUNITIES.map((definition) => {
+    const item = communityFiles.find(({directory}) => path.basename(directory) === definition.slug);
+    for (const key of ["domain", "body", "mp4"]) requireText(item.value[key], `${key}: ${definition.slug}`);
+    localFile(item.directory, item.value.body); localFile(item.directory, item.value.mp4);
+    return { directory: item.directory, value: { ...item.value, ...definition } };
+  });
+  const about = { value: read(path.join(root, "about/index.json")), directory: path.join(root, "about") };
+  requireText(about.value.summary, "about summary");
+  localFile(about.directory, about.value.body);
+  return { news, communities, about };
 }

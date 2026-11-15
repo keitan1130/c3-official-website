@@ -2,47 +2,44 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ArticleIcon from "@mui/icons-material/Article";
 import CloseIcon from "@mui/icons-material/Close";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import GroupsIcon from "@mui/icons-material/Groups";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
-import LaptopMacIcon from "@mui/icons-material/LaptopMac";
 import MenuIcon from "@mui/icons-material/Menu";
-import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import PaletteIcon from "@mui/icons-material/Palette";
-import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
-import ViewInArIcon from "@mui/icons-material/ViewInAr";
-import XIcon from "@mui/icons-material/X";
-import YouTubeIcon from "@mui/icons-material/YouTube";
 
 import styles from "./index.module.css";
 
 import c3Logo from "@/assets/c3-logo.webp";
-import toyboxIcon from "@/assets/toybox-icon.png";
+import { COMMUNITIES } from "@/config/communities";
+import { EXTERNAL_LINKS, HEADER_LINK_ORDER, PAGES } from "@/config/site";
+import CommunityIcon from "@/features/CommunityIcon";
+import ExternalLinkIcon from "@/features/ExternalLinkIcon";
 import ThemeToggle from "@/features/ThemeToggle";
-import { CONTENT } from "@/util/contentRepository";
 import { lockPageScroll } from "@/util/pageScroll";
 
 const NAVIGATION = [
-  { title: "HOME", url: "/", icon: <HomeIcon /> },
-  { title: "C3について", url: "/about", icon: <GroupsIcon /> },
-  { title: "お知らせ", url: "/news", icon: <InfoIcon /> },
-  { title: "ブログ", url: "/blog", icon: <ArticleIcon /> },
+  {
+    title: PAGES.home.navigationLabel,
+    url: PAGES.home.path,
+    icon: <HomeIcon />,
+  },
+  {
+    title: PAGES.about.title,
+    url: PAGES.about.path,
+    icon: <GroupsIcon />,
+  },
+  {
+    title: PAGES.news.title,
+    url: PAGES.news.path,
+    icon: <InfoIcon />,
+  },
+  {
+    title: PAGES.blog.title,
+    url: PAGES.blog.path,
+    icon: <ArticleIcon />,
+  },
 ] as const;
-const COMMUNITY_ICONS = {
-  game: <SportsEsportsIcon />,
-  "3dcg": <ViewInArIcon />,
-  hack: <LaptopMacIcon />,
-  "2dcg": <PaletteIcon />,
-  music: <MusicNoteIcon />,
-} as const;
-const LINK_ICONS = {
-  ToyBox: <img src={toyboxIcon} alt="" width={20} height={20} />,
-  Twitter: <XIcon />,
-  GitHub: <GitHubIcon />,
-  YouTube: <YouTubeIcon />,
-} as const;
 const Header = () => {
   const [menuLocationKey, setMenuLocationKey] = useState<string | null>(null);
   const [isHidden, setIsHidden] = useState(false);
@@ -130,29 +127,28 @@ const Header = () => {
                 ))}
               </ul>
               <ul>
-                {CONTENT.communities.map((item) => (
+                {COMMUNITIES.map((item) => (
                   <li key={item.slug}>
                     <Link to={`/community/${item.slug}`}>
-                      {
-                        COMMUNITY_ICONS[
-                          item.slug as keyof typeof COMMUNITY_ICONS
-                        ]
-                      }
+                      <CommunityIcon slug={item.slug} />
                       {item.name}
                     </Link>
                   </li>
                 ))}
               </ul>
               <ul>
-                {CONTENT.site.links.map((item) => (
-                  <li key={item.url}>
-                    <a href={item.url} target="_blank" rel="noreferrer">
-                      {LINK_ICONS[item.title as keyof typeof LINK_ICONS]}
-                      {item.title}
-                      <OpenInNewIcon />
-                    </a>
-                  </li>
-                ))}
+                {HEADER_LINK_ORDER.map((id) => {
+                  const item = EXTERNAL_LINKS[id];
+                  return (
+                    <li key={id}>
+                      <a href={item.url} target="_blank" rel="noreferrer">
+                        <ExternalLinkIcon id={id} />
+                        {item.label}
+                        <OpenInNewIcon />
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </nav>

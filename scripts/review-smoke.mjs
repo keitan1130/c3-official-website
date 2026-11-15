@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import { loadContent } from "./local-content.mjs";
+import { SITE, PAGES, EXTERNAL_LINKS, HEADER_LINK_ORDER, FOOTER_LINK_ORDER, createPageMetadata } from "../src/config/site.ts";
 
 const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
 const browser = await chromium.launch({ headless: true });
@@ -13,7 +14,7 @@ const authorIds=[...new Set([...Array.from({length:105},(_,index)=>`author${inde
 const contentfulAuthors=authorIds.map((id,index)=>({sys:{id},fields:{name:id==="author1"?"Fixture profile":`Fixture author ${index}`,icon:{sys:{id:"avatar"}},introduction:"Fixture introduction"}}));
 const authorAssets=[{sys:{id:"avatar"},fields:{file:{url:thumbnail}}}];
 let omitIncludedAuthors=false;
-const contentfulBlogs = Array.from({length:105},(_,index)=>({sys:{id:`cf${index}`,createdAt:new Date(Date.UTC(2026,0,2)-index*86400000).toISOString(),updatedAt:"2026-01-02T00:00:00Z"},fields:{title:`Contentful ${index}`,body:"## Fixture body",digest:"Summary",user:[{sys:{id:`author${index}`}}],tags:[]}}));
+const contentfulBlogs = Array.from({length:105},(_,index)=>({sys:{id:`cf${index}`,createdAt:new Date(Date.UTC(2026,0,2)-index*86400000).toISOString(),updatedAt:"2026-01-02T00:00:00Z"},fields:{title:`Contentful ${index}`,body:"## Fixture body",digest:"Summary",user:[{sys:{id:`author${index}`}}],tags:index===0?[{sys:{id:"tag1"}}]:[]}}));
 let isContentfulUnavailable=false, isToyboxUnavailable=false;
 try {
  const page = await browser.newPage({viewport:{width:1440,height:1000}});
@@ -31,7 +32,7 @@ try {
   const id=url.searchParams.get("sys.id"), skip=Number(url.searchParams.get("skip")??0), limit=Number(url.searchParams.get("limit")??100);
   const found=id?contentfulBlogs.filter(item=>item.sys.id===id):contentfulBlogs;
   const items=found.slice(skip,skip+limit).map(item=>url.searchParams.has("select")?{...item,fields:{...item.fields,body:undefined}}:item);
-  return route.fulfill({json:{items,total:found.length,includes:{Entry:omitIncludedAuthors?[]:contentfulAuthors,Asset:authorAssets}}});
+  return route.fulfill({json:{items,total:found.length,includes:{Entry:[...(omitIncludedAuthors?[]:contentfulAuthors),{sys:{id:"tag1"},fields:{name:"Fixture tag"}}],Asset:authorAssets}}});
  });
  await page.route("**/api/v1/blogs**",route=>{
   const url=new URL(route.request().url());requests.push(url);
@@ -52,7 +53,7 @@ try {
   await page.getByRole("heading",{name:"Fixture body",exact:true}).waitFor();
   const canonical=await page.locator('link[rel="canonical"]').getAttribute("href");
   assert.ok(canonical.endsWith(`/blog/${id}`));
-  if(process.env.TEST_CANONICAL_ORIGIN)assert.equal(new URL(canonical).origin,process.env.TEST_CANONICAL_ORIGIN);
+  assert.equal(new URL(canonical).origin,SITE.origin);
   assert.equal(await page.locator('a[href*="source="]').count(),0);
   const article=await page.getByRole("article").boundingBox(), recent=await page.getByRole("complementary").boundingBox();
   assert.ok(recent.y>=article.y+article.height);
@@ -65,7 +66,7 @@ try {
    assert.ok(!requests.some(url=>url.searchParams.get("sys.id")===id));
    assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
    const authorLink=page.getByRole("link",{name:"Fixture author",exact:true});
-   assert.equal(await authorLink.getAttribute("href"),`${loadContent().site.worksUrl}users/${uuid(1000)}`);
+   assert.equal(await authorLink.getAttribute("href"),`${EXTERNAL_LINKS.toybox.url}users/${uuid(1000)}`);
    assert.equal(await authorLink.getAttribute("target"),"_blank");
    assert.equal(await page.locator(`a[href="/author/${uuid(1000)}"]`).count(),0);
   }
@@ -78,6 +79,9 @@ try {
  assert.equal(await page.getByRole("link",{name:"Fixture author",exact:true}).count(),45);
  assert.equal(await page.getByRole("button",{name:"もっと見る",exact:true}).count(),0);
  assert.ok(requests.filter(url=>url.searchParams.get("content_type")==="blog"&&!url.searchParams.has("sys.id")).every(url=>url.searchParams.get("select")&&!url.searchParams.get("select").includes("fields.body")));
+ await page.getByRole("link",{name:"Fixture tag",exact:true}).click();
+ await page.waitForFunction(()=>document.querySelectorAll("article").length===1);
+ await page.getByRole("heading",{name:"Contentful 0",exact:true}).waitFor();
  // Missing included authors share one paginated collection, also reused by news.
  omitIncludedAuthors=true;
  requests.length=0;
@@ -93,6 +97,13 @@ try {
  assert.equal(await page.locator('article a[href^="/author/"]').count(),expectedNewsAuthors);
  assert.equal(await page.getByRole("link",{name:"著者",exact:true}).count(),0);
  assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
+ assert.equal(await page.locator('a[href*="/news?tag="]').count(),0);
+ const newsCount=loadContent().news.length;
+ assert.equal(await page.getByRole("article").count(),newsCount);
+ const firstAuthor=page.locator('article a[href^="/author/"]').first();
+ await firstAuthor.click();
+ await page.getByRole("heading",{level:1}).waitFor();
+ assert.equal(authorRequests().length,Math.ceil(contentfulAuthors.length/100));
  omitIncludedAuthors=false;
  await page.goto(BASE+"/author/author1");
  await page.waitForFunction(()=>document.querySelectorAll("article").length===105);
@@ -101,9 +112,16 @@ try {
  await page.getByRole("region",{name:"最新のブログ"}).waitFor();
  assert.equal(await page.getByRole("region",{name:"最新のブログ"}).getByRole("button",{name:/のスライド[0-9]+を表示/}).count(),5);
  assert.ok(requests.some(url=>url.searchParams.get("skip")==="100"));
+ assert.equal(await page.title(),createPageMetadata({title:PAGES.home.title,pathname:"/"}).title);
+ assert.deepEqual(await page.locator("footer nav a").evaluateAll(links=>links.map(link=>link.href)),FOOTER_LINK_ORDER.map(id=>EXTERNAL_LINKS[id].url));
+ await page.getByRole("button",{name:"メニューを開く",exact:true}).click();
+ for(const id of HEADER_LINK_ORDER)assert.equal(await page.getByRole("navigation",{name:"メインメニュー"}).getByRole("link",{name:EXTERNAL_LINKS[id].label,exact:true}).getAttribute("href"),EXTERNAL_LINKS[id].url);
+ await page.keyboard.press("Escape");
  const checks=await page.evaluate(async({existing,missing})=>{
   const {getBlog,getBlogs}=await import("/src/util/blogRepository.ts");
   const found=await getBlog(existing);
+  const list=await getBlogs();
+  if(list.entries.some(entry=>"body" in entry))throw new Error("List entries must not contain a body loader");
   return {source:found?.source,missing:(await getBlog(missing))===undefined,contentfulMissing:(await getBlog("missing"))===undefined,count:(await getBlogs()).entries.length};
  },{existing:uuid(0),missing:uuid(99)});
  assert.deepEqual(checks,{source:"toybox",missing:true,contentfulMissing:true,count:150});
@@ -120,7 +138,7 @@ try {
  await page.goto(BASE+`/blog/${uuid(0)}`);
  await page.getByRole("heading",{name:"Toybox 0",exact:true}).waitFor();
  await page.getByRole("heading",{name:"Fixture body",exact:true}).waitFor();
- assert.equal(await page.getByRole("link",{name:"Fixture author",exact:true}).getAttribute("href"),`${loadContent().site.worksUrl}users/${uuid(1000)}`);
+ assert.equal(await page.getByRole("link",{name:"Fixture author",exact:true}).getAttribute("href"),`${EXTERNAL_LINKS.toybox.url}users/${uuid(1000)}`);
  assert.equal(requests.filter(url=>url.searchParams.get("content_type")==="user").length,0);
  assert.ok(!requests.some(url=>url.searchParams.get("sys.id")===uuid(0)||url.searchParams.get("sys.id")===uuid(1000)));
  // A Toybox outage does not affect a Contentful detail or its included author.

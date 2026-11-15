@@ -3,6 +3,7 @@ import useSWR from "swr";
 
 import styles from "./index.module.css";
 
+import { PAGES } from "@/config/site";
 import BlogStatus from "@/features/BlogStatus";
 import EntryCard from "@/features/EntryCard";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
@@ -20,9 +21,9 @@ const BlogPage = () => {
   );
   return (
     <section className={styles["page"]}>
-      <PageMeta title="ブログ" />
+      <PageMeta title={PAGES.blog.title} />
       <Breadcrumbs items={[{ label: "ブログ一覧" }]} />
-      <h1>ブログ</h1>
+      <h1>{PAGES.blog.title}</h1>
       {tag && <p>タグ：{tag}</p>}
       <BlogStatus
         isLoading={isLoading}
@@ -32,7 +33,7 @@ const BlogPage = () => {
       />
       <div className={styles["grid"]}>
         {entries?.map((entry) => (
-          <EntryCard key={entry.id} entry={entry} kind="blog" />
+          <EntryCard key={entry.id} entry={entry} />
         ))}
       </div>
       {entries?.length === 0 && <p>該当するブログはありません。</p>}
