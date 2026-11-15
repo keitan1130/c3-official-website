@@ -3,9 +3,11 @@ import useSWR from "swr";
 
 import styles from "./index.module.css";
 
+import { PAGE_TITLES } from "@/config/site";
 import BlogStatus from "@/features/BlogStatus";
 import EntryDetail from "@/features/EntryDetail";
 import NotFoundPage from "@/pages/NotFoundPage";
+import PageMeta from "@/shared/ui/PageMeta";
 import { getBlog, getBlogs } from "@/util/blogRepository";
 
 const BlogDetailPage = () => {
@@ -16,9 +18,10 @@ const BlogDetailPage = () => {
   const recent = useSWR("blogs", getBlogs, {
     shouldRetryOnError: false,
   });
-  if (entry.error || entry.isLoading)
+  if (!entry.data && (entry.error || entry.isLoading))
     return (
       <div className={styles["status"]}>
+        <PageMeta title={PAGE_TITLES.blog} />
         <BlogStatus
           isLoading={entry.isLoading}
           hasError={!!entry.error}
@@ -27,7 +30,18 @@ const BlogDetailPage = () => {
       </div>
     );
   return entry.data ? (
-    <EntryDetail entry={entry.data} recent={recent.data?.entries ?? []} />
+    <>
+      {entry.error && (
+        <div className={styles["status"]}>
+          <BlogStatus
+            isLoading={false}
+            hasError
+            onRetry={() => void entry.mutate()}
+          />
+        </div>
+      )}
+      <EntryDetail entry={entry.data} recent={recent.data?.entries ?? []} />
+    </>
   ) : (
     <NotFoundPage />
   );

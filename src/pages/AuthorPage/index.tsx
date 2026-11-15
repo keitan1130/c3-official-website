@@ -8,6 +8,7 @@ import { useAuthors } from "@/features/AuthorProfile/hook/useAuthors";
 import EntryGrid from "@/features/EntryGrid";
 import NotFoundPage from "@/pages/NotFoundPage";
 import Button from "@/shared/ui/Button";
+import PageMeta from "@/shared/ui/PageMeta";
 import { getAuthorBlogs } from "@/util/blogRepository";
 
 const AuthorPage = () => {
@@ -23,6 +24,7 @@ const AuthorPage = () => {
   if (authors.error)
     return (
       <div className={styles["status"]} role="alert">
+        <PageMeta title="著者" />
         著者情報を読み込めませんでした。
         <Button onClick={() => void authors.mutate()}>再試行</Button>
       </div>
@@ -30,6 +32,7 @@ const AuthorPage = () => {
   if (authors.isLoading)
     return (
       <p className={styles["status"]} role="status">
+        <PageMeta title="著者" />
         読み込み中…
       </p>
     );

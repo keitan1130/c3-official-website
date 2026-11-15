@@ -38,7 +38,14 @@ export const normalizeContentfulAuthors = (
       "homePage",
     ] as const) {
       const value = fields[key];
-      if (value && /^https?:\/\/[^/]+\/.+/.test(value)) links[key] = value;
+      if (!value) continue;
+      try {
+        const url = new URL(value);
+        if (url.protocol === "http:" || url.protocol === "https:")
+          links[key] = url.href;
+      } catch {
+        // Ignore invalid profile URLs.
+      }
     }
     return {
       id: sys.id,

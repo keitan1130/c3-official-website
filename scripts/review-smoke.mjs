@@ -11,7 +11,7 @@ const thumbnail = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http:/
 const uuid = index => `fac206ed-32a0-4fdb-b3e8-${String(index).padStart(12,"0")}`;
 const toyboxBlogs = Array.from({length:45},(_,index)=>({id:uuid(index),title:`Toybox ${index}`,body_text:"## Fixture body\n\nAvailable",created_at:new Date(Date.UTC(2026,0,1)-index*86400000).toISOString(),updated_at:"2026-01-01T00:00:00Z",thumbnail:{url:thumbnail},tags:[],user:{id:uuid(1000+index),name:"Fixture author"}}));
 const authorIds=Array.from({length:105},(_,index)=>`author${index}`);
-const contentfulAuthors=authorIds.map((id,index)=>({sys:{id},fields:{name:id==="author1"?"Fixture profile":`Fixture author ${index}`,icon:{sys:{id:"avatar"}},introduction:"Fixture introduction"}}));
+const contentfulAuthors=authorIds.map((id,index)=>({sys:{id},fields:{name:id==="author1"?"Fixture profile":`Fixture author ${index}`,icon:{sys:{id:"avatar"}},introduction:"Fixture introduction",homePage:id==="author1"?"https://example.com/":undefined}}));
 const authorAssets=[{sys:{id:"avatar"},fields:{file:{url:thumbnail}}}];
 let omitIncludedAuthors=false;
 const contentfulBlogs = Array.from({length:105},(_,index)=>({sys:{id:`cf${index}`,createdAt:new Date(Date.UTC(2026,0,2)-index*86400000).toISOString(),updatedAt:"2026-01-02T00:00:00Z"},fields:{title:`Contentful ${index}`,body:"## Fixture body",digest:"Summary",user:[{sys:{id:`author${index}`}}],tags:index===0?[{sys:{id:"tag1"}}]:[]}}));
@@ -113,6 +113,7 @@ try {
   await link.click();
   await page.getByRole("heading",{name:"Fixture profile",exact:true,level:1}).waitFor();
   assert.equal(authorRequests().length,before);
+  assert.equal(await page.getByRole("link",{name:"Webサイト",exact:true}).getAttribute("href"),"https://example.com/");
  }
  omitIncludedAuthors=false;
  await page.goto(BASE+"/author/author1");
@@ -215,6 +216,37 @@ try {
   await page.waitForFunction(()=>!document.documentElement.hasAttribute("data-scroll-locked"));
   assert.equal(await page.evaluate(()=>scrollY),0);
  }
+ // Cached articles survive failed focus revalidation and recover on retry.
+ await page.goto(BASE+"/blog/cf0");
+ await page.getByRole("heading",{name:"Fixture body",exact:true}).waitFor();
+ isContentfulUnavailable=true;
+ await page.waitForTimeout(5100); // SWR throttles focus revalidation for five seconds.
+ await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+ await page.getByRole("alert").getByText("ブログを読み込めませんでした。",{exact:false}).waitFor();
+ assert.equal(await page.getByRole("article").getByRole("heading",{name:"Contentful 0",exact:true}).count(),1);
+ assert.equal(await page.getByRole("heading",{name:"Fixture body",exact:true}).count(),1);
+ isContentfulUnavailable=false;
+ await page.getByRole("button",{name:"再試行",exact:true}).click();
+ await page.getByRole("alert").waitFor({state:"detached"});
+ // Loading/error routes must replace the previous 404 metadata.
+ for(const [route,errorText,title] of [["/author/author1","著者情報を読み込めませんでした。","著者"],["/blog/cf0","ブログを読み込めませんでした。","ブログ"]]) {
+  await page.goto(BASE+"/missing-static-page");
+  await page.getByRole("heading",{name:"404",exact:true}).waitFor();
+  isContentfulUnavailable=true;
+  await page.evaluate(path=>{history.pushState({},"",path);window.dispatchEvent(new PopStateEvent("popstate"));},route);
+  await page.getByRole("alert").getByText(errorText,{exact:false}).waitFor();
+  assert.equal(await page.title(),createPageMetadata({title,pathname:route}).title);
+  assert.equal(await page.locator('link[rel="canonical"]').getAttribute("href"),SITE.origin+route);
+  assert.equal(await page.locator('meta[name="robots"]').count(),0);
+  isContentfulUnavailable=false;
+  await page.getByRole("button",{name:"再試行",exact:true}).click();
+  await page.getByRole("heading",{name:route.startsWith("/author")?"Fixture profile":"Contentful 0",exact:true,level:1}).waitFor();
+ }
+ const profileUrls=await page.evaluate(async()=>{
+  const {normalizeContentfulAuthors}=await import("/src/util/authorRepository.ts");
+  return ["https://example.com","https://example.com/","https://example.com/profile","javascript:alert(1)","invalid"].map(homePage=>normalizeContentfulAuthors({items:[{sys:{id:"fixture"},fields:{homePage}}]})[0].links.homePage??null);
+ });
+ assert.deepEqual(profileUrls,["https://example.com/","https://example.com/","https://example.com/profile",null,null]);
  await page.clock.install();
  await page.goto(BASE+"/");
  const carousel=page.getByRole("region",{name:"お知らせ",exact:true});
