@@ -5,7 +5,7 @@ import styles from "./index.module.css";
 
 import AuthorProfile from "@/features/AuthorProfile";
 import { useAuthors } from "@/features/AuthorProfile/hook/useAuthors";
-import EntryCard from "@/features/EntryCard";
+import EntryGrid from "@/features/EntryGrid";
 import NotFoundPage from "@/pages/NotFoundPage";
 import Button from "@/shared/ui/Button";
 import { getAuthorBlogs } from "@/util/blogRepository";
@@ -19,6 +19,7 @@ const AuthorPage = () => {
     () => getAuthorBlogs(id),
     { shouldRetryOnError: false },
   );
+  const entries = blogs.data ?? [];
   if (authors.error)
     return (
       <div className={styles["status"]} role="alert">
@@ -44,11 +45,7 @@ const AuthorPage = () => {
           <Button onClick={() => void blogs.mutate()}>再試行</Button>
         </div>
       )}
-      <div className={styles["grid"]}>
-        {blogs.data?.map((entry) => (
-          <EntryCard key={entry.id} entry={entry} />
-        ))}
-      </div>
+      <EntryGrid entries={entries ?? []} />
       {blogs.data?.length === 0 && <p>ブログはまだありません。</p>}
     </div>
   );

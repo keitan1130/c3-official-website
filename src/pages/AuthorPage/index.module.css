@@ -15,12 +15,6 @@
   font-size: 18px;
   font-weight: normal;
 }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(315px, 100%), 1fr));
-  gap: 38px 26px;
-  margin: 2vw 0;
-}
 .status {
   padding: 80px 5vw;
   text-align: center;

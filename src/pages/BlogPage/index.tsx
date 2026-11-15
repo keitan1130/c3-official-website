@@ -5,7 +5,7 @@ import styles from "./index.module.css";
 
 import { PAGES } from "@/config/site";
 import BlogStatus from "@/features/BlogStatus";
-import EntryCard from "@/features/EntryCard";
+import EntryGrid from "@/features/EntryGrid";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
 import PageMeta from "@/shared/ui/PageMeta";
 import { getBlogs } from "@/util/blogRepository";
@@ -30,11 +30,7 @@ const BlogPage = () => {
         unavailableSources={data?.unavailableSources}
         onRetry={() => void mutate()}
       />
-      <div className={styles["grid"]}>
-        {entries?.map((entry) => (
-          <EntryCard key={entry.id} entry={entry} />
-        ))}
-      </div>
+      <EntryGrid entries={entries ?? []} />
       {entries?.length === 0 && <p>該当するブログはありません。</p>}
     </section>
   );

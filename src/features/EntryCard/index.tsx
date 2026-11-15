@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 
 import styles from "./index.module.css";
 
 import AuthorBadge from "@/features/AuthorBadge";
-import { formatDate } from "@/util/formatDate";
-import { formatDateTime } from "@/util/formatDateTime";
+import EntryDates from "@/features/EntryDates";
+import LoadingImage from "@/shared/ui/LoadingImage";
 
 import type { EntrySummary } from "@/shared/types/content";
 
@@ -12,49 +14,50 @@ interface EntryCardProps {
   entry: EntrySummary;
 }
 const EntryCard = ({ entry }: EntryCardProps) => {
+  const [failedThumbnail, setFailedThumbnail] = useState<string>();
+  const hasThumbnail = !!entry.thumbnail && failedThumbnail !== entry.thumbnail;
   const tags = entry.kind === "blog" ? entry.tags : [];
-  const kind = entry.kind;
-  const url = `/${kind}/${encodeURIComponent(entry.id)}`;
+  const url = `/${entry.kind}/${encodeURIComponent(entry.id)}`;
   return (
     <article className={styles["card"]}>
-      <Link className={styles["primary"]} to={url}>
-        <div className={styles["image"]}>
-          {entry.thumbnail && (
-            <img src={entry.thumbnail} alt="" loading="lazy" />
-          )}
-        </div>
-        <h2>{entry.title}</h2>
-      </Link>
+      <div className={styles["image"]}>
+        {hasThumbnail ? (
+          <LoadingImage
+            className={styles["thumbnail"]}
+            src={entry.thumbnail}
+            alt=""
+            loading="lazy"
+            onError={() => setFailedThumbnail(entry.thumbnail)}
+          />
+        ) : (
+          <span className={styles["placeholder"]} aria-hidden="true">
+            <ImageOutlinedIcon fontSize="inherit" />
+          </span>
+        )}
+      </div>
       <div className={styles["content"]}>
-        {tags.length > 0 && (
-          <div className={styles["tags"]}>
-            {tags.map((tag) => (
-              <Link
-                key={tag.id}
-                to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
-              >
-                {tag.name}
-              </Link>
-            ))}
-          </div>
-        )}
-        {entry.kind === "blog" && (
-          <div className={styles["authors"]}>
-            {entry.authors.map(({ id, profile }) => (
-              <AuthorBadge key={id} id={id} author={profile} />
-            ))}
-          </div>
-        )}
-        <p className={styles["digest"]}>{entry.digest}</p>
-        <div className={styles["dates"]}>
-          {entry.kind === "news" ? (
-            <div>投稿日：{formatDate(entry.publishedDate)}</div>
-          ) : (
-            <>
-              <div>作成日：{formatDateTime(entry.createdAt)}</div>
-              <div>更新日：{formatDateTime(entry.updatedAt)}</div>
-            </>
+        <h2 className={styles["title"]} title={entry.title}>
+          <Link className={styles["primary"]} to={url}>
+            {entry.title}
+          </Link>
+        </h2>
+        <p className={styles["summary"]}>{entry.digest.trim() || null}</p>
+        <div className={styles["tags"]}>
+          {tags.map((tag) => (
+            <Link key={tag.id} to={`/blog?tag=${encodeURIComponent(tag.name)}`}>
+              {tag.name}
+            </Link>
+          ))}
+        </div>
+        <div className={styles["meta"]}>
+          {entry.kind === "blog" && (
+            <div className={styles["authors"]}>
+              {entry.authors.map(({ id, profile }) => (
+                <AuthorBadge key={id} id={id} author={profile} />
+              ))}
+            </div>
           )}
+          <EntryDates entry={entry} isCompact />
         </div>
       </div>
     </article>

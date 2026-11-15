@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 
 import styles from "./index.module.css";
 
 import { PAGES } from "@/config/site";
 import AuthorBadge from "@/features/AuthorBadge";
 import BodyContent from "@/features/BodyContent";
+import EntryDates from "@/features/EntryDates";
 import Breadcrumbs from "@/shared/ui/Breadcrumbs";
+import LoadingImage from "@/shared/ui/LoadingImage";
 import PageMeta from "@/shared/ui/PageMeta";
 import Paper from "@/shared/ui/Paper";
-import { formatDate } from "@/util/formatDate";
-import { formatDateTime } from "@/util/formatDateTime";
 
 import type { Entry, EntrySummary } from "@/shared/types/content";
 
@@ -25,7 +26,7 @@ const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
     <section className={styles["entry"]}>
       <PageMeta
         title={entry.title}
-        description={entry.digest}
+        description={entry.digest.trim() || undefined}
         image={entry.thumbnail}
       />
       <Breadcrumbs
@@ -36,42 +37,43 @@ const EntryDetail = ({ entry, recent }: EntryDetailProps) => {
           <article>
             {entry.thumbnail && (
               <div className={styles["hero"]}>
-                <img src={entry.thumbnail} alt={`${entry.title}のサムネイル`} />
+                <LoadingImage
+                  src={entry.thumbnail}
+                  alt={`${entry.title}のサムネイル`}
+                />
               </div>
             )}
-            <h1>{entry.title}</h1>
-            {tags.length > 0 && (
-              <div className={styles["tags"]}>
-                タグ：
-                {tags.map((tag) => (
-                  <Link
-                    key={tag.id}
-                    to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
-                  >
-                    {tag.name}
-                  </Link>
-                ))}
-              </div>
-            )}
-            {entry.kind === "blog" && (
-              <div className={styles["authors"]}>
-                ユーザー：
-                {entry.authors.map(({ id, profile }) => (
-                  <AuthorBadge key={id} id={id} author={profile} />
-                ))}
-              </div>
-            )}
-            <p className={styles["date"]}>
-              投稿日：
-              {entry.kind === "news"
-                ? formatDate(entry.publishedDate)
-                : formatDateTime(entry.createdAt)}
-            </p>
-            {entry.kind === "blog" && (
-              <p className={styles["date"]}>
-                更新日：{formatDateTime(entry.updatedAt)}
-              </p>
-            )}
+            <header className={styles["article-header"]}>
+              <h1>{entry.title}</h1>
+              {tags.length > 0 && (
+                <div className={styles["tags"]}>
+                  <LocalOfferOutlinedIcon
+                    className={styles["meta-icon"]}
+                    aria-hidden="true"
+                  />
+                  {tags.map((tag) => (
+                    <Link
+                      key={tag.id}
+                      to={`/${kind}?tag=${encodeURIComponent(tag.name)}`}
+                    >
+                      {tag.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              <EntryDates entry={entry} />
+              {entry.kind === "blog" && entry.authors.length > 0 && (
+                <div className={styles["authors"]}>
+                  {entry.authors.map(({ id, profile }) => (
+                    <AuthorBadge key={id} id={id} author={profile} />
+                  ))}
+                </div>
+              )}
+              {entry.digest.trim() && (
+                <p className={styles["summary"]}>{entry.digest.trim()}</p>
+              )}
+            </header>
+            <hr className={styles["divider"]} />
             <div className={styles["body"]}>
               <BodyContent load={entry.body} />
             </div>

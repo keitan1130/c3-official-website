@@ -4,9 +4,3 @@
   margin: 0 auto 100px;
   padding: 10px 0;
 }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(315px, 100%), 1fr));
-  row-gap: 38px;
-  column-gap: 26px;
-}

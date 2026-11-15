@@ -23,11 +23,18 @@
 .hero img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+}
+.article-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
 }
 .article h1 {
   font-size: 40px;
-  margin: 30px 0 0;
+  margin: 0;
+  line-height: 1.25;
   overflow-wrap: anywhere;
 }
 .tags,
@@ -36,8 +43,9 @@
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
-  margin-top: 10px;
-  font-size: 18px;
+  width: 100%;
+  min-width: 0;
+  font-size: 14px;
 }
 .tags a {
   background: var(--paper-color);
@@ -48,12 +56,31 @@
   text-decoration: none;
   font-size: 14px;
 }
-.date {
-  font-size: 18px;
-  margin: 10px 0;
+.meta-icon {
+  color: var(--font-muted-color);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.summary {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  color: var(--font-muted-color);
+  font-size: 16px;
+  line-height: 1.75;
+  white-space: normal;
+  line-break: strict;
+  overflow-wrap: anywhere;
+}
+.divider {
+  width: 100%;
+  margin: 24px 0;
+  border: 0;
+  border-top: 1px solid var(--border-color);
 }
 .body {
-  margin-top: 40px;
+  min-width: 0;
 }
 .recent {
   box-sizing: border-box;
@@ -123,7 +150,7 @@
   .article h1 {
     font-size: 28px;
   }
-  .date {
+  .summary {
     font-size: 14px;
   }
 }
