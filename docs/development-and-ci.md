@@ -61,7 +61,9 @@ TEST_BASE_URL=http://127.0.0.1:5191 npm run test:review
 
 `test:review` はブログのID形式による取得先判定、クエリなしURL、本文を除外したContentful一覧、ブログ・著者別一覧の全件表示、通信失敗と404の区別、noindex解除、メニューのスクロール固定・位置復元・focus復帰を検査します。API応答はPlaywrightで差し替えます。実API・CORSの確認にはなりません。
 
-`test:content` には全記事の自動検出、ID・投稿日・必須値・画像の検証、参照画像の破損、共通接頭辞のある素材名、投稿日順・同日のID順、分野定義とフォルダの不一致、記事件数の変化に追従するPages成果物検査を含めます。`test:pages` は現在の `content/` と生成済みルート集合を照合します。
+`test:content` には全記事の自動検出、ID・投稿日・必須値・素材の存在と参照範囲、Markdown・HTMLの相対URL変換、コード例の保持、共通接頭辞のある素材名、投稿日順・同日のID順、分野定義とフォルダの不一致、記事件数の変化に追従するPages成果物検査を含めます。`test:pages` は現在の `content/` と生成済みルート集合を照合します。
+
+`npm run build && npm run test:content:browser` は生成済み `dist/` の全ローカル本文を390px・1440pxで開き、全本文画像の実読込と動画メタデータ、横溢れ、実行時エラーを検査します。previewサーバーは自動起動・終了し、作品APIだけfixtureを使用します。小さい画像のインライン化とsanitizeの組み合わせによる表示欠落も検出します。実機の動画再生やCloudflare上の配信確認とは区別します。
 
 ## ロゴ・アイコンの更新
 

@@ -16,7 +16,17 @@ content/
 
 C3ロゴの元画像は `public/C3Logo.svg` です。画面は `SITE.logo` を参照し、favicon・端末用アイコン・OGP用PNG・新規ニュースの仮画像は同じSVGから生成したPNGを使用します。その他の共通アイコン・動画読み込み用画像は `src/assets/` に配置します。記事・紹介本文に付属する素材は `content/` 内の各 `assets/` に配置します。サイト設定・固定ページ名・外部リンクは `src/config/site.ts`、分野名・表示順は `src/config/communities.ts` で管理します。
 
-本文は `body.md`、設定は `index.json`、素材は `assets/` に統一します。本文やJSONから `./assets/cover.jpg` のように相対参照します。写真を `public/` へ二重コピーする必要はありません。
+本文は `body.md`、設定は `index.json`、記事・ページ専用のローカル素材は必ず同居する `assets/` 配下に統一します。新規作成・通常編集とも例外は設けません。動画は `./assets/hero.mp4`、画像は `./assets/photo-07.png` のように参照します。素材が多い場合も `assets/photos/` など、`assets/` の中で整理します。写真を `public/` へ二重コピーする必要はありません。
+
+JSONの相対パスは `index.json` のあるフォルダを基準に、本文の相対URLはMarkdownファイルのあるフォルダを基準に解決します。`./` は省略できます。画像・動画等の相対参照と、`./assets/...`（`assets/...` も可）を指すリンクは素材として検証・変換し、同じ記事・ページの `assets/` 配下から外れる場合はシンボリックリンク経由も含めて生成時にエラーにします。それ以外のリンクはページURLとして保持します。参照形式とHTMLのリンクにも同じ規則を適用します。本文を別フォルダに置く場合は `../assets/...` も素材として解決します。
+
+`/news/article-id` の本文では、次のようにページ遷移を記述できます。相対ページURLはブラウザが表示中のURLを基準に解決するため、末尾スラッシュの有無で移動先が変わります。
+
+```md
+[別の記事](./other-article-id)
+[Aboutへ](../about)
+[お知らせ一覧](/news)
+```
 
 ## ニュースの追加
 
@@ -47,8 +57,11 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 
 - 見出し・箇条書き・リンク・画像・GFMの表など、`MarkdownPreview` が対応する記法を使います。日本語の文中の強調は `グッズの**割引券**が貰えます` のように `**` で囲みます。`__` は前後の文字によって強調にならない場合があります。
 - 画像は原則 `![画像の説明](./assets/photo.jpg)` で記述します。幅の指定が必要なら `<img src="./assets/photo.jpg" alt="画像の説明" width="200" />` を使えます。画像の高さやパーセント幅は指定できません。
+- 空白を含むファイル名は `![画像](<./photos/photo (1).png>)` またはURLエンコードで記述できます。参照形式の画像・リンク、HTMLの画像・動画・音声・poster・source・trackも相対URLを解決します。クエリ・フラグメントは保持し、コードブロック・インラインコード内の例や通常の文章は変換しません。
 - `div` による中央寄せ・flex配置、`b` タグ、spanのmarginやfont-styleは表示側で除去されます。段落・空行・`**強調**`・画像を使って構成します。
 - 表内の `<br>` と、spanの許可された文字色・文字サイズは利用できます。raw HTMLの全要素・全スタイルに対応しているわけではありません。許可内容は [markdownSchema.ts](../src/features/MarkdownPreview/markdownSchema.ts) と [rehypeMarkdownStyles.ts](../src/features/MarkdownPreview/rehypeMarkdownStyles.ts) を参照してください。
+- 参照形式のリンク・画像は、本文で使われる識別子の最初の定義だけを検査・変換します。識別子の大文字小文字と連続する空白は同一視します。未使用の定義と重複した2件目以降の定義は、そのまま保持します。採用される素材が存在しない場合はエラーになります。
+- 見出し・手動指定ID・脚注へのリンクは `#名前` を使います。例: `<p id="custom-anchor">本文</p>` に `[本文へ](#custom-anchor)` または `記事URL#custom-anchor` で移動できます。`[^note]` の脚注は `#fn-note`、本文への戻り先は `#fnref-note`（再参照は `#fnref-note-2`）です。内部IDの保護用接頭辞は記述しません。直接アクセス・再読込・本文内クリックで、対象を含む折りたたみも開きます。
 
 ## 自動検出とURL
 
@@ -67,7 +80,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 
 ## 検査と素材
 
-`scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事の `./assets/` 内のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
-本文は遅延読込し、相対参照をビルド時に配信用URLへ変換します。Markdownのsanitize処理は維持します。新しい素材は用途の分かる名前で保存し、表示・再生を確認してください。
+`scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事の `assets/` 配下のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
+本文は遅延読込し、構文解析した相対参照をビルド時に配信用URLへ変換します。素材はサイズにかかわらずファイルとして出力し、Markdownのsanitize処理は維持します。新しい素材は用途の分かる名前で保存し、表示・再生を確認してください。`npm run build && npm run test:content:browser` でビルド成果物の全本文と画像・動画をPC・モバイル幅で検証できます。
 
 命名は [命名規則](naming-conventions.md)、配信条件は [Cloudflare Pages](cloudflare-pages.md) を参照します。

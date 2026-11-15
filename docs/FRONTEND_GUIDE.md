@@ -11,7 +11,7 @@
 - `src/pages/` はルート単位の構成と parameter の受け渡しに絞り、feature を組み合わせます。
 - 機能固有の UI・API・hook・store は `src/features/<Feature>/` に置きます。
 - 汎用 UI は `src/shared/ui/`、共有型は `src/shared/types/`、UI 非依存の共有関数は `src/util/`。局所型は利用箇所の近くに置きます。
-- 本文・メタデータ・写真・動画は `content/` のページ・記事フォルダ内にまとめます。例: `content/about/`、`content/news/<date>-<slug>/`。画像・動画等の素材は各フォルダの `assets/` にまとめ、相対パスからビルド時に配信用URLへ解決します。詳細は [コンテンツ構成](content-structure.md) に従います。
+- 本文・メタデータ・写真・動画は `content/` のページ・記事フォルダ内にまとめます。例: `content/about/`、`content/news/<date>-<slug>/`。記事・ページ専用のローカル素材は、例外なく同居する `assets/` 配下に配置します。相対パスから配信用URLへ解決し、`assets/` 外への参照は生成時に拒否します。詳細は [コンテンツ構成](content-structure.md) に従います。
 - `src/assets/` は共通ロゴ・アイコン・動画読み込み用画像等、import して使う UI 素材、`dist/` は生成物です。生成物を手動編集しません。
 - 新しい部品の前に shared UI と feature 内の既存部品を検索します。Hygenで既存テンプレートを利用できます。
 

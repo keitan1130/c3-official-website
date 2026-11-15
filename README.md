@@ -27,7 +27,7 @@ npm run dev
 npm run new:news -- 2026-11-14-event-guide
 ```
 
-生成された `index.json`・`body.md`・`assets/` を編集します。仮のサムネイル `assets/cover.png` も配置されるため、必要な画像へ差し替えてください。`content/news/` の全記事が一覧・詳細・ホームの重要なお知らせへ自動反映されます。公開・重要フラグや下書き機能はありません。完成した内容を `npm run ci` で確認してから公開します。
+生成された `index.json`・`body.md`・`assets/` を編集します。記事専用のローカル素材は例外なく `assets/` 配下に置きます。仮のサムネイル `assets/cover.png` も配置されるため、必要な画像へ差し替えてください。`content/news/` の全記事が一覧・詳細・ホームの重要なお知らせへ自動反映されます。公開・重要フラグや下書き機能はありません。完成した内容を `npm run ci` で確認してから公開します。
 
 記事ID・日時・画像の条件とMarkdownの書き方は [記事・素材の管理](docs/content-structure.md) を参照してください。
 
