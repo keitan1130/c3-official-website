@@ -1,7 +1,7 @@
 import * as ts from "typescript/unstable/ast";
 import { API } from "typescript/unstable/sync";
 
-import { checkCssModules } from "./check-kebab-case.js";
+import { checkCssModules } from "./css.js";
 
 import fs from "node:fs";
 import path from "node:path";
@@ -188,7 +188,9 @@ const collectTypeScriptViolations = (file, sourceFile) => {
       !(
         PASCAL_CASE_PATTERN.test(node.name.text) &&
         ts.isCallExpression(node.initializer) &&
-        ["lazy", "memo", "forwardRef"].includes(node.initializer.expression.getText(sourceFile))
+        ["lazy", "memo", "forwardRef"].includes(
+          node.initializer.expression.getText(sourceFile),
+        )
       ) &&
       !UPPER_SNAKE_CASE_PATTERN.test(node.name.text)
     ) {
