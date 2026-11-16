@@ -1,18 +1,20 @@
 import { micromark } from "micromark";
 import { parseFragment } from "parse5";
+import { test } from "vitest";
 
 import { prepareContent } from "../scripts/content/generate.mjs";
 import { assetFile, localFile } from "../scripts/content/load.mjs";
 import { markdownAssetEdits } from "../scripts/content/markdown-assets.mjs";
-import { contentFixture } from "./fixtures/content.mjs";
+import { contentFixture } from "./fixtures/content.ts";
+import { loadGeneratedContent } from "./helpers/generated-content.ts";
 
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { registerHooks } from "node:module";
 import os from "node:os";
 import path from "node:path";
-import test from "node:test";
-import { fileURLToPath, pathToFileURL } from "node:url";
+
+import type { DefaultTreeAdapterMap } from "parse5";
+import type { ViteDevServer } from "vite";
 
 test("image descriptions do not validate or rewrite resources that only become alt text", () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-image-alt-"));
@@ -30,8 +32,8 @@ test("image descriptions do not validate or rewrite resources that only become a
     write("about/body.md", markdown);
     const output = path.join(temporary, "generated/contentData.ts");
     assert.doesNotThrow(() => prepareContent(root, output));
-    const urls = [];
-    markdownAssetEdits(markdown, (url) => {
+    const urls: string[] = [];
+    markdownAssetEdits(markdown, (url: string) => {
       urls.push(url);
       return url;
     });
@@ -47,7 +49,6 @@ test("image descriptions do not validate or rewrite resources that only become a
 
 test("generated Markdown and HTML preserve URL character references after rendering", async () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-url-entities-"));
-  let hooks;
   try {
     const root = path.join(temporary, "content");
     const write = contentFixture(root);
@@ -62,49 +63,34 @@ test("generated Markdown and HTML preserve URL character references after render
     write("about/body.md", markdown);
     const output = path.join(temporary, "generated/contentData.ts");
     prepareContent(root, output);
-    hooks = registerHooks({
-      load(url, context, nextLoad) {
-        if (url.endsWith("?url&no-inline"))
-          return {
-            format: "module",
-            shortCircuit: true,
-            source: 'export default "/assets/imported.png";',
-          };
-        if (url.endsWith("?raw"))
-          return {
-            format: "module",
-            shortCircuit: true,
-            source: `export default ${JSON.stringify(fs.readFileSync(fileURLToPath(url), "utf8"))};`,
-          };
-        return nextLoad(url, context);
-      },
+    const generated = loadGeneratedContent(output, {
+      "image.png": "/assets/imported.png",
     });
-    const { default: content } = await import(pathToFileURL(output).href);
-    const collectUrls = (text) => {
-      const urls = [];
-      const walk = (node) => {
-        for (const attr of node.attrs ?? [])
+    const collectUrls = (text: string) => {
+      const urls: string[] = [];
+      const walk = (node: DefaultTreeAdapterMap["node"]) => {
+        for (const attr of "attrs" in node ? node.attrs : [])
           if (["src", "href"].includes(attr.name)) urls.push(attr.value);
-        for (const child of node.childNodes ?? []) walk(child);
+        for (const child of "childNodes" in node ? node.childNodes : [])
+          walk(child);
       };
       walk(parseFragment(micromark(text)));
       return urls;
     };
     assert.deepEqual(
-      collectUrls(await content.about.body()),
+      collectUrls(generated.body),
       collectUrls(markdown).map((url) =>
         url.replace("./assets/image.png", "/assets/imported.png"),
       ),
     );
   } finally {
-    hooks?.deregister();
     fs.rmSync(temporary, { recursive: true, force: true });
   }
 });
 
 test("reserved characters in source paths work through real Vite build and dev imports", async () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-vite-paths-"));
-  let server;
+  let server: ViteDevServer | undefined;
   try {
     const root = path.join(temporary, "content");
     const write = contentFixture(root);
@@ -136,6 +122,7 @@ test("reserved characters in source paths work through real Vite build and dev i
         rolldownOptions: { input: path.join(temporary, "main.js") },
       },
     });
+    assert.ok(!Array.isArray(result) && "output" in result);
     const assets = result.output.filter((entry) => entry.type === "asset");
     for (const source of ["hash image", "query image"])
       assert.ok(
@@ -155,7 +142,9 @@ test("reserved characters in source paths work through real Vite build and dev i
       server: { host: "127.0.0.1", port: 0 },
     });
     await server.listen();
-    const base = `http://127.0.0.1:${server.httpServer.address().port}`;
+    const address = server.httpServer?.address();
+    assert.ok(address && typeof address !== "string");
+    const base = `http://127.0.0.1:${address.port}`;
     for (const name of fs.readdirSync(
       path.join(temporary, "generated/contentFiles"),
     )) {
@@ -201,11 +190,14 @@ test("only referenced first definitions are validated and rewritten", () => {
       ignored;
     write("about/body.md", markdown);
     prepareContent(root, output);
-    const resolved = [];
-    const edits = markdownAssetEdits(markdown, (url, _context, kind) => {
-      resolved.push({ url, kind });
-      return "/assets/resolved.png";
-    });
+    const resolved: { url: string; kind: string }[] = [];
+    const edits = markdownAssetEdits(
+      markdown,
+      (url: string, _context: string, kind: string) => {
+        resolved.push({ url, kind });
+        return "/assets/resolved.png";
+      },
+    );
     assert.deepEqual(resolved, [{ url: "./assets/valid.png", kind: "media" }]);
     let body = markdown;
     for (const edit of edits.toReversed())
@@ -232,10 +224,10 @@ test("only referenced first definitions are validated and rewritten", () => {
       write("about/body.md", markdown);
       assert.throws(() => prepareContent(root, output), /ENOENT/, markdown);
     }
-    const normalized = [];
+    const normalized: { url: string; kind: string }[] = [];
     markdownAssetEdits(
       "[link][Spaced label]\n\n[spaced\t LABEL]: ./assets/valid.png\n\n[SPACED label]: ./assets/missing.png",
-      (url, _context, kind) => {
+      (url: string, _context: string, kind: string) => {
         normalized.push({ url, kind });
         return url;
       },
@@ -289,7 +281,7 @@ test("all news folders are published and invalid metadata or missing assets fail
       [{ publishedDate: "2026-02-30" }, /Invalid publishedDate/],
       [{ publishedDate: "2026-11-14T00:00:00Z" }, /Invalid publishedDate/],
       [{ publishedDate: "" }, /Invalid publishedDate/],
-    ]) {
+    ] as [Record<string, string>, RegExp][]) {
       write("news/readable-folder/index.json", { ...article, ...changes });
       assert.throws(() => prepareContent(root, output), error);
     }
@@ -453,33 +445,9 @@ test("parsed references resolve assets without touching code or prose", async ()
     write("communities/game/assets/hero.mp4", "video");
     const output = path.join(temporary, "generated/contentData.ts");
     prepareContent(root, output);
-    const urls = new Map();
-    const hooks = registerHooks({
-      load(url, context, nextLoad) {
-        if (url.endsWith("?url&no-inline")) {
-          if (!urls.has(fileURLToPath(url)))
-            urls.set(
-              fileURLToPath(url),
-              `/assets/file-${urls.size}${path.extname(fileURLToPath(url))}`,
-            );
-          return {
-            format: "module",
-            shortCircuit: true,
-            source: `export default ${JSON.stringify(urls.get(fileURLToPath(url)))};`,
-          };
-        }
-        if (url.endsWith("?raw"))
-          return {
-            format: "module",
-            shortCircuit: true,
-            source: `export default ${JSON.stringify(fs.readFileSync(fileURLToPath(url), "utf8"))};`,
-          };
-        return nextLoad(url, context);
-      },
-    });
-    try {
-      const { default: content } = await import(pathToFileURL(output).href);
-      const body = await content.about.body();
+    const generated = loadGeneratedContent(output);
+    {
+      const body = generated.body;
       assert.ok(
         body.includes(code),
         "code and prose remain byte-for-byte unchanged",
@@ -488,7 +456,12 @@ test("parsed references resolve assets without touching code or prose", async ()
         .split("\n\n")
         .filter((link) => !link.startsWith("[![linked image]")))
         assert.ok(body.includes(link), link);
-      const url = (file) => urls.get(path.join(root, "about", "assets", file));
+      const url = (file: string) => {
+        const value =
+          generated.assets[path.join(root, "about", "assets", file)];
+        assert.ok(value, file);
+        return value;
+      };
       for (const file of [
         "photos/photo(1).png",
         "photos/photo two.png",
@@ -523,8 +496,6 @@ test("parsed references resolve assets without touching code or prose", async ()
         body.includes(`${url("photos/photo.png")}?label=%22quoted%22&amp;x=1`),
       );
       assert.ok(body.includes('"photo title"'));
-    } finally {
-      hooks.deregister();
     }
     for (const body of [
       "![bad](../../outside.png)",
@@ -585,32 +556,11 @@ test("asset URLs with a shared filename prefix are resolved independently", asyn
       "photo.png": "/assets/photo-first.png",
       "photo.png.webp": "/assets/photo-second.webp",
     };
-    const hooks = registerHooks({
-      load(url, context, nextLoad) {
-        if (url.endsWith("?url&no-inline"))
-          return {
-            format: "module",
-            shortCircuit: true,
-            source: `export default ${JSON.stringify(assetUrls[path.basename(fileURLToPath(url))] ?? "/assets/fixture")};`,
-          };
-        if (url.endsWith("?raw"))
-          return {
-            format: "module",
-            shortCircuit: true,
-            source: `export default ${JSON.stringify(fs.readFileSync(fileURLToPath(url), "utf8"))};`,
-          };
-        return nextLoad(url, context);
-      },
-    });
-    try {
-      const { default: content } = await import(pathToFileURL(output).href);
-      assert.equal(
-        await content.about.body(),
-        "![first](/assets/photo-first.png)\n![second](/assets/photo-second.webp)",
-      );
-    } finally {
-      hooks.deregister();
-    }
+    const generated = loadGeneratedContent(output, assetUrls);
+    assert.equal(
+      generated.body,
+      "![first](/assets/photo-first.png)\n![second](/assets/photo-second.webp)",
+    );
   } finally {
     fs.rmSync(temporary, { recursive: true, force: true });
   }
@@ -640,26 +590,8 @@ test("news is sorted by publication date, then by stable id", async () => {
     }
     const output = path.join(temporary, "generated/contentData.ts");
     prepareContent(root, output);
-    const hooks = registerHooks({
-      load(url, context, nextLoad) {
-        if (url.endsWith("?url&no-inline"))
-          return {
-            format: "module",
-            shortCircuit: true,
-            source: 'export default "/assets/cover.png";',
-          };
-        return nextLoad(url, context);
-      },
-    });
-    try {
-      const { default: content } = await import(pathToFileURL(output).href);
-      assert.deepEqual(
-        content.news.map((entry) => entry.id),
-        ["later", "same-day", "earlier"],
-      );
-    } finally {
-      hooks.deregister();
-    }
+    const generated = loadGeneratedContent(output);
+    assert.deepEqual(generated.newsIds, ["later", "same-day", "earlier"]);
     write("communities/new/index.json", { slug: "new" });
     assert.throws(
       () => prepareContent(root, output),

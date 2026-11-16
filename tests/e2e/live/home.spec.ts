@@ -1,11 +1,22 @@
-import { chromium } from "playwright";
+import { test } from "playwright/test";
 
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 
-const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
-const browser = await chromium.launch({ headless: true });
-try {
+test("home layout, theme and live blog availability", async ({
+  browser,
+  baseURL,
+}) => {
+  test.skip(
+    process.env.TEST_LIVE_API !== "1",
+    "Set TEST_LIVE_API=1 to contact live APIs",
+  );
+  const BASE = baseURL;
+  assert.ok(BASE);
+  assert.ok(
+    process.env.TEST_BASE_URL,
+    "Specify TEST_BASE_URL for live API checks",
+  );
   await fs.mkdir("test-results/home", { recursive: true });
   for (const width of [390, 768, 1440]) {
     const page = await browser.newPage({
@@ -13,7 +24,7 @@ try {
       colorScheme: "light",
       reducedMotion: "reduce",
     });
-    const errors = [];
+    const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(BASE);
     await page
@@ -90,6 +101,4 @@ try {
   console.log(
     "Home: 390/768/1440 light+dark, 5 videos, carousel navigation and blog failure isolation passed.",
   );
-} finally {
-  await browser.close();
-}
+});

@@ -1,17 +1,20 @@
-import { chromium } from "playwright";
+import { test } from "playwright/test";
 
 import assert from "node:assert/strict";
 
-const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
-const browser = await chromium.launch({ headless: true });
-const works = Array.from({ length: 20 }, (_, index) => ({
-  id: `work-${index}`,
-  title: `作品 ${index + 1}`,
-  visibility: "public",
-  thumbnail_url: `${BASE}/test-work.svg`,
-}));
-const response = { works, page: 1, limit: 20, total_count: 20 };
-try {
+test("public works contract and loading, empty and error states", async ({
+  browser,
+  baseURL,
+}) => {
+  const BASE = baseURL;
+  assert.ok(BASE);
+  const works = Array.from({ length: 20 }, (_, index) => ({
+    id: `work-${index}`,
+    title: `作品 ${index + 1}`,
+    visibility: "public",
+    thumbnail_url: `${BASE}/test-work.svg`,
+  }));
+  const response = { works, page: 1, limit: 20, total_count: 20 };
   for (const width of [390, 1440]) {
     for (const pathname of ["/", "/about"]) {
       const page = await browser.newPage({
@@ -27,8 +30,8 @@ try {
       await page.route(/cdn\.contentful\.com|\/api\/v1\/blogs/, (route) =>
         route.abort(),
       );
-      let release;
-      const gate = new Promise((resolve) => {
+      let release: () => void = () => {};
+      const gate = new Promise<void>((resolve) => {
         release = resolve;
       });
       let requests = 0;
@@ -60,7 +63,9 @@ try {
       );
       assert.equal(
         new Set(
-          await images.evaluateAll((items) => items.map((item) => item.title)),
+          await images.evaluateAll((items) =>
+            items.map((item) => (item as HTMLElement).title),
+          ),
         ).size,
         20,
       );
@@ -69,9 +74,9 @@ try {
         .getByRole("link", { name: "作品を見る" })
         .scrollIntoViewIfNeeded();
       await page.waitForFunction(() =>
-        [...document.querySelectorAll('img[title^="作品 "]')].some(
-          (image) => image.naturalWidth > 0,
-        ),
+        [
+          ...document.querySelectorAll<HTMLImageElement>('img[title^="作品 "]'),
+        ].some((image) => image.naturalWidth > 0),
       );
       assert.equal(
         await page.evaluate(
@@ -121,6 +126,4 @@ try {
   console.log(
     "Works API fixture checks passed: home/About at 390/1440px, 20 works, request contract, loading, images, empty, HTTP/schema failures and retry. Live API/CORS not verified.",
   );
-} finally {
-  await browser.close();
-}
+});

@@ -19,10 +19,10 @@ Vite + React + TypeScriptのSPAです。認証・投稿機能や独自APIサー�
 | `scripts/checks/` | TypeScript・CSSの命名検査 |
 | `scripts/lib/` | Node側の環境設定 |
 | `build/vite/` | コンテンツ監視・HTMLメタデータ・Pages出力プラグイン |
-| `tests/` | Node回帰テスト、`e2e/`、fixture |
+| `tests/` | VitestのNodeテスト、Playwrightの `e2e/`、fixture・Node用ヘルパー |
 | `src/generated/`・`dist/` | Git管理外の生成物。手動編集しない |
 
-`vite.config.ts` はアプリのプラグインとalias、`vitest.config.ts` はStorybookテスト設定を担当します。
+`vite.config.ts` はアプリのプラグインとalias、`vitest.config.ts` はNode・Storybookのproject、`playwright.config.ts` はE2Eとサーバー起動を担当します。
 Vite起動時にローカル本文を検証し、遅延importを持つ一覧を生成します。開発中は `content/` を監視します。
 ビルド時は同じmode・公開originを使い、Viteの出力先へ各静的ページのHTML・OGP・sitemap・404を生成します。
 

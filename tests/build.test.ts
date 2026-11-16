@@ -1,11 +1,12 @@
-import { contentFixture } from "./fixtures/content.mjs";
+import { test } from "vitest";
+
+import { contentFixture } from "./fixtures/content.ts";
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 test("Vite generates content and Pages with the selected mode and output directory", () => {

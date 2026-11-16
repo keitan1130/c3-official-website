@@ -1,19 +1,15 @@
-import { chromium } from "playwright";
-import { preview } from "vite";
+import { test } from "playwright/test";
 
 import { loadContent } from "../../scripts/content/load.mjs";
 
 import assert from "node:assert/strict";
 
-// Run against dist so Vite's production asset handling is part of the check.
-const server = await preview({
-  configFile: false,
-  preview: { host: "127.0.0.1", port: 0, open: false },
-});
-let browser;
-try {
-  browser = await chromium.launch({ headless: true });
-  const base = `http://127.0.0.1:${server.httpServer.address().port}`;
+test("production Markdown media loads at mobile and desktop widths", async ({
+  browser,
+  baseURL,
+}) => {
+  const base = baseURL;
+  assert.ok(base);
   const { news, communities } = loadContent();
   const routes = [
     "/about",
@@ -24,7 +20,7 @@ try {
   let videos = 0;
   for (const width of [390, 1440]) {
     const page = await browser.newPage({ viewport: { width, height: 1000 } });
-    const errors = [];
+    const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.route(
       (url) => url.pathname === "/works",
@@ -46,9 +42,13 @@ try {
           `${route}: missing or inlined image src`,
         );
         await image.scrollIntoViewIfNeeded();
-        await image.evaluate((element) => element.decode().catch(() => {}));
+        await image.evaluate((element) =>
+          (element as HTMLImageElement).decode().catch(() => {}),
+        );
         assert.ok(
-          await image.evaluate((element) => element.naturalWidth > 0),
+          await image.evaluate(
+            (element) => (element as HTMLImageElement).naturalWidth > 0,
+          ),
           `${route}: broken image ${src}`,
         );
         images++;
@@ -56,16 +56,20 @@ try {
       for (const video of await page.locator("main video").all()) {
         await video.scrollIntoViewIfNeeded();
         await video.evaluate((element) => {
-          element.preload = "metadata";
-          element.load();
+          (element as HTMLVideoElement).preload = "metadata";
+          (element as HTMLVideoElement).load();
         });
         await page.waitForFunction(
-          (element) => element.readyState >= 1 || element.error,
+          (element) =>
+            (element as HTMLVideoElement).readyState >= 1 ||
+            (element as HTMLVideoElement).error,
           await video.elementHandle(),
         );
         assert.ok(
           await video.evaluate(
-            (element) => element.videoWidth > 0 && !element.error,
+            (element) =>
+              (element as HTMLVideoElement).videoWidth > 0 &&
+              !(element as HTMLVideoElement).error,
           ),
           `${route}: broken video`,
         );
@@ -85,9 +89,4 @@ try {
   console.log(
     `Verified production bodies on ${routes.length} routes at 390/1440px: ${images} image loads and ${videos} video metadata loads (works API fixture).`,
   );
-} finally {
-  await browser?.close();
-  await new Promise((resolve, reject) =>
-    server.httpServer.close((error) => (error ? reject(error) : resolve())),
-  );
-}
+});

@@ -27,17 +27,19 @@
 - ローカル本文・素材の変更は `npm run build && npm run test:e2e` で全本文のPC・モバイル表示を確認します。
 - UI変更は既存Storybookの代表例・操作を確認し、必要な回帰だけを追加します。操作テストには `test` tagを使います。
 - ルート変更は直接アクセス・再読込・404・戻る/進む・アンカー、テーマ変更は両テーマと保存・再読込を確認します。
-- `tests/e2e/review.mjs` は起動中のViteへ接続し、ブログ・著者APIをfixtureで検証します。`TEST_BASE_URL` で接続先を指定できます。
-- `tests/e2e/` の `browser.mjs`・`works.mjs` はページ・作品APIのfixture確認、`home.mjs`・`blog.mjs` は実ブログAPIを含む確認です。
+- 通常テストは `tests/*.test.ts`、fixture・ヘルパー・E2Eも `tsconfig.test.json` の型検査対象です。
+- E2Eは `npm run test:e2e` で実行します。開発・previewサーバーは自動起動・終了し、API fixtureと全本文を検査します。事前に `npm run build` が必要です。
+- Nodeのimport hookによる生成モジュール検証は、Vitestから独立したNodeプロセスで行います。
 - ブラウザテストにはPlaywright Chromiumが必要です。未導入時は `npx playwright install chromium`。
 - `git diff --check` と未追跡ファイルを確認し、ローカル・fixture・実API・公開環境を区別して報告します。
 
-fixture検証用Viteの起動例:
+実APIの確認は既定でスキップします。実API用Viteを別途起動し、次のように明示指定します。
 
 ```bash
-VITE_CTF_SPACE_ID=fixture-space VITE_CTF_CDA_ACCESS_TOKEN=fixture-token VITE_API_BASE_URL=http://127.0.0.1:5191 npm run dev -- --host 127.0.0.1 --port 5191 --strictPort
-TEST_BASE_URL=http://127.0.0.1:5191 node tests/e2e/review.mjs
+TEST_LIVE_API=1 TEST_BASE_URL=http://127.0.0.1:5173 npm run test:e2e -- --project live
 ```
+
+Playwrightの失敗時は `test-results/` にスクリーンショット・traceを保存します。
 
 ## Git
 

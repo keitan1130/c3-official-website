@@ -1,7 +1,7 @@
 import { loadSiteEnvironment } from "../../scripts/lib/environment.mjs";
 // Run against Vite with fixture environment settings; all API traffic is intercepted.
 
-import { chromium } from "playwright";
+import { test } from "playwright/test";
 
 import { loadContent } from "../../scripts/content/load.mjs";
 import { EXTERNAL_LINKS, SITE } from "../../src/config/site.ts";
@@ -11,61 +11,66 @@ import assert from "node:assert/strict";
 
 loadSiteEnvironment("development");
 
-const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
-const browser = await chromium.launch({ headless: true });
-const thumbnail =
-  "data:image/svg+xml," +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="400" height="200" fill="gray"/></svg>',
-  );
-const uuid = (index) =>
-  `fac206ed-32a0-4fdb-b3e8-${String(index).padStart(12, "0")}`;
-const toyboxBlogs = Array.from({ length: 45 }, (_, index) => ({
-  id: uuid(index),
-  title: `Toybox ${index}`,
-  body_text: "## Fixture body\n\nAvailable",
-  created_at: new Date(Date.UTC(2026, 0, 1) - index * 86400000).toISOString(),
-  updated_at: "2026-01-01T00:00:00Z",
-  thumbnail: { url: thumbnail },
-  tags: [],
-  user: { id: uuid(1000 + index), name: "Fixture author" },
-}));
-const authorIds = Array.from({ length: 105 }, (_, index) => `author${index}`);
-const contentfulAuthors = authorIds.map((id, index) => ({
-  sys: { id },
-  fields: {
-    name: id === "author1" ? "Fixture profile" : `Fixture author ${index}`,
-    icon: { sys: { id: "avatar" } },
-    introduction: "Fixture introduction",
-    homePage: id === "author1" ? "https://example.com/" : undefined,
-  },
-}));
-const authorAssets = [
-  { sys: { id: "avatar" }, fields: { file: { url: thumbnail } } },
-];
-let omitIncludedAuthors = false;
-const contentfulBlogs = Array.from({ length: 105 }, (_, index) => ({
-  sys: {
-    id: `cf${index}`,
-    createdAt: new Date(Date.UTC(2026, 0, 2) - index * 86400000).toISOString(),
-    updatedAt: "2026-01-02T00:00:00Z",
-  },
-  fields: {
-    title: `Contentful ${index}`,
-    body: "## Fixture body",
-    digest: "Summary",
-    user: [{ sys: { id: `author${index}` } }],
-    tags: index === 0 ? [{ sys: { id: "tag1" } }] : [],
-  },
-}));
-let isContentfulUnavailable = false,
-  isToyboxUnavailable = false;
-try {
+test("blog and author API contracts, failures and navigation", async ({
+  browser,
+  baseURL,
+}) => {
+  const BASE = baseURL;
+  assert.ok(BASE);
+  const thumbnail =
+    "data:image/svg+xml," +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="400" height="200" fill="gray"/></svg>',
+    );
+  const uuid = (index: number) =>
+    `fac206ed-32a0-4fdb-b3e8-${String(index).padStart(12, "0")}`;
+  const toyboxBlogs = Array.from({ length: 45 }, (_, index) => ({
+    id: uuid(index),
+    title: `Toybox ${index}`,
+    body_text: "## Fixture body\n\nAvailable",
+    created_at: new Date(Date.UTC(2026, 0, 1) - index * 86400000).toISOString(),
+    updated_at: "2026-01-01T00:00:00Z",
+    thumbnail: { url: thumbnail },
+    tags: [],
+    user: { id: uuid(1000 + index), name: "Fixture author" },
+  }));
+  const authorIds = Array.from({ length: 105 }, (_, index) => `author${index}`);
+  const contentfulAuthors = authorIds.map((id, index) => ({
+    sys: { id },
+    fields: {
+      name: id === "author1" ? "Fixture profile" : `Fixture author ${index}`,
+      icon: { sys: { id: "avatar" } },
+      introduction: "Fixture introduction",
+      homePage: id === "author1" ? "https://example.com/" : undefined,
+    },
+  }));
+  const authorAssets = [
+    { sys: { id: "avatar" }, fields: { file: { url: thumbnail } } },
+  ];
+  let omitIncludedAuthors = false;
+  const contentfulBlogs = Array.from({ length: 105 }, (_, index) => ({
+    sys: {
+      id: `cf${index}`,
+      createdAt: new Date(
+        Date.UTC(2026, 0, 2) - index * 86400000,
+      ).toISOString(),
+      updatedAt: "2026-01-02T00:00:00Z",
+    },
+    fields: {
+      title: `Contentful ${index}`,
+      body: "## Fixture body",
+      digest: "Summary",
+      user: [{ sys: { id: `author${index}` } }],
+      tags: index === 0 ? [{ sys: { id: "tag1" } }] : [],
+    },
+  }));
+  let isContentfulUnavailable = false,
+    isToyboxUnavailable = false;
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
-  const errors = [],
-    requests = [];
+  const errors: string[] = [];
+  const requests: URL[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
     if (message.type() === "error" && /same key/.test(message.text()))
@@ -152,11 +157,13 @@ try {
     const canonical = await page
       .locator('link[rel="canonical"]')
       .getAttribute("href");
+    assert.ok(canonical);
     assert.ok(canonical.endsWith(`/blog/${id}`));
     assert.equal(new URL(canonical).origin, SITE.origin);
     assert.equal(await page.locator('a[href*="source="]').count(), 0);
     const article = await page.getByRole("article").boundingBox(),
       recent = await page.getByRole("complementary").boundingBox();
+    assert.ok(article && recent);
     assert.ok(recent.y >= article.y + article.height);
     if (id.startsWith("cf")) {
       assert.ok(!requests.some((url) => url.pathname.endsWith(`/blogs/${id}`)));
@@ -232,7 +239,7 @@ try {
       .every(
         (url) =>
           url.searchParams.get("select") &&
-          !url.searchParams.get("select").includes("fields.body"),
+          !url.searchParams.get("select")?.includes("fields.body"),
       ),
   );
   await page.getByRole("link", { name: "Fixture tag", exact: true }).click();
@@ -344,13 +351,17 @@ try {
   assert.deepEqual(
     await page
       .locator("footer nav a")
-      .evaluateAll((links) => links.map((link) => link.href)),
-    ["toybox", "x", "youtube", "github"].map((id) => EXTERNAL_LINKS[id].url),
+      .evaluateAll((links) =>
+        links.map((link) => (link as HTMLAnchorElement).href),
+      ),
+    (["toybox", "x", "youtube", "github"] as const).map(
+      (id) => EXTERNAL_LINKS[id].url,
+    ),
   );
   await page
     .getByRole("button", { name: "メニューを開く", exact: true })
     .click();
-  for (const id of ["toybox", "x", "github", "youtube"])
+  for (const id of ["toybox", "x", "github", "youtube"] as const)
     assert.equal(
       await page
         .getByRole("navigation", { name: "メインメニュー" })
@@ -497,11 +508,11 @@ try {
   await page.locator('[class*="markdown-preview"]').waitFor();
   await page.evaluate(() => window.scrollTo({ top: 420, behavior: "instant" }));
   await page.waitForFunction(() =>
-    document.querySelector("header").hasAttribute("data-hidden"),
+    document.querySelector("header")?.hasAttribute("data-hidden"),
   );
   await page.evaluate(() => window.scrollTo({ top: 400, behavior: "instant" }));
   await page.waitForFunction(
-    () => !document.querySelector("header").hasAttribute("data-hidden"),
+    () => !document.querySelector("header")?.hasAttribute("data-hidden"),
   );
   await page.getByRole("button", { name: "メニューを開く" }).click();
   await page.waitForFunction(
@@ -539,13 +550,13 @@ try {
       window.scrollTo({ top: 600, behavior: "instant" }),
     );
     await page.waitForFunction(() =>
-      document.querySelector("header").hasAttribute("data-hidden"),
+      document.querySelector("header")?.hasAttribute("data-hidden"),
     );
     await page.evaluate(() =>
       window.scrollTo({ top: 550, behavior: "instant" }),
     );
     await page.waitForFunction(
-      () => !document.querySelector("header").hasAttribute("data-hidden"),
+      () => !document.querySelector("header")?.hasAttribute("data-hidden"),
     );
     await page.getByRole("button", { name: "メニューを開く" }).click();
     await page.getByRole("link", { name: "お知らせ", exact: true }).click();
@@ -689,6 +700,4 @@ try {
   console.log(
     "Verified ID-only blog URLs, UUID routing, lists without Contentful bodies, all blog/author entries, included authors without extra requests and shared batched author fallback and news date-only metadata, UUID Toybox authors, independent source outages, partial/full failures and retry, noindex recovery, menu scroll restoration/navigation and persistent carousel pause (API fixtures).",
   );
-} finally {
-  await browser.close();
-}
+});

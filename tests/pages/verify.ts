@@ -20,15 +20,15 @@ for (const url of urls) {
   const html = fs.readFileSync(file, "utf8");
   assert.match(html, /<meta property="og:title" content="[^"]+"/);
   assert.match(html, /<link rel="canonical"/);
-  const image = new URL(
-    html.match(/<meta property="og:image" content="([^"]+)"/)[1],
-  );
+  const imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+  assert.ok(imageMatch);
+  const image = new URL(imageMatch[1]);
   assert.equal(image.origin, SITE.origin);
   assert.ok(fs.existsSync(path.join(root, image.pathname)));
   assert.ok(html.includes(`<meta property="og:url" content="${url.href}">`));
   assert.ok(html.includes(`<link rel="canonical" href="${url.href}">`));
 }
-const readEntries = (directory) =>
+const readEntries = (directory: string) =>
   fs
     .readdirSync(directory, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())

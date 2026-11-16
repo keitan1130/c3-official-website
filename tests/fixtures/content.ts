@@ -2,8 +2,8 @@ import { COMMUNITIES } from "../../src/config/communities.ts";
 
 import fs from "node:fs";
 import path from "node:path";
-export function contentFixture(root) {
-  const write = (name, value) => {
+export function contentFixture(root: string) {
+  const write = (name: string, value: string | Record<string, unknown>) => {
     const file = path.join(root, name);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(

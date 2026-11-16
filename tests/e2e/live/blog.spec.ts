@@ -1,10 +1,18 @@
-import { chromium } from "playwright";
+import { test } from "playwright/test";
 
 import assert from "node:assert/strict";
 
-const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
-const browser = await chromium.launch({ headless: true });
-try {
+test("live blog APIs and failure recovery", async ({ browser, baseURL }) => {
+  const BASE = baseURL;
+  assert.ok(BASE);
+  test.skip(
+    process.env.TEST_LIVE_API !== "1",
+    "Set TEST_LIVE_API=1 to contact live APIs",
+  );
+  assert.ok(
+    process.env.TEST_BASE_URL,
+    "Specify TEST_BASE_URL for live API checks",
+  );
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
@@ -78,6 +86,4 @@ try {
       fullFailureAndRetry: true,
     }),
   );
-} finally {
-  await browser.close();
-}
+});

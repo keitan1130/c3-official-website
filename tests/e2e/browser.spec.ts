@@ -1,12 +1,15 @@
-import { chromium } from "playwright";
+import { test } from "playwright/test";
 
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 
-const BASE = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
-const browser = await chromium.launch({ headless: true });
-const results = [];
-try {
+test("local routes and news remain available without external APIs", async ({
+  browser,
+  baseURL,
+}) => {
+  const BASE = baseURL;
+  assert.ok(BASE);
+  const results = [];
   for (const width of [390, 1440]) {
     const page = await browser.newPage({
       viewport: { width, height: 1000 },
@@ -19,7 +22,7 @@ try {
           json: { works: [], limit: 20, page: 1, total_count: 0 },
         }),
     );
-    const errors = [];
+    const errors: string[] = [];
     const external = [];
     page.on("pageerror", (error) => errors.push(error.message));
     page.on("request", (request) => {
@@ -45,7 +48,7 @@ try {
       assert.equal(await page.getByRole("alert").count(), 0, route);
       if (route.startsWith("/community/"))
         await page.waitForFunction(
-          () => document.querySelector("video")?.readyState >= 1,
+          () => (document.querySelector("video")?.readyState ?? 0) >= 1,
         );
       assert.equal(
         await page.evaluate(
@@ -113,6 +116,4 @@ try {
       worksApiFixture: true,
     }),
   );
-} finally {
-  await browser.close();
-}
+});

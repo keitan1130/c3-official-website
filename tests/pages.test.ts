@@ -1,12 +1,13 @@
+import { test } from "vitest";
+
 import { SITE } from "../src/config/site.ts";
-import { contentFixture } from "./fixtures/content.mjs";
+import { contentFixture } from "./fixtures/content.ts";
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 const prepareScript = fileURLToPath(
@@ -19,12 +20,12 @@ const newScript = fileURLToPath(
   new URL("../scripts/content/new-news.mjs", import.meta.url),
 );
 const verifyScript = fileURLToPath(
-  new URL("./pages/verify.mjs", import.meta.url),
+  new URL("./pages/verify.ts", import.meta.url),
 );
 
 test("static pages follow current content rather than a fixed page count", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "c3-pages-"));
-  const write = (name, value) => {
+  const write = (name: string, value: string | Record<string, unknown>) => {
     const file = path.join(root, name);
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(
@@ -46,8 +47,12 @@ test("static pages follow current content rather than a fixed page count", () =>
     write("content/news/published/assets/cover.png", "image");
     write("public/favicon.png", "logo");
     write(".env", "VITE_SITE_URL=https://pages.example/\n");
-    const build = (overrides = {}) => {
-      const env = { ...process.env, NODE_ENV: "production", ...overrides };
+    const build = (overrides: NodeJS.ProcessEnv = {}) => {
+      const env: NodeJS.ProcessEnv = {
+        ...process.env,
+        NODE_ENV: "production",
+        ...overrides,
+      };
       if (!Object.hasOwn(overrides, "VITE_SITE_URL")) delete env.VITE_SITE_URL;
       write(
         "dist/index.html",
