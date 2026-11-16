@@ -1,7 +1,8 @@
 # Cloudflare Pages
 
 build rootはこのプロジェクト、コマンドは `npm run build`、出力先は `dist/`、Nodeは26系です。
-環境変数は `.env.example` を参照し、`VITE_SITE_URL` にパス等を含まない公開originを設定します。
+ローカルでは `.env.example` をコピーした `.env` に、Pagesではビルド環境変数に設定します。
+`VITE_SITE_URL` にはパス等を含まない公開originを指定します。`.env.example` は設定項目のひな形です。
 変更した環境変数は再ビルドが必要です。公開前の一括検査は `npm run ci` です。
 
 ビルドは紹介・分野・ニュース・一覧の初期HTML、OGP画像、canonical、sitemap、robots、404を生成します。

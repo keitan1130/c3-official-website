@@ -52,7 +52,7 @@ Vite起動時にローカル本文を検証し、遅延importを持つ一覧を�
 | Toyboxブログ | `VITE_API_BASE_URL` の `/api/v1/blogs?disable_pagination=true`、詳細は `/api/v1/blogs/:id` |
 | 公開作品 | 同じbase URLの `/works?limit=20&page=1&sort=newest&visibility=public` |
 
-Contentfulの設定は `.env.example` を参照します。共通APIのbase URLに `/works` や `/api/v1` を含めません。
+Contentfulの設定はローカルの `.env` またはビルド環境変数に指定します。共通APIのbase URLに `/works` や `/api/v1` を含めません。
 Goの公開GETへcookieを送りません。Toyboxへの転送はbackend側の設定が必要で、Vite側にプロキシはありません。
 SWRでブログ一覧・詳細・著者・作品を共有し、ローカル本文は外部APIに依存しません。
 ブログ一覧は一方のAPIが失敗すれば成功分と部分失敗を表示します。画面のページングは設けません。
