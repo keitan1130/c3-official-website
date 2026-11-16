@@ -9,6 +9,108 @@ import { contentFixture } from "./fixtures/local-content.mjs";
 import { prepareContent } from "./prepare-content.mjs";
 import { localFile, assetFile } from "./local-content.mjs";
 import { markdownAssetEdits } from "./markdown-assets.mjs";
+import { micromark } from "micromark";
+import { parseFragment } from "parse5";
+
+test("image descriptions do not validate or rewrite resources that only become alt text", () => {
+ const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-image-alt-"));
+ try {
+  const root = path.join(temporary, "content");
+  const write = contentFixture(root);
+  write("about/assets/real.png", "image");
+  const markdown = [
+   '![outer ![inner](./assets/missing.png)](./assets/real.png)',
+   '![caption [link](./assets/missing.pdf)](./assets/real.png)',
+   '![outer ![inner][ref]](./assets/real.png)',
+   '![caption <img src="./assets/missing.png">](./assets/real.png)',
+   '[ref]: ./assets/missing.png',
+  ].join("\n\n");
+  write("about/body.md", markdown);
+  const output = path.join(temporary, "generated/contentData.ts");
+  assert.doesNotThrow(() => prepareContent(root, output));
+  const urls = [];
+  markdownAssetEdits(markdown, (url) => { urls.push(url); return url; });
+  assert.deepEqual(urls, Array(4).fill("./assets/real.png"));
+  assert.equal((micromark(markdown).match(/<img /g) ?? []).length, 4);
+  // A reference that is also used outside alt text must still be checked.
+  write("about/body.md", markdown + "\n\n![visible][ref]");
+  assert.throws(() => prepareContent(root, output), /ENOENT/);
+ } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
+});
+
+test("generated Markdown and HTML preserve URL character references after rendering", async () => {
+ const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-url-entities-"));
+ let hooks;
+ try {
+  const root = path.join(temporary, "content");
+  const write = contentFixture(root);
+  const markdown = [
+   '![named](./assets/image.png?label=&amp;copy;&amp;x=1#part)',
+   '![numeric](./assets/image.png?label=&amp;#65;)',
+   '[download](./assets/image.png?label=&amp;amp;)',
+   '![reference][image]\n\n[image]: ./assets/image.png?label=&amp;copy;',
+   '<img src="./assets/image.png?label=&amp;copy;&amp;x=1">',
+  ].join("\n\n");
+  write("about/assets/image.png", "image");
+  write("about/body.md", markdown);
+  const output = path.join(temporary, "generated/contentData.ts");
+  prepareContent(root, output);
+  hooks = registerHooks({load(url, context, nextLoad) {
+   if (url.endsWith("?url&no-inline")) return {format:"module",shortCircuit:true,source:'export default "/assets/imported.png";'};
+   if (url.endsWith("?raw")) return {format:"module",shortCircuit:true,source:`export default ${JSON.stringify(fs.readFileSync(fileURLToPath(url), "utf8"))};`};
+   return nextLoad(url, context);
+  }});
+  const {default:content} = await import(pathToFileURL(output).href);
+  const collectUrls = (text) => {
+   const urls = [];
+   const walk = (node) => {
+    for (const attr of node.attrs ?? []) if (["src", "href"].includes(attr.name)) urls.push(attr.value);
+    for (const child of node.childNodes ?? []) walk(child);
+   };
+   walk(parseFragment(micromark(text)));
+   return urls;
+  };
+  assert.deepEqual(collectUrls(await content.about.body()), collectUrls(markdown).map(url => url.replace("./assets/image.png", "/assets/imported.png")));
+ } finally { hooks?.deregister(); fs.rmSync(temporary, { recursive: true, force: true }); }
+});
+
+test("reserved characters in source paths work through real Vite build and dev imports", async () => {
+ const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-vite-paths-"));
+ let server;
+ try {
+  const root = path.join(temporary, "content");
+  const write = contentFixture(root);
+  write("about/index.json", {summary:"About",body:"./text#1/body?draft.md"});
+  write("about/text#1/body?draft.md", '![hash](../assets/photo%231.png)\n\n![query](../assets/photo%3F2.png)');
+  write("about/assets/photo#1.png", "hash image");
+  write("about/assets/photo?2.png", "query image");
+  const output = path.join(temporary, "generated/contentData.ts");
+  prepareContent(root, output);
+  fs.writeFileSync(path.join(temporary, "main.js"), 'import content from "./generated/contentData.ts"; console.log(content, await content.about.body());');
+  const {build, createServer} = await import("vite");
+  const result = await build({root:temporary,configFile:false,logLevel:"silent",build:{write:false,minify:false,target:"esnext",rolldownOptions:{input:path.join(temporary,"main.js")}}});
+  const assets = result.output.filter(entry => entry.type === "asset");
+  for (const source of ["hash image", "query image"]) assert.ok(assets.some(asset => String(asset.source) === source), source);
+  assert.ok(result.output.some(entry => entry.type === "chunk" && entry.code.includes("![hash]")), "body is included in its dynamic chunk");
+  server = await createServer({root:temporary,configFile:false,logLevel:"silent",server:{host:"127.0.0.1",port:0}});
+  await server.listen();
+  const base = `http://127.0.0.1:${server.httpServer.address().port}`;
+  for (const name of fs.readdirSync(path.join(temporary, "generated/contentFiles"))) {
+   const file = path.join(temporary, "generated/contentFiles", name);
+   const response = await fetch(`${base}/generated/contentFiles/${name}`);
+   assert.equal(response.status, 200);
+   assert.equal(await response.text(), fs.readFileSync(file, "utf8"));
+   const module = await server.transformRequest(`/generated/contentFiles/${name}${name.endsWith(".md") ? "?raw" : "?url&no-inline"}`);
+   assert.ok(module?.code.includes("export default"));
+  }
+  // Rebuilding after a source change removes obsolete generated copies.
+  write("about/assets/photo#1.png", "updated image");
+  prepareContent(root, output);
+  const staged = fs.readdirSync(path.join(temporary, "generated/contentFiles")).map(name => fs.readFileSync(path.join(temporary, "generated/contentFiles", name), "utf8"));
+  assert.ok(staged.includes("updated image"));
+  assert.ok(!staged.includes("hash image"));
+ } finally { await server?.close(); fs.rmSync(temporary, { recursive: true, force: true }); }
+});
 
 test("only referenced first definitions are validated and rewritten", () => {
  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "c3-definitions-"));

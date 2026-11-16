@@ -25,7 +25,9 @@ export function markdownAssetEdits(text, resolve) {
       if (token.type === "resource") reference.hasResource = true;
     } else if (token.type === "image" || token.type === "link") {
       references.pop();
-      if (!reference.hasResource) {
+      // Image descriptions are flattened to alt text, so their nested links
+      // and images do not load a resource or activate a reference definition.
+      if (!reference.hasResource && !references.some((parent) => parent.type === "image")) {
         const identifier = normalizeIdentifier(reference.identifier ?? reference.label ?? "");
         usedReferences.add(identifier);
         if (reference.type === "image") imageReferences.add(identifier);
@@ -51,6 +53,7 @@ export function markdownAssetEdits(text, resolve) {
       seenDefinitions.add(definition);
     }
     if (token.type === "resourceDestinationString" || token.type === "definitionDestinationString") {
+      if (token.type === "resourceDestinationString" && containers.slice(0, -1).includes("image")) continue;
       // CommonMark uses the first definition only, and unused definitions do
       // not contribute any rendered link or image.
       if (token.type === "definitionDestinationString" && !isActiveDefinition) continue;
@@ -58,7 +61,7 @@ export function markdownAssetEdits(text, resolve) {
       const isImage = token.type === "definitionDestinationString" ? imageReferences.has(definition) : containers.at(-1) === "image";
       const value = resolve(url, "markdown", isImage ? "media" : "link");
       if (value !== url) edits.push({ start, end, value });
-    } else if (token.type === "htmlFlow" || token.type === "htmlText") {
+    } else if ((token.type === "htmlFlow" || token.type === "htmlText") && !containers.includes("image")) {
       const walk = (node) => {
         for (const attr of node.attrs ?? []) {
           if (!attributes[node.tagName]?.includes(attr.name)) continue;

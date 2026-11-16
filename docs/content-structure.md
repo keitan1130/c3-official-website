@@ -61,6 +61,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 - `div` による中央寄せ・flex配置、`b` タグ、spanのmarginやfont-styleは表示側で除去されます。段落・空行・`**強調**`・画像を使って構成します。
 - 表内の `<br>` と、spanの許可された文字色・文字サイズは利用できます。raw HTMLの全要素・全スタイルに対応しているわけではありません。許可内容は [markdownSchema.ts](../src/features/MarkdownPreview/markdownSchema.ts) と [rehypeMarkdownStyles.ts](../src/features/MarkdownPreview/rehypeMarkdownStyles.ts) を参照してください。
 - 参照形式のリンク・画像は、本文で使われる識別子の最初の定義だけを検査・変換します。識別子の大文字小文字と連続する空白は同一視します。未使用の定義と重複した2件目以降の定義は、そのまま保持します。採用される素材が存在しない場合はエラーになります。
+- 画像の代替テキスト内のリンク・画像・HTMLは文字列として表示されるため、その中だけで使われる素材や参照定義は検査・変換しません。同じ定義を通常の本文でも使う場合は検査します。URLのクエリ等に含まれる文字参照は、表示時の値を保つように変換します。
 - 見出し・手動指定ID・脚注へのリンクは `#名前` を使います。例: `<p id="custom-anchor">本文</p>` に `[本文へ](#custom-anchor)` または `記事URL#custom-anchor` で移動できます。`[^note]` の脚注は `#fn-note`、本文への戻り先は `#fnref-note`（再参照は `#fnref-note-2`）です。内部IDの保護用接頭辞は記述しません。直接アクセス・再読込・本文内クリックで、対象を含む折りたたみも開きます。
 
 ## 自動検出とURL
@@ -82,5 +83,7 @@ Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します
 
 `scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事の `assets/` 配下のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
 本文は遅延読込し、構文解析した相対参照をビルド時に配信用URLへ変換します。素材はサイズにかかわらずファイルとして出力し、Markdownのsanitize処理は維持します。新しい素材は用途の分かる名前で保存し、表示・再生を確認してください。`npm run build && npm run test:content:browser` でビルド成果物の全本文と画像・動画をPC・モバイル幅で検証できます。
+
+素材URL内のファイル名の `#`・`?` は、それぞれ `%23`・`%3F` で記述します。元の本文・素材のパスにこれらの文字が含まれる場合は、生成時に `src/generated/contentFiles/` へ内容ハッシュ名の作業用コピーを作り、Viteから取り込みます。不要になったコピーは再生成時に削除します。元ファイル名は変更せず、生成物は編集・コミットしません。新しい素材の命名は引き続き小文字英数字のkebab-caseを使います。
 
 命名は [命名規則](naming-conventions.md)、配信条件は [Cloudflare Pages](cloudflare-pages.md) を参照します。
