@@ -2,9 +2,9 @@ import { micromark } from "micromark";
 import { parseFragment } from "parse5";
 import { test } from "vitest";
 
-import { prepareContent } from "../scripts/content/generate.mjs";
-import { assetFile, localFile } from "../scripts/content/load.mjs";
-import { markdownAssetEdits } from "../scripts/content/markdown-assets.mjs";
+import { prepareContent } from "../scripts/content/generate.ts";
+import { assetFile, localFile } from "../scripts/content/load.ts";
+import { markdownAssetEdits } from "../scripts/content/markdownAssets.ts";
 import { contentFixture } from "./fixtures/content.ts";
 import { loadGeneratedContent } from "./helpers/generated-content.ts";
 

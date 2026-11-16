@@ -1,9 +1,9 @@
-import { loadSiteEnvironment } from "../../scripts/lib/environment.mjs";
+import { loadSiteEnvironment } from "../../scripts/lib/environment.ts";
 // Run against Vite with fixture environment settings; all API traffic is intercepted.
 
 import { test } from "playwright/test";
 
-import { loadContent } from "../../scripts/content/load.mjs";
+import { loadContent } from "../../scripts/content/load.ts";
 import { EXTERNAL_LINKS, SITE } from "../../src/config/site.ts";
 import { createPageMetadata } from "../../src/util/pageMetadata.ts";
 

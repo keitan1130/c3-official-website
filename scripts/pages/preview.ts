@@ -5,7 +5,7 @@ import http from "node:http";
 import path from "node:path";
 
 const ROOT = path.resolve("dist");
-const TYPES = {
+const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
   ".css": "text/css",
@@ -22,7 +22,7 @@ const TYPES = {
   ".mp4": "video/mp4",
   ".woff2": "font/woff2",
 };
-const fileExists = async (file) => {
+const fileExists = async (file: string) => {
   try {
     return (await fs.stat(file)).isFile();
   } catch {
@@ -32,6 +32,10 @@ const fileExists = async (file) => {
 http
   .createServer(async (request, response) => {
     try {
+      if (!request.url) {
+        response.writeHead(400);
+        return response.end("Invalid request");
+      }
       const pathname = decodeURIComponent(
         new URL(request.url, "http://localhost").pathname,
       );

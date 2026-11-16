@@ -1,7 +1,7 @@
 import * as ts from "typescript/unstable/ast";
 import { API } from "typescript/unstable/sync";
 
-import { checkCssModules } from "./css.js";
+import { checkCssModules, type Violation } from "./css.ts";
 
 import fs from "node:fs";
 import path from "node:path";
@@ -15,16 +15,16 @@ const HANDLER_PATTERN = /^on[A-Z]/;
 const BOOLEAN_PREFIX_PATTERN = /^(?:is|has|can)[A-Z]/;
 const API_CONTRACT_TAG_NAME = "apiContract";
 
-const walkFiles = (directory) =>
+const walkFiles = (directory: string): string[] =>
   fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const entryPath = path.join(directory, entry.name);
     return entry.isDirectory() ? walkFiles(entryPath) : [entryPath];
   });
 
-const getLine = (sourceFile, node) =>
+const getLine = (sourceFile: ts.SourceFile, node: ts.Node) =>
   sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
 
-const isApiContractProperty = (node) => {
+const isApiContractProperty = (node: ts.Node) => {
   let parent = node.parent;
 
   while (parent && !ts.isSourceFile(parent)) {
@@ -44,16 +44,19 @@ const isApiContractProperty = (node) => {
   return false;
 };
 
-const replaceIdentifier = (content, from, to) =>
+const replaceIdentifier = (content: string, from: string, to: string) =>
   content.replace(new RegExp(`\\b${from}\\b`, "g"), to);
 
-const collectTypeScriptViolations = (file, sourceFile) => {
-  const violations = [];
+const collectTypeScriptViolations = (
+  file: string,
+  sourceFile: ts.SourceFile,
+) => {
+  const violations: Violation[] = [];
 
-  const report = (node, message) =>
+  const report = (node: ts.Node, message: string) =>
     violations.push({ file, line: getLine(sourceFile, node), message });
 
-  const visit = (node) => {
+  const visit = (node: ts.Node): void => {
     if (
       (ts.isTypeAliasDeclaration(node) ||
         ts.isInterfaceDeclaration(node) ||
@@ -264,10 +267,10 @@ const collectTypeScriptViolations = (file, sourceFile) => {
   return violations;
 };
 
-const applySafeFixes = (content, sourceFile) => {
-  const renames = new Map();
+const applySafeFixes = (content: string, sourceFile: ts.SourceFile) => {
+  const renames = new Map<string, string>();
 
-  const visit = (node) => {
+  const visit = (node: ts.Node): void => {
     if (
       (ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)) &&
       /Prop$/.test(node.name.text)
@@ -290,7 +293,7 @@ const checkTypeScript = ({ fix = false } = {}) => {
   const files = walkFiles(SRC_DIRECTORY).filter((file) =>
     /\.(?:ts|tsx)$/.test(file),
   );
-  const violations = [];
+  const violations: Violation[] = [];
 
   for (const file of files.filter((file) =>
     file.endsWith(`${path.sep}index.tsx`),
@@ -336,7 +339,7 @@ const checkTypeScript = ({ fix = false } = {}) => {
   return violations;
 };
 
-const printViolations = (violations) => {
+const printViolations = (violations: Violation[]) => {
   for (const violation of violations) {
     console.error(
       `${path.relative(process.cwd(), violation.file)}:${violation.line} ${violation.message}`,
@@ -344,7 +347,10 @@ const printViolations = (violations) => {
   }
 };
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   const isFixMode = process.argv.includes("--fix");
   const detectedViolations = [
     ...checkCssModules({ fix: isFixMode }),

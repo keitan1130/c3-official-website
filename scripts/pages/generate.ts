@@ -1,6 +1,6 @@
 import { createPageMetadata } from "../../src/util/pageMetadata.ts";
-import { assetFile, loadContent } from "../content/load.mjs";
-import { loadSiteEnvironment, PAGE_TITLES, SITE } from "../lib/environment.mjs";
+import { assetFile, loadContent } from "../content/load.ts";
+import { loadSiteEnvironment, PAGE_TITLES, SITE } from "../lib/environment.ts";
 
 import fs from "node:fs";
 import path from "node:path";
@@ -12,19 +12,22 @@ export function preparePages(
   const { about, communities, news } = loadContent(path.join(root, "content"));
   const origin = SITE.origin;
   const template = fs.readFileSync(path.join(output, "index.html"), "utf8");
-  const escapeHtml = (text) =>
-    String(text).replace(
-      /[&<>"']/g,
-      (char) =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        })[char],
-    );
-  const metadata = (title, description, url, image, isError = false) => {
+  const escapes: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  };
+  const escapeHtml = (text: string) =>
+    String(text).replace(/[&<>"']/g, (char) => escapes[char]);
+  const metadata = (
+    title: string,
+    description: string,
+    url: string,
+    image?: string,
+    isError = false,
+  ) => {
     const meta = createPageMetadata({
       title,
       description,
@@ -42,8 +45,13 @@ export function preparePages(
         `<meta name="description" content="${escapeHtml(meta.description)}"><meta property="og:title" content="${escapeHtml(meta.ogTitle)}"><meta property="og:description" content="${escapeHtml(meta.description)}"><meta property="og:type" content="website"><meta property="og:url" content="${escapeHtml(meta.url)}"><meta property="og:image" content="${escapeHtml(meta.image)}"><meta name="twitter:card" content="summary_large_image"><link rel="canonical" href="${escapeHtml(meta.url)}">${isError ? '<meta name="robots" content="noindex">' : ""}</head>`,
       );
   };
-  const routes = [];
-  function emit(route, title, description, image) {
+  const routes: string[] = [];
+  function emit(
+    route: string,
+    title: string,
+    description: string,
+    image?: string,
+  ) {
     const file =
       route === "/"
         ? path.join(output, "index.html")

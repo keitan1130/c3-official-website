@@ -1,11 +1,29 @@
 import { COMMUNITIES } from "../../src/config/communities.ts";
-import { markdownAssetEdits } from "./markdown-assets.mjs";
+import { markdownAssetEdits } from "./markdownAssets.ts";
 
 import fs from "node:fs";
 import path from "node:path";
 
-const read = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
-export const readEntries = (root, name) =>
+interface ContentEntry<T> {
+  value: T;
+  directory: string;
+}
+interface NewsInput {
+  id: string;
+  title: string;
+  digest: string;
+  body: string;
+  thumbnail: string;
+  publishedDate: string;
+}
+
+const read = (file: string): Record<string, unknown> => {
+  const value: unknown = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new Error(`Expected content object: ${file}`);
+  return value as Record<string, unknown>;
+};
+export const readEntries = (root: string, name: string) =>
   fs
     .readdirSync(path.join(root, name), { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -13,7 +31,11 @@ export const readEntries = (root, name) =>
       const directory = path.join(root, name, entry.name);
       return { value: read(path.join(directory, "index.json")), directory };
     });
-export function localFile(directory, relative, boundary = directory) {
+export function localFile(
+  directory: string,
+  relative: unknown,
+  boundary = directory,
+) {
   if (
     typeof relative !== "string" ||
     !relative ||
@@ -32,24 +54,24 @@ export function localFile(directory, relative, boundary = directory) {
   return file;
 }
 export function assetFile(
-  entryDirectory,
-  relative,
+  entryDirectory: string,
+  relative: unknown,
   directory = entryDirectory,
 ) {
   localFile(directory, relative, entryDirectory);
   return localFile(directory, relative, path.join(entryDirectory, "assets"));
 }
 export function localAsset(
-  directory,
-  url,
+  directory: string,
+  url: string,
   entryDirectory = directory,
-  kind = "media",
+  kind: "media" | "link" = "media",
 ) {
   if (!url || /^(?:[a-z][a-z\d+.-]*:|[\\/#?])/i.test(url)) return;
   const index = url.search(/[?#]/);
   const pathname = index < 0 ? url : url.slice(0, index);
   const suffix = index < 0 ? "" : url.slice(index);
-  let decoded;
+  let decoded: string;
   try {
     decoded = decodeURIComponent(pathname);
   } catch (error) {
@@ -59,7 +81,7 @@ export function localAsset(
   if (kind === "link" && !/^(?:\.{1,2}\/)*assets\//.test(decoded)) return;
   return { file: assetFile(entryDirectory, decoded, directory), suffix };
 }
-const validateBody = (directory, relative) => {
+const validateBody = (directory: string, relative: unknown) => {
   const file = localFile(directory, relative);
   const text = fs.readFileSync(file, "utf8");
   markdownAssetEdits(text, (url, _context, kind) => {
@@ -67,22 +89,29 @@ const validateBody = (directory, relative) => {
     return url;
   });
 };
-const requireText = (value, label) => {
+function requireText(value: unknown, label: string): asserts value is string {
   if (typeof value !== "string" || !value.trim())
     throw new Error(`Missing ${label}`);
-};
-const assertUnique = (values, label) => {
+}
+function requireFields<K extends string>(
+  value: Record<string, unknown>,
+  keys: readonly K[],
+  label: string,
+): asserts value is Record<string, unknown> & Record<K, string> {
+  for (const key of keys) requireText(value[key], `${key}: ${label}`);
+}
+const assertUnique = (values: readonly string[], label: string) => {
   if (new Set(values).size !== values.length)
     throw new Error(`Duplicate ${label}`);
 };
-const requireId = (value, label) => {
+function requireId(value: unknown, label: string): asserts value is string {
   if (
     typeof value !== "string" ||
     !/^[A-Za-z0-9]+(?:[-_][A-Za-z0-9]+)*$/.test(value)
   )
     throw new Error(`Invalid ${label}: ${value}`);
-};
-const requireDate = (value, label) => {
+}
+function requireDate(value: unknown, label: string): asserts value is string {
   if (
     typeof value !== "string" ||
     !/^\d{4}-\d{2}-\d{2}$/.test(value) ||
@@ -97,19 +126,23 @@ const requireDate = (value, label) => {
     day > new Date(Date.UTC(year, month, 0)).getUTCDate()
   )
     throw new Error(`Invalid ${label}: ${value}`);
-};
+}
 export function loadContent(root = path.resolve("content")) {
-  const news = readEntries(root, "news");
-  for (const { value: item, directory } of news) {
-    requireId(item.id, "news id");
-    for (const key of ["title", "digest", "body", "thumbnail"])
-      requireText(item[key], `${key}: ${item.id}`);
-    requireDate(item.publishedDate, `publishedDate: ${item.id}`);
-    if (!/\.(?:png|jpe?g|webp|gif|avif)$/i.test(item.thumbnail))
-      throw new Error(`Invalid thumbnail: ${item.id}`);
-    assetFile(directory, item.thumbnail);
-    validateBody(directory, item.body);
-  }
+  const news: ContentEntry<NewsInput>[] = readEntries(root, "news").map(
+    ({ value: item, directory }) => {
+      requireId(item.id, "news id");
+      requireFields(item, ["title", "digest", "body", "thumbnail"], item.id);
+      requireDate(item.publishedDate, `publishedDate: ${item.id}`);
+      if (!/\.(?:png|jpe?g|webp|gif|avif)$/i.test(item.thumbnail))
+        throw new Error(`Invalid thumbnail: ${item.id}`);
+      assetFile(directory, item.thumbnail);
+      validateBody(directory, item.body);
+      return {
+        directory,
+        value: { ...item, id: item.id, publishedDate: item.publishedDate },
+      };
+    },
+  );
   assertUnique(
     news.map(({ value }) => value.id),
     "news id",
@@ -132,8 +165,8 @@ export function loadContent(root = path.resolve("content")) {
     const item = communityFiles.find(
       ({ directory }) => path.basename(directory) === definition.slug,
     );
-    for (const key of ["domain", "body", "mp4"])
-      requireText(item.value[key], `${key}: ${definition.slug}`);
+    if (!item) throw new Error("Invalid community definitions");
+    requireFields(item.value, ["domain", "body", "mp4"], definition.slug);
     validateBody(item.directory, item.value.body);
     assetFile(item.directory, item.value.mp4);
     return {
@@ -141,11 +174,9 @@ export function loadContent(root = path.resolve("content")) {
       value: { ...item.value, ...definition },
     };
   });
-  const about = {
-    value: read(path.join(root, "about/index.json")),
-    directory: path.join(root, "about"),
-  };
-  requireText(about.value.summary, "about summary");
+  const aboutValue = read(path.join(root, "about/index.json"));
+  requireFields(aboutValue, ["summary", "body"], "about");
+  const about = { value: aboutValue, directory: path.join(root, "about") };
   validateBody(about.directory, about.value.body);
   return { news, communities, about };
 }

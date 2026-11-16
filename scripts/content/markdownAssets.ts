@@ -5,7 +5,18 @@ import { decodeString } from "micromark-util-decode-string";
 import { normalizeIdentifier } from "micromark-util-normalize-identifier";
 import { parseFragment } from "parse5";
 
-const attributes = {
+import type { DefaultTreeAdapterMap } from "parse5";
+
+export type AssetKind = "media" | "link";
+type Reference = {
+  type: "image" | "link";
+  label?: string;
+  identifier?: string;
+  hasResource?: boolean;
+};
+type AssetEdit = { start: number; end: number; value: string };
+
+const attributes: Record<string, readonly string[]> = {
   a: ["href"],
   img: ["src"],
   video: ["src", "poster"],
@@ -15,16 +26,23 @@ const attributes = {
 };
 
 // Replace only parsed URL spans, preserving Markdown formatting and code verbatim.
-export function markdownAssetEdits(text, resolve) {
-  const edits = [];
+export function markdownAssetEdits(
+  text: string,
+  resolve: (
+    url: string,
+    context: "markdown" | "html",
+    kind: AssetKind,
+  ) => string,
+): AssetEdit[] {
+  const edits: AssetEdit[] = [];
   const events = postprocess(
     parse({ extensions: [gfm(), math()] })
       .document()
       .write(preprocess()(text, undefined, true)),
   );
-  const imageReferences = new Set();
-  const usedReferences = new Set();
-  const references = [];
+  const imageReferences = new Set<string>();
+  const usedReferences = new Set<string>();
+  const references: Reference[] = [];
   // Definitions can be shared by links and images, and can appear before use.
   for (const [kind, token] of events) {
     if (kind === "enter" && (token.type === "image" || token.type === "link"))
@@ -53,10 +71,10 @@ export function markdownAssetEdits(text, resolve) {
       }
     }
   }
-  const containers = [];
-  let definition;
+  const containers: ("image" | "link")[] = [];
+  let definition = "";
   let isActiveDefinition = false;
-  const seenDefinitions = new Set();
+  const seenDefinitions = new Set<string>();
   for (const [kind, token] of events) {
     if (kind === "exit") {
       if (token.type === "image" || token.type === "link") containers.pop();
@@ -66,6 +84,8 @@ export function markdownAssetEdits(text, resolve) {
       containers.push(token.type);
     const start = token.start.offset;
     const end = token.end.offset;
+    if (start === undefined || end === undefined)
+      throw new Error("Markdown token has no source offset");
     const source = text.slice(start, end);
     if (token.type === "definitionLabelString") {
       definition = normalizeIdentifier(source);
@@ -97,23 +117,26 @@ export function markdownAssetEdits(text, resolve) {
       (token.type === "htmlFlow" || token.type === "htmlText") &&
       !containers.includes("image")
     ) {
-      const walk = (node) => {
-        for (const attr of node.attrs ?? []) {
-          if (!attributes[node.tagName]?.includes(attr.name)) continue;
-          const value = resolve(
-            attr.value,
-            "html",
-            node.tagName === "a" ? "link" : "media",
-          );
-          const location = node.sourceCodeLocation?.attrs?.[attr.name];
-          if (value !== attr.value && location)
-            edits.push({
-              start: start + location.startOffset,
-              end: start + location.endOffset,
-              value: `${attr.name}="${value}"`,
-            });
+      const walk = (node: DefaultTreeAdapterMap["node"]) => {
+        if ("attrs" in node) {
+          for (const attr of node.attrs) {
+            if (!attributes[node.tagName]?.includes(attr.name)) continue;
+            const value = resolve(
+              attr.value,
+              "html",
+              node.tagName === "a" ? "link" : "media",
+            );
+            const location = node.sourceCodeLocation?.attrs?.[attr.name];
+            if (value !== attr.value && location)
+              edits.push({
+                start: start + location.startOffset,
+                end: start + location.endOffset,
+                value: `${attr.name}="${value}"`,
+              });
+          }
         }
-        for (const child of node.childNodes ?? []) walk(child);
+        for (const child of "childNodes" in node ? node.childNodes : [])
+          walk(child);
       };
       walk(parseFragment(source, { sourceCodeLocationInfo: true }));
     }

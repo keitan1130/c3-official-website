@@ -1,6 +1,6 @@
-import { prepareContent } from "../../scripts/content/generate.mjs";
-import { SITE } from "../../scripts/lib/environment.mjs";
-import { preparePages } from "../../scripts/pages/generate.mjs";
+import { prepareContent } from "../../scripts/content/generate.ts";
+import { SITE } from "../../scripts/lib/environment.ts";
+import { preparePages } from "../../scripts/pages/generate.ts";
 import { createPageMetadata } from "../../src/util/pageMetadata.ts";
 
 import path from "node:path";

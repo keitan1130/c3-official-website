@@ -1,6 +1,6 @@
 import { defineConfig } from "playwright/test";
 
-import { loadSiteEnvironment } from "./scripts/lib/environment.mjs";
+import { loadSiteEnvironment } from "./scripts/lib/environment.ts";
 
 loadSiteEnvironment("development");
 const devURL = "http://127.0.0.1:5191";

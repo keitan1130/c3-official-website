@@ -11,13 +11,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const prepareScript = fileURLToPath(
-  new URL("../scripts/pages/generate.mjs", import.meta.url),
+  new URL("../scripts/pages/generate.ts", import.meta.url),
 );
 const contentScript = fileURLToPath(
-  new URL("../scripts/content/generate.mjs", import.meta.url),
+  new URL("../scripts/content/generate.ts", import.meta.url),
 );
 const newScript = fileURLToPath(
-  new URL("../scripts/content/new-news.mjs", import.meta.url),
+  new URL("../scripts/content/newNews.ts", import.meta.url),
 );
 const verifyScript = fileURLToPath(
   new URL("./pages/verify.ts", import.meta.url),

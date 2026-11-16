@@ -1,4 +1,4 @@
-import { loadSiteEnvironment, SITE } from "../../scripts/lib/environment.mjs";
+import { loadSiteEnvironment, SITE } from "../../scripts/lib/environment.ts";
 import { COMMUNITIES } from "../../src/config/communities.ts";
 
 import assert from "node:assert/strict";

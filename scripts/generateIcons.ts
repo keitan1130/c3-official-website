@@ -11,7 +11,7 @@ const directory = path.resolve("public");
 const svg = fs
   .readFileSync(path.join(directory, SITE.logo.slice(1)))
   .toString("base64");
-const outputs = [
+const outputs: [name: string, size: number, isMaskable?: boolean][] = [
   ["favicon-16x16.png", 16],
   ["favicon-32x32.png", 32],
   ["favicon-64x64.png", 64],
@@ -25,7 +25,7 @@ const outputs = [
 const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage();
-  const render = async (size, isMaskable = false) => {
+  const render = async (size: number, isMaskable = false) => {
     const result = await page.evaluate(
       async ({ svg, size, isMaskable, background }) => {
         const image = new Image();
@@ -34,6 +34,7 @@ try {
         const canvas = document.createElement("canvas");
         canvas.width = canvas.height = size;
         const context = canvas.getContext("2d");
+        if (!context) throw new Error("Canvas 2D context is unavailable");
         context.imageSmoothingEnabled = true;
         context.imageSmoothingQuality = "high";
         if (isMaskable) {

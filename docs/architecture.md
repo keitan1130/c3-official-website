@@ -23,6 +23,7 @@ Vite + React + TypeScriptのSPAです。認証・投稿機能や独自APIサー�
 | `src/generated/`・`dist/` | Git管理外の生成物。手動編集しない |
 
 `vite.config.ts` はアプリのプラグインとalias、`vitest.config.ts` はNode・Storybookのproject、`playwright.config.ts` はE2Eとサーバー起動を担当します。
+`scripts/` もTypeScriptで管理し、`tsconfig.node.json` で型検査します。
 Vite起動時にローカル本文を検証し、遅延importを持つ一覧を生成します。開発中は `content/` を監視します。
 ビルド時は同じmode・公開originを使い、Viteの出力先へ各静的ページのHTML・OGP・sitemap・404を生成します。
 

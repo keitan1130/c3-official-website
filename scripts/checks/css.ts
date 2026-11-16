@@ -2,6 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+export interface Violation {
+  file: string;
+  line: number;
+  message: string;
+}
+
 const SRC_DIRECTORY = path.resolve("src");
 const CSS_MODULE_PATTERN = /index\.module\.css$/;
 const STYLE_DOT_REFERENCE_PATTERN = /\bstyles\.([A-Za-z_$][\w$]*)/g;
@@ -11,31 +17,32 @@ const CUSTOM_PROPERTY_PATTERN = /--([A-Za-z_][\w-]*)/g;
 const ATTRIBUTE_SELECTOR_PATTERN = /\[\s*((?:data|aria)-[A-Za-z0-9_-]+)/g;
 const KEBAB_CASE_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 
-const walkFiles = (directory) =>
+const walkFiles = (directory: string): string[] =>
   fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const entryPath = path.join(directory, entry.name);
     return entry.isDirectory() ? walkFiles(entryPath) : [entryPath];
   });
 
-const toKebabCase = (value) =>
+const toKebabCase = (value: string) =>
   value
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/[_\s]+/g, "-")
     .replace(/-+/g, "-")
     .toLowerCase();
 
-const getLine = (content, index) => content.slice(0, index).split("\n").length;
+const getLine = (content: string, index: number) =>
+  content.slice(0, index).split("\n").length;
 
 export const checkCssModules = ({ fix = false } = {}) => {
   const files = walkFiles(SRC_DIRECTORY);
   const cssFiles = files.filter((file) => file.endsWith(".css"));
   const sourceFiles = files.filter((file) => /\.(?:ts|tsx)$/.test(file));
-  const violations = [];
+  const violations: Violation[] = [];
 
   for (const file of cssFiles) {
     let content = fs.readFileSync(file, "utf8");
     const originalContent = content;
-    const renames = new Map();
+    const renames = new Map<string, string>();
 
     if (CSS_MODULE_PATTERN.test(file)) {
       for (const match of content.matchAll(CLASS_SELECTOR_PATTERN)) {
@@ -121,7 +128,7 @@ export const checkCssModules = ({ fix = false } = {}) => {
   return violations;
 };
 
-const printViolations = (violations) => {
+const printViolations = (violations: Violation[]) => {
   for (const violation of violations) {
     console.error(
       `${path.relative(process.cwd(), violation.file)}:${violation.line} ${violation.message}`,
@@ -129,7 +136,10 @@ const printViolations = (violations) => {
   }
 };
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   const isFixMode = process.argv.includes("--fix");
   const violations = checkCssModules({ fix: isFixMode });
 

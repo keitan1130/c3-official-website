@@ -19,7 +19,7 @@
 - button・link・alt等を適切に使い、menu/dialogのキーボード操作・Escape・focus復帰を維持します。
 
 `npm run check` はコード・設定・スクリプト・テストをBiomeで確認し、命名も検査します。
-命名の自動修正が必要な場合は `node scripts/checks/naming.js --fix`、UI雛形は `npx hygen generator ui`（`feature`・`component` も可）を使います。
+命名の自動修正が必要な場合は `node scripts/checks/naming.ts --fix`、UI雛形は `npx hygen generator ui`（`feature`・`component` も可）を使います。
 
 ## 検証
 

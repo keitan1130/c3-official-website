@@ -1,6 +1,6 @@
 import { test } from "playwright/test";
 
-import { loadContent } from "../../scripts/content/load.mjs";
+import { loadContent } from "../../scripts/content/load.ts";
 
 import assert from "node:assert/strict";
 
