@@ -9,6 +9,13 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
     "@storybook/addon-vitest",
   ],
+  async viteFinal(config) {
+    config.plugins = config.plugins?.filter(
+      (plugin) =>
+        !plugin || !("name" in plugin) || plugin.name !== "site-pages",
+    );
+    return config;
+  },
   framework: {
     name: "@storybook/react-vite",
     options: {},

@@ -1,86 +1,59 @@
 # 記事・素材の管理
 
-本文・表示設定・写真・動画を、ページまたは記事ごとのフォルダへまとめます。
+本文・設定・専用素材は同じページ・記事フォルダで管理します。
 
 ```text
 content/
-  about/index.json
-  about/body.md
-  communities/<slug>/index.json   # game・3dcg・hack・2dcg・music
-  communities/<slug>/body.md
-  communities/<slug>/assets/
-  news/YYYY-MM-DD-topic/index.json
-  news/YYYY-MM-DD-topic/body.md
-  news/YYYY-MM-DD-topic/assets/
+  about/{index.json,body.md,assets/}
+  communities/<slug>/{index.json,body.md,assets/}
+  news/YYYY-MM-DD-topic/{index.json,body.md,assets/}
 ```
 
-C3ロゴの元画像は `public/C3Logo.svg` です。画面は `SITE.logo` を参照し、favicon・端末用アイコン・OGP用PNG・新規ニュースの仮画像は同じSVGから生成したPNGを使用します。その他の共通アイコン・動画読み込み用画像は `src/assets/` に配置します。記事・紹介本文に付属する素材は `content/` 内の各 `assets/` に配置します。サイト設定・固定ページ名・外部リンクは `src/config/site.ts`、分野名・表示順は `src/config/communities.ts` で管理します。
-
-本文は `body.md`、設定は `index.json`、記事・ページ専用のローカル素材は必ず同居する `assets/` 配下に統一します。新規作成・通常編集とも例外は設けません。動画は `./assets/hero.mp4`、画像は `./assets/photo-07.png` のように参照します。素材が多い場合も `assets/photos/` など、`assets/` の中で整理します。写真を `public/` へ二重コピーする必要はありません。
-
-JSONの相対パスは `index.json` のあるフォルダを基準に、本文の相対URLはMarkdownファイルのあるフォルダを基準に解決します。`./` は省略できます。画像・動画等の相対参照と、`./assets/...`（`assets/...` も可）を指すリンクは素材として検証・変換し、同じ記事・ページの `assets/` 配下から外れる場合はシンボリックリンク経由も含めて生成時にエラーにします。それ以外のリンクはページURLとして保持します。参照形式とHTMLのリンクにも同じ規則を適用します。本文を別フォルダに置く場合は `../assets/...` も素材として解決します。
-
-`/news/article-id` の本文では、次のようにページ遷移を記述できます。相対ページURLはブラウザが表示中のURLを基準に解決するため、末尾スラッシュの有無で移動先が変わります。
-
-```md
-[別の記事](./other-article-id)
-[Aboutへ](../about)
-[お知らせ一覧](/news)
-```
+ロゴ元画像は `public/C3Logo.svg`、その他の共通UI素材は `src/assets/` です。
+サイト名・外部リンクは `src/config/site.ts`、分野名・表示順は `src/config/communities.ts` で管理します。
 
 ## ニュースの追加
 
 ```bash
-npm run new:news -- 2026-11-14-event-guide
+npm run new:news -- 2026-11-16-event-guide
 npm run dev
 ```
 
-1. 生成されたフォルダの `index.json` でタイトル・概要・投稿日を編集します。
-2. `body.md` に本文を書き、写真等を `assets/` へ置きます。
-3. 仮のサムネイル `assets/cover.png` を差し替えるか、別の画像を置いて `thumbnail` を変更します。PCとモバイルでプレビューします。
-4. `npm run ci` で検査してから変更を公開します。追加した全記事が配信対象です。
+生成された `index.json`・`body.md` を編集し、仮の `assets/cover.png` を差し替えます。
 
 ```json
 {
-  "id": "2026-11-14-event-guide",
+  "id": "2026-11-16-event-guide",
   "title": "イベントのご案内",
   "digest": "開催日と会場をご案内します。",
-  "publishedDate": "2026-11-14",
+  "publishedDate": "2026-11-16",
   "body": "./body.md",
-  "thumbnail": "./assets/cover.jpg"
+  "thumbnail": "./assets/cover.png"
 }
 ```
 
-Markdownの画像は `![会場の様子](./assets/venue.jpg)` と記述します。
+全記事が自動公開対象です。下書き・重要フラグ・タグ・著者・更新日時は持ちません。
+URLは `/news/<id>`。公開後はIDを維持し、投稿日降順・同日はID順で表示します。ホームは最新5件です。
+サムネイルは記事の `assets/` 内のPNG・JPEG・WebP・GIF・AVIFを使います。
+新しいフォルダ・素材名は小文字英数字のkebab-caseにし、既存のContentful IDは保持します。
 
-## Markdownの書き方
+## 本文と素材
 
-- 見出し・箇条書き・リンク・画像・GFMの表など、`MarkdownPreview` が対応する記法を使います。日本語の文中の強調は `グッズの**割引券**が貰えます` のように `**` で囲みます。`__` は前後の文字によって強調にならない場合があります。
-- 画像は原則 `![画像の説明](./assets/photo.jpg)` で記述します。幅の指定が必要なら `<img src="./assets/photo.jpg" alt="画像の説明" width="200" />` を使えます。画像の高さやパーセント幅は指定できません。
-- 空白を含むファイル名は `![画像](<./photos/photo (1).png>)` またはURLエンコードで記述できます。参照形式の画像・リンク、HTMLの画像・動画・音声・poster・source・trackも相対URLを解決します。クエリ・フラグメントは保持し、コードブロック・インラインコード内の例や通常の文章は変換しません。
-- `div` による中央寄せ・flex配置、`b` タグ、spanのmarginやfont-styleは表示側で除去されます。段落・空行・`**強調**`・画像を使って構成します。
-- 表内の `<br>` と、spanの許可された文字色・文字サイズは利用できます。raw HTMLの全要素・全スタイルに対応しているわけではありません。許可内容は [markdownSchema.ts](../src/features/MarkdownPreview/markdownSchema.ts) と [rehypeMarkdownStyles.ts](../src/features/MarkdownPreview/rehypeMarkdownStyles.ts) を参照してください。
-- 参照形式のリンク・画像は、本文で使われる識別子の最初の定義だけを検査・変換します。識別子の大文字小文字と連続する空白は同一視します。未使用の定義と重複した2件目以降の定義は、そのまま保持します。採用される素材が存在しない場合はエラーになります。
-- 見出し・手動指定ID・脚注へのリンクは `#名前` を使います。例: `<p id="custom-anchor">本文</p>` に `[本文へ](#custom-anchor)` または `記事URL#custom-anchor` で移動できます。`[^note]` の脚注は `#fn-note`、本文への戻り先は `#fnref-note`（再参照は `#fnref-note-2`）です。内部IDの保護用接頭辞は記述しません。直接アクセス・再読込・本文内クリックで、対象を含む折りたたみも開きます。
+- 画像は `![画像の説明](./assets/photo.jpg)`、幅指定は `<img src="./assets/photo.jpg" alt="説明" width="200" />`。
+- GFMの表・タスクリスト・脚注、数式、折りたたみ等に対応します。通常の改行も表示に反映します。
+- HTMLは許可した要素・属性だけを表示します。`div` 配置・`b`・任意CSSは使えません。spanの文字色・文字サイズは限定対応です。詳細は `src/features/MarkdownPreview/markdownSchema.ts` と `rehypeMarkdownStyles.ts` を参照します。
+- 本文の相対素材URLはMarkdownファイル基準、JSONのパスはJSON基準です。素材は同じ記事・ページの `assets/` 内に置き、本文を別フォルダに置いた場合は `../assets/` も使えます。
+- 参照形式・HTMLの画像/動画/音声・poster/source/trackにも対応します。クエリ・フラグメントを保持し、コード・数式・通常の文章内は変換しません。
+- 素材リンクは `assets/` を指す場合だけ変換します。それ以外はページURLとして保持され、相対リンクの行き先は現在のURLと末尾スラッシュの有無に依存します。
+- 参照定義は使用される最初の定義だけを検査します。画像の代替テキスト内だけのリンク・画像・HTMLは読み込まれないため、素材検査の対象外です。
+- 空白を含むURLは `![説明](<./assets/photo (1).png>)` またはURLエンコードで記述できます。ファイル名の `#`・`?` は `%23`・`%3F` とします。
+- アンカーは `#見出し名`・手動ID・脚注の `#fn-note` を指定します。内部の保護用接頭辞は不要です。リンク先を含む折りたたみは自動で開きます。
 
-## 自動検出とURL
+生成時にID・必須値・実在する日付・素材の存在・25 MiB上限を検査します。
+素材が `assets/` の外を指す場合は、シンボリックリンク経由でもエラーになります。
+`#`・`?` を含む元パスは、生成用のハッシュ名コピーを経由してViteへ取り込みます。不要なコピーは再生成時に削除します。
+`src/generated/` を編集・コミットしません。本文は遅延読込、素材はサイズにかかわらずファイル配信です。
 
-- 記事フォルダは自動検出されるため、Reactのimportや一覧配列へ追記しません。開発サーバーも変更を監視します。
-- 表示順は `publishedDate` の降順、同日はID順です。全記事を公開し、ホームのお知らせには最新5件を使用します。公開フラグと下書き機能はありません。
-- 作業中の記事はローカルで編集し、完成してからコミット・公開します。新規作成コマンドは仮のサムネイルも配置します。
-- ニュースURLは `/news/<id>`。公開後はIDを維持し、タイトル・フォルダ名の変更でURLを変えません。
-- 分野URLは `/community/<slug>`。slugはコード側の分野定義とフォルダ名を一致させます。分野のJSONは `domain`・`body`・`mp4` を持ち、名称・旧ID・slugを重複定義しません。新しい分野は定義とフォルダを一緒に追加します。
-- ニュースのタグ参照・タグ表示・タグ絞り込みはありません。ブログのタグは引き続き各APIから取得します。
-- AboutのJSONは `summary` と `body` を持ち、ページ名は共通設定を参照します。
-- ニュースは `publishedDate: "YYYY-MM-DD"` の投稿日だけを管理し、「投稿日：YYYY/MM/DD」と表示します。作成日時・更新日時・著者IDは持ちません。ブログの著者・日時は各APIから取得します。
-
-## 掲載作品
-
-ホームとAboutの作品欄は、作品APIから最新の公開作品を最大20件取得します。作品情報・サムネイルを `content/` に保存する必要はありません。接続先は `VITE_API_BASE_URL` で設定します。
-
-## 検査と素材
-
-`scripts/local-content.mjs` は生成処理で共用する検証を担当します。IDは英数字と途中のハイフン・アンダースコアを許可し、既存のContentful IDを保持します。必須値、実在する投稿日（YYYY-MM-DD）、素材の存在と参照範囲、25 MiBの上限も検査します。サムネイルは記事の `assets/` 配下のPNG / JPEG / WebP / GIF / AVIFに限定し、外部URLは使いません。生成物の `src/generated/contentData.ts` を編集しません。
-本文は遅延読込し、構文解析した相対参照をビルド時に配信用URLへ変換します。素材はサイズにかかわらずファイルとして出力し、Markdownのsanitize処理は維持します。新しい素材は用途の分かる名前で保存し、表示・再生を確認してください。`npm run build && npm run test:content:browser` でビルド成果物の全本文と画像・動画をPC・モバイル幅で検証できます。
-
-命名は [命名規則](naming-conventions.md)、配信条件は [Cloudflare Pages](cloudflare-pages.md) を参照します。
+分野はコード定義のslugとフォルダ名を一致させ、JSONに `domain`・`body`・`mp4` を持ちます。
+AboutのJSONは `summary`・`body` を持ちます。掲載作品はAPI取得のため、ローカルへ保存しません。
+公開前に `npm run ci`、表示は `npm run test:e2e` で確認します。
